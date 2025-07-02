@@ -146,7 +146,7 @@ export function EPAInterface() {
           <TabsContent value="lokal" className="mt-0">
             <div className="p-6">
               {viewMode === 'thumbnail' ? (
-                <DocumentThumbnailView onViewDetails={handleViewDetails} documents={localDocuments} />
+                <DocumentThumbnailView onViewDetails={handleViewDetails} />
               ) : (
                 <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
               )}
@@ -155,7 +155,7 @@ export function EPAInterface() {
 
           <TabsContent value="epa" className="mt-0">
             <div className="p-6">
-              <DocumentTableView documents={epaDocuments} onBack={() => {}} />
+              <DocumentThumbnailView onViewDetails={handleViewDetails} documents={epaDocuments} />
             </div>
           </TabsContent>
 

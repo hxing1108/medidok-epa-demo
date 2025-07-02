@@ -269,6 +269,33 @@ export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThum
                       <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
                       <p className="text-xs text-muted-foreground">{doc.pageCount}</p>
                       <p className="text-xs text-muted-foreground">{doc.author}</p>
+                      <div className="flex space-x-1 mt-2">
+                        <Button 
+                          size="sm" 
+                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
+                          onClick={() => onViewDetails([doc])}
+                        >
+                          📄
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
+                        >
+                          📥
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
+                        >
+                          🔗
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
+                        >
+                          📤
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
