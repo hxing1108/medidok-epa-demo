@@ -336,6 +336,8 @@ export function EPAInterface() {
                           onViewDetails={handleViewDetails} 
                           onDocumentSelect={handleDocumentSelect}
                           documents={localDocumentsList}
+                          localDocuments={localDocumentsList}
+                          isFromEPA={false}
                         />
                       ) : (
                         <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -413,6 +415,8 @@ export function EPAInterface() {
                       onViewDetails={handleViewDetails} 
                       onDocumentSelect={handleDocumentSelect}
                       documents={localDocumentsList}
+                      localDocuments={localDocumentsList}
+                      isFromEPA={false}
                     />
                   ) : (
                     <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -426,6 +430,8 @@ export function EPAInterface() {
                     onViewDetails={handleViewDetails} 
                     documents={epaDocuments} 
                     onDocumentSelect={handleDocumentSelect}
+                    localDocuments={localDocumentsList}
+                    isFromEPA={true}
                   />
                 </div>
               </TabsContent>

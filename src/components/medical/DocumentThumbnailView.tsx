@@ -221,9 +221,11 @@ interface DocumentThumbnailViewProps {
   onViewDetails: (documents: Document[]) => void;
   documents?: Document[];
   onDocumentSelect?: (document: Document) => void;
+  localDocuments?: Document[]; // For checking import status
+  isFromEPA?: boolean; // Whether this is the ePA tab
 }
 
-export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect }: DocumentThumbnailViewProps) {
+export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect, localDocuments, isFromEPA }: DocumentThumbnailViewProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["Befundbericht", "Einstellbrief", "Wundbeurteilung"]));
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
@@ -330,10 +332,13 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
                     <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
                     <p className="text-xs text-muted-foreground">{doc.pageCount}</p>
                     <p className="text-xs text-muted-foreground">{doc.author}</p>
-                    {doc.importedFromEPA && (
+                    {/* Show pill based on context and import status */}
+                    {(isFromEPA || doc.importedFromEPA) && (
                       <div className="mt-2">
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
-                          ePA Import
+                          {isFromEPA && !localDocuments?.some(localDoc => 
+                            localDoc.name === doc.name && localDoc.author === doc.author && localDoc.creationDate === doc.creationDate
+                          ) ? "ePA" : "ePA Import"}
                         </span>
                       </div>
                     )}

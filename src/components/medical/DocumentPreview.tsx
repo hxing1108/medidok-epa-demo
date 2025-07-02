@@ -77,19 +77,6 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
             </Button>
           </div>
         </div>
-        
-        {/* Document Source Badge */}
-        <div className="flex justify-center">
-          {isFromEPA ? (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-              {isAlreadyImported ? "ePA Import" : "ePA"}
-            </Badge>
-          ) : document.importedFromEPA ? (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-              ePA Import
-            </Badge>
-          ) : null}
-        </div>
       </CardHeader>
       
       <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
