@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DocumentThumbnailView, Document } from "./DocumentThumbnailView";
 import { DocumentTableView } from "./DocumentTableView";
+import ctThoraxPreview from "@/assets/ct-thorax-preview.jpg";
+import mrtKopfPreview from "@/assets/mrt-kopf-preview.jpg";
+import consentFormPreview from "@/assets/consent-form-preview.jpg";
+import labResultsPreview from "@/assets/lab-results-preview.jpg";
 
 // Mock data for local documents (Bilderliste)
 const localDocuments: Document[] = [
@@ -18,7 +22,9 @@ const localDocuments: Document[] = [
     author: "Dr. Schmidt",
     uploader: "Dr. Schmidt",
     department: "Radiologie",
-    source: "local"
+    source: "local",
+    pageCount: "1 Seite",
+    thumbnailUrl: ctThoraxPreview
   },
   {
     id: "local2", 
@@ -30,7 +36,9 @@ const localDocuments: Document[] = [
     author: "Dr. Weber",
     uploader: "Dr. Weber",
     department: "Radiologie",
-    source: "local"
+    source: "local",
+    pageCount: "1 Seite",
+    thumbnailUrl: mrtKopfPreview
   }
 ];
 
@@ -47,7 +55,9 @@ const epaDocuments: Document[] = [
     uploader: "-",
     department: "-",
     source: "epa",
-    importedFromEPA: true
+    importedFromEPA: true,
+    pageCount: "2 Seiten",
+    thumbnailUrl: consentFormPreview
   },
   {
     id: "epa2",
@@ -60,7 +70,9 @@ const epaDocuments: Document[] = [
     uploader: "-", 
     department: "Labor",
     source: "epa",
-    importedFromEPA: true
+    importedFromEPA: true,
+    pageCount: "3 Seiten",
+    thumbnailUrl: labResultsPreview
   }
 ];
 
@@ -134,7 +146,7 @@ export function EPAInterface() {
           <TabsContent value="lokal" className="mt-0">
             <div className="p-6">
               {viewMode === 'thumbnail' ? (
-                <DocumentThumbnailView onViewDetails={handleViewDetails} />
+                <DocumentThumbnailView onViewDetails={handleViewDetails} documents={localDocuments} />
               ) : (
                 <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
               )}
