@@ -394,28 +394,61 @@ export function EPAInterface() {
               <div className="h-full flex flex-col">
                 {/* Tab Navigation for Bilderlist only */}
                 <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
-                  <div className="p-6 pb-0">
-                    <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
-                      <TabsTrigger 
-                        value="lokal" 
-                        className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                      >
-                        Lokal
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="epa"
-                        className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                      >
-                        ePA
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="plus"
-                        className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                      >
-                        +
-                      </TabsTrigger>
-                    </TabsList>
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between mb-4">
+                  <TabsList className="h-8 bg-transparent p-0 border-none">
+                    <TabsTrigger 
+                      value="lokal" 
+                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                    >
+                      Lokal
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="epa"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                    >
+                      ePA
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="plus"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                    >
+                      +
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  {/* Edit Function Buttons */}
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                      </svg>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                      </svg>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <Search className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4m-4 0l5.656 5.656M20 8V4m0 0h-4m4 0l-5.656 5.656M4 16v4m0 0h4m-4 0l5.656-5.656M20 16v4m0 0h-4m4 0l-5.656-5.656" />
+                      </svg>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                      <Import className="h-3 w-3 mr-1" />
+                      Import
+                    </Button>
                   </div>
+                </div>
+              </div>
                   
                   <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
