@@ -265,7 +265,7 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
             </div>
             
             {isExpanded && (
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 ml-6">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start">
                 {category.documents.map((doc) => (
                 <div 
                   key={doc.id} 
