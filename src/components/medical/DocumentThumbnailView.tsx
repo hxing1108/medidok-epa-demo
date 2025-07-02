@@ -246,7 +246,7 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
   ] : mockCategories;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full overflow-y-auto">
       {displayCategories.map((category) => {
         const isExpanded = expandedCategories.has(category.name) || documents;
         return (
