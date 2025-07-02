@@ -7,15 +7,16 @@ import { Document } from "./DocumentThumbnailView";
 
 interface DocumentPreviewProps {
   document: Document;
+  onClose?: () => void;
 }
 
-export function DocumentPreview({ document }: DocumentPreviewProps) {
+export function DocumentPreview({ document, onClose }: DocumentPreviewProps) {
   return (
     <div className="h-full flex flex-col">
       <CardHeader className="border-b">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -23,13 +24,21 @@ export function DocumentPreview({ document }: DocumentPreviewProps) {
       
       <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Document Preview Area */}
-        <div className="bg-muted rounded-lg p-8 min-h-64 flex items-center justify-center">
-          <div className="text-center">
-            <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-sm text-muted-foreground">
-              Dokumentvorschau für {document.name}
-            </p>
-          </div>
+        <div className="bg-muted rounded-lg p-4 min-h-64 flex items-center justify-center">
+          {document.thumbnailUrl ? (
+            <img 
+              src={document.thumbnailUrl} 
+              alt={`Preview of ${document.name}`}
+              className="max-w-full max-h-64 object-contain rounded"
+            />
+          ) : (
+            <div className="text-center">
+              <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground">
+                Dokumentvorschau für {document.name}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Document Metadata */}

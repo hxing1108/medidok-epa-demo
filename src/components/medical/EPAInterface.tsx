@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DocumentThumbnailView, Document } from "./DocumentThumbnailView";
 import { DocumentTableView } from "./DocumentTableView";
+import { DocumentPreview } from "./DocumentPreview";
 import ctThoraxPreview from "@/assets/ct-thorax-preview.jpg";
 import mrtKopfPreview from "@/assets/mrt-kopf-preview.jpg";
 import consentFormPreview from "@/assets/consent-form-preview.jpg";
@@ -80,6 +81,7 @@ export function EPAInterface() {
   const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('epa');
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -89,6 +91,10 @@ export function EPAInterface() {
   const handleBackToThumbnails = () => {
     setSelectedDocuments([]);
     setViewMode('thumbnail');
+  };
+
+  const handleDocumentSelect = (document: Document) => {
+    setSelectedDocument(document);
   };
 
   const currentDocuments = currentTab === 'lokal' ? localDocuments : epaDocuments;
@@ -144,18 +150,45 @@ export function EPAInterface() {
           </TabsList>
 
           <TabsContent value="lokal" className="mt-0">
-            <div className="p-6">
-              {viewMode === 'thumbnail' ? (
-                <DocumentThumbnailView onViewDetails={handleViewDetails} />
-              ) : (
-                <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+            <div className="flex h-full">
+              <div className={`p-6 ${selectedDocument ? 'w-2/3' : 'w-full'} transition-all duration-300`}>
+                {viewMode === 'thumbnail' ? (
+                  <DocumentThumbnailView 
+                    onViewDetails={handleViewDetails} 
+                    onDocumentSelect={handleDocumentSelect}
+                  />
+                ) : (
+                  <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                )}
+              </div>
+              {selectedDocument && (
+                <div className="w-1/3 border-l bg-card">
+                  <DocumentPreview 
+                    document={selectedDocument} 
+                    onClose={() => setSelectedDocument(null)}
+                  />
+                </div>
               )}
             </div>
           </TabsContent>
 
           <TabsContent value="epa" className="mt-0">
-            <div className="p-6">
-              <DocumentThumbnailView onViewDetails={handleViewDetails} documents={epaDocuments} />
+            <div className="flex h-full">
+              <div className={`p-6 ${selectedDocument ? 'w-2/3' : 'w-full'} transition-all duration-300`}>
+                <DocumentThumbnailView 
+                  onViewDetails={handleViewDetails} 
+                  documents={epaDocuments} 
+                  onDocumentSelect={handleDocumentSelect}
+                />
+              </div>
+              {selectedDocument && (
+                <div className="w-1/3 border-l bg-card">
+                  <DocumentPreview 
+                    document={selectedDocument} 
+                    onClose={() => setSelectedDocument(null)}
+                  />
+                </div>
+              )}
             </div>
           </TabsContent>
 

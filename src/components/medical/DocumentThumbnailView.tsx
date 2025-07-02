@@ -220,9 +220,10 @@ const mockCategories: DocumentCategory[] = [
 interface DocumentThumbnailViewProps {
   onViewDetails: (documents: Document[]) => void;
   documents?: Document[];
+  onDocumentSelect?: (document: Document) => void;
 }
 
-export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThumbnailViewProps) {
+export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect }: DocumentThumbnailViewProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["Befundbericht", "Einstellbrief", "Wundbeurteilung"]));
 
   const toggleCategory = (categoryName: string) => {
@@ -266,34 +267,38 @@ export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThum
             {isExpanded && (
               <div className="grid grid-cols-5 gap-4 ml-6">
                 {category.documents.map((doc) => (
-                  <div key={doc.id} className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
-                    <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
-                      {doc.thumbnailUrl ? (
-                        <img 
-                          src={doc.thumbnailUrl} 
-                          alt={`Preview of ${doc.name}`}
-                          className="w-full h-full object-cover rounded"
-                        />
-                      ) : (
-                        <div className="text-center text-xs text-muted-foreground">
-                          <div className="w-8 h-10 bg-background border rounded mx-auto mb-1"></div>
-                          Vorschau
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
-                      <p className="text-xs text-muted-foreground">{doc.pageCount}</p>
-                      <p className="text-xs text-muted-foreground">{doc.author}</p>
-                      {doc.importedFromEPA && (
-                        <div className="mt-2">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
-                            ePA Import
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                <div 
+                  key={doc.id} 
+                  className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => onDocumentSelect?.(doc)}
+                >
+                  <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
+                    {doc.thumbnailUrl ? (
+                      <img 
+                        src={doc.thumbnailUrl} 
+                        alt={`Preview of ${doc.name}`}
+                        className="w-full h-full object-cover rounded"
+                      />
+                    ) : (
+                      <div className="text-center text-xs text-muted-foreground">
+                        <div className="w-8 h-10 bg-background border rounded mx-auto mb-1"></div>
+                        Vorschau
+                      </div>
+                    )}
                   </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
+                    <p className="text-xs text-muted-foreground">{doc.pageCount}</p>
+                    <p className="text-xs text-muted-foreground">{doc.author}</p>
+                    {doc.importedFromEPA && (
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
+                          ePA Import
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 ))}
               </div>
             )}
