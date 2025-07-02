@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import befundberichtPreview from "@/assets/befundbericht-preview.jpg";
 import einstellbriefPreview from "@/assets/einstellbrief-preview.jpg";
-import wundbeurteilungPreview from "@/assets/wundbeurteilung-preview.jpg";
+import wundbeurteilungPreview from "/lovable-uploads/1544ef16-9b39-411e-8fe9-1dc19f2c89ad.png";
 
 export interface Document {
   id: string;
@@ -225,6 +225,7 @@ interface DocumentThumbnailViewProps {
 
 export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect }: DocumentThumbnailViewProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["Befundbericht", "Einstellbrief", "Wundbeurteilung"]));
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
   const toggleCategory = (categoryName: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -301,8 +302,15 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
                 {category.documents.map((doc) => (
                 <div 
                   key={doc.id} 
-                  className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow cursor-pointer"
-                  onClick={() => onDocumentSelect?.(doc)}
+                  className={`bg-card border rounded-lg p-3 hover:bg-card/20 transition-all cursor-pointer ${
+                    selectedDocumentId === doc.id 
+                      ? 'border-primary border-2' 
+                      : 'border-border hover:border-primary/30'
+                  }`}
+                  onClick={() => {
+                    setSelectedDocumentId(doc.id);
+                    onDocumentSelect?.(doc);
+                  }}
                 >
                   <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
                     {doc.thumbnailUrl ? (
