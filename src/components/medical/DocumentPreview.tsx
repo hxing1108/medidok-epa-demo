@@ -2,15 +2,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Eye, FileText, X } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Download, Eye, FileText, X, ChevronDown, ChevronRight } from "lucide-react";
 import { Document } from "./DocumentThumbnailView";
 
 interface DocumentPreviewProps {
   document: Document;
   onClose?: () => void;
+  isMetadataCollapsed: boolean;
+  onToggleMetadata: () => void;
 }
 
-export function DocumentPreview({ document, onClose }: DocumentPreviewProps) {
+export function DocumentPreview({ document, onClose, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
   return (
     <div className="h-full flex flex-col">
       <CardHeader className="border-b">
@@ -42,64 +45,75 @@ export function DocumentPreview({ document, onClose }: DocumentPreviewProps) {
         </div>
 
         {/* Document Metadata */}
-        <div className="space-y-4">
-          <h3 className="font-semibold">Metadaten</h3>
+        <Collapsible open={!isMetadataCollapsed} onOpenChange={(open) => onToggleMetadata()}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+              <h3 className="font-semibold">Metadaten</h3>
+              {isMetadataCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
           
-          <div className="grid grid-cols-1 gap-3 text-sm">
-            <div>
-              <span className="font-medium text-muted-foreground">Titel:</span>
-              <p className="mt-1">{document.name}</p>
+          <CollapsibleContent className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 gap-3 text-sm">
+              <div>
+                <span className="font-medium text-muted-foreground">Titel:</span>
+                <p className="mt-1">{document.name}</p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Kategorie:</span>
+                <p className="mt-1">{document.category}</p>
+              </div>
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Dokumenttyp:</span>
+                <p className="mt-1">{document.type}</p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Erstellungsdatum:</span>
+                <p className="mt-1">{document.creationDate}</p>
+              </div>
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Upload-Datum:</span>
+                <p className="mt-1">{document.uploadDate}</p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Autor:</span>
+                <p className="mt-1">{document.author}</p>
+              </div>
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Einsteller:</span>
+                <p className="mt-1">{document.uploader}</p>
+              </div>
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Fachgruppe:</span>
+                <p className="mt-1">{document.department}</p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <span className="font-medium text-muted-foreground">Dokument-ID:</span>
+                <p className="mt-1">{document.id}</p>
+              </div>
             </div>
-            
-            <Separator />
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Kategorie:</span>
-              <p className="mt-1">{document.category}</p>
-            </div>
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Dokumenttyp:</span>
-              <p className="mt-1">{document.type}</p>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Erstellungsdatum:</span>
-              <p className="mt-1">{document.creationDate}</p>
-            </div>
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Upload-Datum:</span>
-              <p className="mt-1">{document.uploadDate}</p>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Autor:</span>
-              <p className="mt-1">{document.author}</p>
-            </div>
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Einsteller:</span>
-              <p className="mt-1">{document.uploader}</p>
-            </div>
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Fachgruppe:</span>
-              <p className="mt-1">{document.department}</p>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <span className="font-medium text-muted-foreground">Dokument-ID:</span>
-              <p className="mt-1">{document.id}</p>
-            </div>
-          </div>
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Action Buttons */}
         <div className="space-y-2">

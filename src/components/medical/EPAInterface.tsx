@@ -82,6 +82,7 @@ export function EPAInterface() {
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [isMetadataCollapsed, setIsMetadataCollapsed] = useState(false);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -95,6 +96,10 @@ export function EPAInterface() {
 
   const handleDocumentSelect = (document: Document) => {
     setSelectedDocument(document);
+  };
+
+  const handleToggleMetadata = () => {
+    setIsMetadataCollapsed(!isMetadataCollapsed);
   };
 
   const currentDocuments = currentTab === 'lokal' ? localDocuments : epaDocuments;
@@ -166,6 +171,8 @@ export function EPAInterface() {
                   <DocumentPreview 
                     document={selectedDocument} 
                     onClose={() => setSelectedDocument(null)}
+                    isMetadataCollapsed={isMetadataCollapsed}
+                    onToggleMetadata={handleToggleMetadata}
                   />
                 </div>
               )}
@@ -186,6 +193,8 @@ export function EPAInterface() {
                   <DocumentPreview 
                     document={selectedDocument} 
                     onClose={() => setSelectedDocument(null)}
+                    isMetadataCollapsed={isMetadataCollapsed}
+                    onToggleMetadata={handleToggleMetadata}
                   />
                 </div>
               )}
