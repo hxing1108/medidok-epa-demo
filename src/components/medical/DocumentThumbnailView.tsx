@@ -14,6 +14,8 @@ export interface Document {
   department: string;
   pageCount?: string;
   thumbnailUrl?: string;
+  source?: "local" | "epa";
+  importedFromEPA?: boolean;
 }
 
 interface DocumentCategory {

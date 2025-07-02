@@ -6,7 +6,66 @@ import { Input } from "@/components/ui/input";
 import { DocumentThumbnailView, Document } from "./DocumentThumbnailView";
 import { DocumentTableView } from "./DocumentTableView";
 
+// Mock data for local documents (Bilderliste)
+const localDocuments: Document[] = [
+  {
+    id: "local1",
+    name: "CT Thorax",
+    category: "RAD",
+    type: "BLD",
+    creationDate: "02.07.2025",
+    uploadDate: "02.07.2025",
+    author: "Dr. Schmidt",
+    uploader: "Dr. Schmidt",
+    department: "Radiologie",
+    source: "local"
+  },
+  {
+    id: "local2", 
+    name: "MRT Kopf",
+    category: "RAD",
+    type: "BLD",
+    creationDate: "01.07.2025",
+    uploadDate: "01.07.2025",
+    author: "Dr. Weber",
+    uploader: "Dr. Weber",
+    department: "Radiologie",
+    source: "local"
+  }
+];
+
+// Mock data for ePA documents
+const epaDocuments: Document[] = [
+  {
+    id: "epa1",
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI",
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-",
+    source: "epa",
+    importedFromEPA: true
+  },
+  {
+    id: "epa2",
+    name: "Laborwerte Blutbild",
+    category: "LAB",
+    type: "BEF",
+    creationDate: "05.11.2021",
+    uploadDate: "05.11.2021",
+    author: "Dr. Müller",
+    uploader: "-", 
+    department: "Labor",
+    source: "epa",
+    importedFromEPA: true
+  }
+];
+
 export function EPAInterface() {
+  const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('epa');
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
 
@@ -19,6 +78,8 @@ export function EPAInterface() {
     setSelectedDocuments([]);
     setViewMode('thumbnail');
   };
+
+  const currentDocuments = currentTab === 'lokal' ? localDocuments : epaDocuments;
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -48,7 +109,7 @@ export function EPAInterface() {
 
       {/* Navigation Tabs */}
       <div className="border-b bg-card px-6">
-        <Tabs defaultValue="epa" className="w-full">
+        <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="w-full">
           <TabsList className="h-10 bg-transparent p-0 border-none">
             <TabsTrigger 
               value="lokal" 
@@ -69,17 +130,38 @@ export function EPAInterface() {
               +
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="lokal" className="mt-0">
+            <div className="p-6">
+              {viewMode === 'thumbnail' ? (
+                <DocumentThumbnailView onViewDetails={handleViewDetails} />
+              ) : (
+                <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="epa" className="mt-0">
+            <div className="p-6">
+              {viewMode === 'thumbnail' ? (
+                <DocumentThumbnailView onViewDetails={handleViewDetails} />
+              ) : (
+                <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="plus" className="mt-0">
+            <div className="p-6">
+              <div className="text-center text-muted-foreground">
+                Tab "+" noch nicht implementiert
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        {viewMode === 'thumbnail' ? (
-          <DocumentThumbnailView onViewDetails={handleViewDetails} />
-        ) : (
-          <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-        )}
-      </div>
+      {/* Main Content is now handled by TabsContent above */}
     </div>
   );
 }
