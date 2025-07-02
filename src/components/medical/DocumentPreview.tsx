@@ -14,10 +14,17 @@ interface DocumentPreviewProps {
   onDownload?: (document: Document) => void;
   isMetadataCollapsed: boolean;
   onToggleMetadata: () => void;
+  localDocuments?: Document[]; // Array of local documents to check for duplicates
+  isFromEPA?: boolean; // Whether this document is from ePA tab
 }
 
-export function DocumentPreview({ document, onClose, onFullscreen, onDownload, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
+export function DocumentPreview({ document, onClose, onFullscreen, onDownload, isMetadataCollapsed, onToggleMetadata, localDocuments, isFromEPA }: DocumentPreviewProps) {
   const { toast } = useToast();
+
+  // Check if this document is already imported to local
+  const isAlreadyImported = localDocuments?.some(localDoc => 
+    localDoc.name === document.name && localDoc.author === document.author && localDoc.creationDate === document.creationDate
+  ) || false;
 
   const handleDownload = async () => {
     try {
@@ -69,6 +76,19 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
               <X className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+        
+        {/* Document Source Badge */}
+        <div className="flex justify-center">
+          {isFromEPA ? (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              {isAlreadyImported ? "ePA Import" : "ePA"}
+            </Badge>
+          ) : document.importedFromEPA ? (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              ePA Import
+            </Badge>
+          ) : null}
         </div>
       </CardHeader>
       
@@ -166,9 +186,14 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
 
       {/* Download Section at Bottom */}
       <div className="border-t p-4">
-        <Button onClick={handleDownload} className="w-full">
+        <Button 
+          onClick={handleDownload} 
+          className="w-full" 
+          disabled={isAlreadyImported}
+          variant={isAlreadyImported ? "secondary" : "default"}
+        >
           <Download className="h-4 w-4 mr-2" />
-          Dokument herunterladen
+          {isAlreadyImported ? "Bereits importiert" : "Dokument herunterladen"}
         </Button>
       </div>
     </div>

@@ -261,6 +261,8 @@ export function EPAInterface() {
           onDownload={handleDownloadDocument}
           isMetadataCollapsed={isMetadataCollapsed}
           onToggleMetadata={handleToggleMetadata}
+          localDocuments={localDocumentsList}
+          isFromEPA={currentTab === 'epa'}
         />
       </div>
     );
@@ -371,6 +373,8 @@ export function EPAInterface() {
                   onDownload={handleDownloadDocument}
                   isMetadataCollapsed={isMetadataCollapsed}
                   onToggleMetadata={handleToggleMetadata}
+                  localDocuments={localDocumentsList}
+                  isFromEPA={currentTab === 'epa'}
                 />
               </div>
             </ResizablePanel>
