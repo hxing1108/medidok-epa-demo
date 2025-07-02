@@ -188,8 +188,8 @@ export function EPAInterface() {
                 onLayout={(sizes) => setPanelSizes(sizes)}
               >
                 <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="h-full overflow-y-auto">
-                    <div className="p-6">
+                  <div className="h-full flex flex-col">
+                    <div className="flex-1 overflow-y-auto p-6">
                       {viewMode === 'thumbnail' ? (
                         <DocumentThumbnailView 
                           onViewDetails={handleViewDetails} 
@@ -215,8 +215,8 @@ export function EPAInterface() {
                 </ResizablePanel>
               </ResizablePanelGroup>
             ) : (
-              <div className="h-full overflow-y-auto">
-                <div className="p-6">
+              <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-y-auto p-6">
                   {viewMode === 'thumbnail' ? (
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
@@ -238,8 +238,8 @@ export function EPAInterface() {
                 onLayout={(sizes) => setPanelSizes(sizes)}
               >
                 <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="h-full overflow-y-auto">
-                    <div className="p-6">
+                  <div className="h-full flex flex-col">
+                    <div className="flex-1 overflow-y-auto p-6">
                       <DocumentThumbnailView 
                         onViewDetails={handleViewDetails} 
                         documents={epaDocuments} 
@@ -262,8 +262,8 @@ export function EPAInterface() {
                 </ResizablePanel>
               </ResizablePanelGroup>
             ) : (
-              <div className="h-full overflow-y-auto">
-                <div className="p-6">
+              <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-y-auto p-6">
                   <DocumentThumbnailView 
                     onViewDetails={handleViewDetails} 
                     documents={epaDocuments} 
