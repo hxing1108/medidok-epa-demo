@@ -236,14 +236,44 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
     setExpandedCategories(newExpanded);
   };
 
-  // If custom documents are provided, create categories for them
-  const displayCategories = documents ? [
-    {
-      name: "Dokumente",
+  // If custom documents are provided, group them by type/class
+  const displayCategories = documents ? 
+    groupDocumentsByClass(documents) : mockCategories;
+
+  // Function to group documents by their medical class
+  function groupDocumentsByClass(docs: Document[]): DocumentCategory[] {
+    const grouped = docs.reduce((acc, doc) => {
+      // Create a class name based on document type and category
+      let className = '';
+      if (doc.type === 'BLD' && doc.category === 'RAD') {
+        // Extract class from document name for radiology images
+        if (doc.name.includes('CT')) className = 'CT Untersuchungen';
+        else if (doc.name.includes('MRT')) className = 'MRT Untersuchungen';
+        else className = 'Radiologie Bilder';
+      } else if (doc.category === 'BESC') {
+        className = 'Befundberichte';
+      } else if (doc.category === 'LAB') {
+        className = 'Laborwerte';
+      } else if (doc.category === 'BRIEF') {
+        className = 'Briefe';
+      } else {
+        className = 'Sonstige Dokumente';
+      }
+
+      if (!acc[className]) {
+        acc[className] = [];
+      }
+      acc[className].push(doc);
+      return acc;
+    }, {} as Record<string, Document[]>);
+
+    // Convert to DocumentCategory format
+    return Object.entries(grouped).map(([name, documents]) => ({
+      name,
       count: documents.length,
-      documents: documents
-    }
-  ] : mockCategories;
+      documents
+    }));
+  }
 
   return (
     <div className="space-y-4">
