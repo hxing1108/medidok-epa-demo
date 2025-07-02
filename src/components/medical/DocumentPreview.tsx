@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Download, Eye, FileText, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Download, Eye, FileText, X, ChevronDown, ChevronRight, Maximize } from "lucide-react";
 import { Document } from "./DocumentThumbnailView";
 
 interface DocumentPreviewProps {
@@ -19,9 +19,14 @@ export function DocumentPreview({ document, onClose, isMetadataCollapsed, onTogg
       <CardHeader className="border-b">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm">
+              <Maximize className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -115,17 +120,6 @@ export function DocumentPreview({ document, onClose, isMetadataCollapsed, onTogg
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Action Buttons */}
-        <div className="space-y-2">
-          <Button className="w-full">
-            <Eye className="h-4 w-4 mr-2" />
-            Vollbild anzeigen
-          </Button>
-          <Button variant="outline" className="w-full">
-            <Download className="h-4 w-4 mr-2" />
-            Herunterladen
-          </Button>
-        </div>
       </CardContent>
     </div>
   );
