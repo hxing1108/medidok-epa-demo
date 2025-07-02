@@ -292,141 +292,146 @@ export function EPAInterface() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="border-b bg-card px-6">
-        <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="w-full">
-          <TabsList className="h-10 bg-transparent p-0 border-none">
-            <TabsTrigger 
-              value="lokal" 
-              className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-            >
-              Lokal
-            </TabsTrigger>
-            <TabsTrigger 
-              value="epa"
-              className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-            >
-              ePA
-            </TabsTrigger>
-            <TabsTrigger 
-              value="plus"
-              className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-            >
-              +
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="lokal" className="mt-0 flex-1 overflow-hidden">
-            {selectedDocument ? (
-              <ResizablePanelGroup 
-                direction="horizontal" 
-                className="h-full" 
-                onLayout={(sizes) => setPanelSizes(sizes)}
+      {/* Navigation Tabs and Content Container */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="border-b bg-card px-6">
+          <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="w-full h-full flex flex-col">
+            <TabsList className="h-10 bg-transparent p-0 border-none">
+              <TabsTrigger 
+                value="lokal" 
+                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
               >
-                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1 overflow-y-auto p-6">
-                      {viewMode === 'thumbnail' ? (
-                        <DocumentThumbnailView 
-                          onViewDetails={handleViewDetails} 
-                          onDocumentSelect={handleDocumentSelect}
-                          documents={localDocumentsList}
-                        />
-                      ) : (
-                        <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                      )}
+                Lokal
+              </TabsTrigger>
+              <TabsTrigger 
+                value="epa"
+                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              >
+                ePA
+              </TabsTrigger>
+              <TabsTrigger 
+                value="plus"
+                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              >
+                +
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Tab Content Container with Fixed Height */}
+        <div className="flex-1 min-h-0">
+          <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full">
+            <TabsContent value="lokal" className="mt-0 h-full">
+              {selectedDocument ? (
+                <ResizablePanelGroup 
+                  direction="horizontal" 
+                  className="h-full" 
+                  onLayout={(sizes) => setPanelSizes(sizes)}
+                >
+                  <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
+                    <div className="h-full flex flex-col">
+                      <div className="flex-1 overflow-y-auto p-6">
+                        {viewMode === 'thumbnail' ? (
+                          <DocumentThumbnailView 
+                            onViewDetails={handleViewDetails} 
+                            onDocumentSelect={handleDocumentSelect}
+                            documents={localDocumentsList}
+                          />
+                        ) : (
+                          <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
-                  <div className="bg-card h-full">
-                    <DocumentPreview 
-                      document={selectedDocument} 
-                      onClose={() => setSelectedDocument(null)}
-                      onFullscreen={handleFullscreen}
-                      onDownload={handleDownloadDocument}
-                      isMetadataCollapsed={isMetadataCollapsed}
-                      onToggleMetadata={handleToggleMetadata}
-                    />
-                  </div>
-                </ResizablePanel>
-              </ResizablePanelGroup>
-            ) : (
-              <div className="h-full flex flex-col">
-                <div className="flex-1 overflow-y-auto p-6">
-                  {viewMode === 'thumbnail' ? (
-                    <DocumentThumbnailView 
-                      onViewDetails={handleViewDetails} 
-                      onDocumentSelect={handleDocumentSelect}
-                      documents={localDocumentsList}
-                    />
-                  ) : (
-                    <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                  )}
-                </div>
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="epa" className="mt-0 flex-1 overflow-hidden">
-            {selectedDocument ? (
-              <ResizablePanelGroup 
-                direction="horizontal" 
-                className="h-full" 
-                onLayout={(sizes) => setPanelSizes(sizes)}
-              >
-                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1 overflow-y-auto p-6">
-                      <DocumentThumbnailView 
-                        onViewDetails={handleViewDetails} 
-                        documents={epaDocuments} 
-                        onDocumentSelect={handleDocumentSelect}
+                  </ResizablePanel>
+                  <ResizableHandle />
+                  <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
+                    <div className="bg-card h-full">
+                      <DocumentPreview 
+                        document={selectedDocument} 
+                        onClose={() => setSelectedDocument(null)}
+                        onFullscreen={handleFullscreen}
+                        onDownload={handleDownloadDocument}
+                        isMetadataCollapsed={isMetadataCollapsed}
+                        onToggleMetadata={handleToggleMetadata}
                       />
                     </div>
+                  </ResizablePanel>
+                </ResizablePanelGroup>
+              ) : (
+                <div className="h-full flex flex-col">
+                  <div className="flex-1 overflow-y-auto p-6">
+                    {viewMode === 'thumbnail' ? (
+                      <DocumentThumbnailView 
+                        onViewDetails={handleViewDetails} 
+                        onDocumentSelect={handleDocumentSelect}
+                        documents={localDocumentsList}
+                      />
+                    ) : (
+                      <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                    )}
                   </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
-                  <div className="bg-card h-full">
-                    <DocumentPreview 
-                      document={selectedDocument} 
-                      onClose={() => setSelectedDocument(null)}
-                      onFullscreen={handleFullscreen}
-                      onDownload={handleDownloadDocument}
-                      isMetadataCollapsed={isMetadataCollapsed}
-                      onToggleMetadata={handleToggleMetadata}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="epa" className="mt-0 h-full">
+              {selectedDocument ? (
+                <ResizablePanelGroup 
+                  direction="horizontal" 
+                  className="h-full" 
+                  onLayout={(sizes) => setPanelSizes(sizes)}
+                >
+                  <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
+                    <div className="h-full flex flex-col">
+                      <div className="flex-1 overflow-y-auto p-6">
+                        <DocumentThumbnailView 
+                          onViewDetails={handleViewDetails} 
+                          documents={epaDocuments} 
+                          onDocumentSelect={handleDocumentSelect}
+                        />
+                      </div>
+                    </div>
+                  </ResizablePanel>
+                  <ResizableHandle />
+                  <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
+                    <div className="bg-card h-full">
+                      <DocumentPreview 
+                        document={selectedDocument} 
+                        onClose={() => setSelectedDocument(null)}
+                        onFullscreen={handleFullscreen}
+                        onDownload={handleDownloadDocument}
+                        isMetadataCollapsed={isMetadataCollapsed}
+                        onToggleMetadata={handleToggleMetadata}
+                      />
+                    </div>
+                  </ResizablePanel>
+                </ResizablePanelGroup>
+              ) : (
+                <div className="h-full flex flex-col">
+                  <div className="flex-1 overflow-y-auto p-6">
+                    <DocumentThumbnailView 
+                      onViewDetails={handleViewDetails} 
+                      documents={epaDocuments} 
+                      onDocumentSelect={handleDocumentSelect}
                     />
                   </div>
-                </ResizablePanel>
-              </ResizablePanelGroup>
-            ) : (
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="plus" className="mt-0 h-full">
               <div className="h-full flex flex-col">
                 <div className="flex-1 overflow-y-auto p-6">
-                  <DocumentThumbnailView 
-                    onViewDetails={handleViewDetails} 
-                    documents={epaDocuments} 
-                    onDocumentSelect={handleDocumentSelect}
-                  />
+                  <div className="text-center text-muted-foreground">
+                    Tab "+" noch nicht implementiert
+                  </div>
                 </div>
               </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="plus" className="mt-0 flex-1 overflow-hidden">
-            <div className="h-full overflow-y-auto">
-              <div className="p-6">
-                <div className="text-center text-muted-foreground">
-                  Tab "+" noch nicht implementiert
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-
-      {/* Main Content is now handled by TabsContent above */}
     </div>
   );
 }
