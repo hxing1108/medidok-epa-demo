@@ -294,169 +294,148 @@ export function EPAInterface() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0">
-        <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
-          <TabsContent value="lokal" className="mt-0 h-full flex flex-col">
-            {/* Tab Navigation */}
-            <div className="p-6 pb-0">
-              <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
-                <TabsTrigger 
-                  value="lokal" 
-                  className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                >
-                  Tab1
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="epa"
-                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                >
-                  Tab2
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="plus"
-                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                >
-                  +
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 min-h-0">
-              {selectedDocument ? (
-                <ResizablePanelGroup 
-                  direction="horizontal" 
-                  className="h-full" 
-                  onLayout={(sizes) => setPanelSizes(sizes)}
-                >
-                  <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                    <div className="h-full flex flex-col">
-                      <div className="flex-1 overflow-y-auto px-6">
-                        {viewMode === 'thumbnail' ? (
-                          <DocumentThumbnailView 
-                            onViewDetails={handleViewDetails} 
-                            onDocumentSelect={handleDocumentSelect}
-                            documents={localDocumentsList}
-                          />
-                        ) : (
-                          <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                        )}
-                      </div>
-                    </div>
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
-                    <div className="bg-card h-full">
-                      <DocumentPreview 
-                        document={selectedDocument} 
-                        onClose={() => setSelectedDocument(null)}
-                        onFullscreen={handleFullscreen}
-                        onDownload={handleDownloadDocument}
-                        isMetadataCollapsed={isMetadataCollapsed}
-                        onToggleMetadata={handleToggleMetadata}
-                      />
-                    </div>
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              ) : (
-                <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto px-6">
-                    {viewMode === 'thumbnail' ? (
-                      <DocumentThumbnailView 
-                        onViewDetails={handleViewDetails} 
-                        onDocumentSelect={handleDocumentSelect}
-                        documents={localDocumentsList}
-                      />
-                    ) : (
-                      <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                    )}
+        {selectedDocument ? (
+          <ResizablePanelGroup 
+            direction="horizontal" 
+            className="h-full" 
+            onLayout={(sizes) => setPanelSizes(sizes)}
+          >
+            <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
+              <div className="h-full flex flex-col">
+                {/* Tab Navigation for Bilderlist only */}
+                <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
+                  <div className="p-6 pb-0">
+                    <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
+                      <TabsTrigger 
+                        value="lokal" 
+                        className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                      >
+                        Lokal
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="epa"
+                        className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                      >
+                        ePA
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="plus"
+                        className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                      >
+                        +
+                      </TabsTrigger>
+                    </TabsList>
                   </div>
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="epa" className="mt-0 h-full flex flex-col">
-            {/* Tab Navigation */}
-            <div className="p-6 pb-0">
-              <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
-                <TabsTrigger 
-                  value="lokal" 
-                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                >
-                  Tab1
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="epa"
-                  className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                >
-                  Tab2
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="plus"
-                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                >
-                  +
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 min-h-0">
-              {selectedDocument ? (
-                <ResizablePanelGroup 
-                  direction="horizontal" 
-                  className="h-full" 
-                  onLayout={(sizes) => setPanelSizes(sizes)}
-                >
-                  <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                    <div className="h-full flex flex-col">
-                      <div className="flex-1 overflow-y-auto px-6">
+                  
+                  <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
+                    <div className="h-full overflow-y-auto px-6">
+                      {viewMode === 'thumbnail' ? (
                         <DocumentThumbnailView 
                           onViewDetails={handleViewDetails} 
-                          documents={epaDocuments} 
                           onDocumentSelect={handleDocumentSelect}
+                          documents={localDocumentsList}
                         />
-                      </div>
+                      ) : (
+                        <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                      )}
                     </div>
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
-                    <div className="bg-card h-full">
-                      <DocumentPreview 
-                        document={selectedDocument} 
-                        onClose={() => setSelectedDocument(null)}
-                        onFullscreen={handleFullscreen}
-                        onDownload={handleDownloadDocument}
-                        isMetadataCollapsed={isMetadataCollapsed}
-                        onToggleMetadata={handleToggleMetadata}
+                  </TabsContent>
+
+                  <TabsContent value="epa" className="flex-1 min-h-0 mt-0">
+                    <div className="h-full overflow-y-auto px-6">
+                      <DocumentThumbnailView 
+                        onViewDetails={handleViewDetails} 
+                        documents={epaDocuments} 
+                        onDocumentSelect={handleDocumentSelect}
                       />
                     </div>
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              ) : (
-                <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto px-6">
+                  </TabsContent>
+
+                  <TabsContent value="plus" className="flex-1 min-h-0 mt-0">
+                    <div className="h-full overflow-y-auto px-6">
+                      <div className="text-center text-muted-foreground">
+                        Tab "+" noch nicht implementiert
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
+              <div className="bg-card h-full">
+                <DocumentPreview 
+                  document={selectedDocument} 
+                  onClose={() => setSelectedDocument(null)}
+                  onFullscreen={handleFullscreen}
+                  onDownload={handleDownloadDocument}
+                  isMetadataCollapsed={isMetadataCollapsed}
+                  onToggleMetadata={handleToggleMetadata}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          <div className="h-full flex flex-col">
+            {/* Tab Navigation for Bilderlist only */}
+            <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
+              <div className="p-6 pb-0">
+                <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
+                  <TabsTrigger 
+                    value="lokal" 
+                    className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                  >
+                    Lokal
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="epa"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                  >
+                    ePA
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="plus"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                  >
+                    +
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
+                <div className="h-full overflow-y-auto px-6">
+                  {viewMode === 'thumbnail' ? (
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
-                      documents={epaDocuments} 
                       onDocumentSelect={handleDocumentSelect}
+                      documents={localDocumentsList}
                     />
+                  ) : (
+                    <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="epa" className="flex-1 min-h-0 mt-0">
+                <div className="h-full overflow-y-auto px-6">
+                  <DocumentThumbnailView 
+                    onViewDetails={handleViewDetails} 
+                    documents={epaDocuments} 
+                    onDocumentSelect={handleDocumentSelect}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="plus" className="flex-1 min-h-0 mt-0">
+                <div className="h-full overflow-y-auto px-6">
+                  <div className="text-center text-muted-foreground">
+                    Tab "+" noch nicht implementiert
                   </div>
                 </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="plus" className="mt-0 h-full flex flex-col">
-            <div className="h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="text-center text-muted-foreground">
-                  Tab "+" noch nicht implementiert
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );
