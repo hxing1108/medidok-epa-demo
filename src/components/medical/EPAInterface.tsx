@@ -158,7 +158,7 @@ const localDocuments: Document[] = [
   }
 ];
 
-// Mock data for ePA documents
+// Mock data for ePA documents  
 const epaDocuments: Document[] = [
   {
     id: "epa1",
@@ -189,6 +189,90 @@ const epaDocuments: Document[] = [
     importedFromEPA: true,
     pageCount: "3 Seiten",
     thumbnailUrl: labResultsPreview
+  },
+  {
+    id: "epa3",
+    name: "Neurologischer Befund Gina Ortmann",
+    category: "BESC",
+    type: "BEF",
+    creationDate: "14.03.1991",
+    uploadDate: "14.03.1991",
+    author: "Dr. med. Kathrin Hilbert",
+    uploader: "-",
+    department: "Neurologie",
+    source: "epa",
+    pageCount: "2 Seiten",
+    thumbnailUrl: "/lovable-uploads/8cae94e0-2f38-4e68-8c3a-892c27d9737d.png"
+  },
+  {
+    id: "epa4", 
+    name: "Echokardiographie Sylvia",
+    category: "BESC",
+    type: "BEF",
+    creationDate: "24.10.64",
+    uploadDate: "24.10.64",
+    author: "Dr. med. Frank Towae",
+    uploader: "-",
+    department: "Kardiologie",
+    source: "epa",
+    pageCount: "1 Seite",
+    thumbnailUrl: "/lovable-uploads/ab9f6edf-0cba-4d66-91a9-bc06361442ab.png"
+  },
+  {
+    id: "epa5",
+    name: "Histopathologischer Befund Sofie Buchinger",
+    category: "BESC", 
+    type: "BEF",
+    creationDate: "04.08.2022",
+    uploadDate: "08.08.2022",
+    author: "Pathologie Ingolstadt",
+    uploader: "-",
+    department: "Pathologie",
+    source: "epa",
+    pageCount: "2 Seiten",
+    thumbnailUrl: "/lovable-uploads/6f562a21-8024-4997-af46-2b5ab9795ab5.png"
+  },
+  {
+    id: "epa6",
+    name: "Befundbericht Sina Hazet",
+    category: "BESC",
+    type: "BEF", 
+    creationDate: "04.05.2022",
+    uploadDate: "04.05.2022",
+    author: "Priv.-Doz. Dr. med. Thomas Schmidt",
+    uploader: "-",
+    department: "Neurologie",
+    source: "epa",
+    pageCount: "2 Seiten",
+    thumbnailUrl: "/lovable-uploads/12077eaa-68d7-48ce-b4cc-abf50d07abbb.png"
+  },
+  {
+    id: "epa7",
+    name: "eArztbrief Monika Möbius",
+    category: "BRIEF",
+    type: "EIN",
+    creationDate: "08.05.2023",
+    uploadDate: "08.05.2023", 
+    author: "Dr.med. Kemal Cabadag",
+    uploader: "-",
+    department: "Onkologie",
+    source: "epa",
+    pageCount: "1 Seite",
+    thumbnailUrl: "/lovable-uploads/e193902b-cc7a-47da-b505-65107a38930e.png"
+  },
+  {
+    id: "epa8",
+    name: "Ileo-/Koloskopie Stefanie Welsch-Seibel", 
+    category: "BESC",
+    type: "BEF",
+    creationDate: "15.12.2022",
+    uploadDate: "15.12.2022",
+    author: "Dr. Frank Küppers",
+    uploader: "-", 
+    department: "Gastroenterologie",
+    source: "epa",
+    pageCount: "1 Seite",
+    thumbnailUrl: "/lovable-uploads/62f8033e-7725-4828-b0d5-1265c6405663.png"
   }
 ];
 
