@@ -130,8 +130,8 @@ export function EPAInterface() {
     );
   }
 
-  return (
-    <div className="h-screen flex flex-col bg-background">
+    return (
+      <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Header */}
       <div className="border-b bg-card px-6 py-3">
         <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ export function EPAInterface() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="lokal" className="mt-0">
+          <TabsContent value="lokal" className="mt-0 flex-1 overflow-hidden">
             {selectedDocument ? (
               <ResizablePanelGroup 
                 direction="horizontal" 
@@ -188,15 +188,17 @@ export function EPAInterface() {
                 onLayout={(sizes) => setPanelSizes(sizes)}
               >
                 <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="p-6 h-full">
-                    {viewMode === 'thumbnail' ? (
-                      <DocumentThumbnailView 
-                        onViewDetails={handleViewDetails} 
-                        onDocumentSelect={handleDocumentSelect}
-                      />
-                    ) : (
-                      <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                    )}
+                  <div className="h-full overflow-y-auto">
+                    <div className="p-6">
+                      {viewMode === 'thumbnail' ? (
+                        <DocumentThumbnailView 
+                          onViewDetails={handleViewDetails} 
+                          onDocumentSelect={handleDocumentSelect}
+                        />
+                      ) : (
+                        <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                      )}
+                    </div>
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
@@ -213,33 +215,37 @@ export function EPAInterface() {
                 </ResizablePanel>
               </ResizablePanelGroup>
             ) : (
-              <div className="p-6">
-                {viewMode === 'thumbnail' ? (
-                  <DocumentThumbnailView 
-                    onViewDetails={handleViewDetails} 
-                    onDocumentSelect={handleDocumentSelect}
-                  />
-                ) : (
-                  <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
-                )}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="epa" className="mt-0">
-            {selectedDocument ? (
-              <ResizablePanelGroup 
-                direction="horizontal" 
-                className="h-full" 
-                onLayout={(sizes) => setPanelSizes(sizes)}
-              >
-                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-                  <div className="p-6 h-full">
+              <div className="h-full overflow-y-auto">
+                <div className="p-6">
+                  {viewMode === 'thumbnail' ? (
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
-                      documents={epaDocuments} 
                       onDocumentSelect={handleDocumentSelect}
                     />
+                  ) : (
+                    <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                  )}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="epa" className="mt-0 flex-1 overflow-hidden">
+            {selectedDocument ? (
+              <ResizablePanelGroup 
+                direction="horizontal" 
+                className="h-full" 
+                onLayout={(sizes) => setPanelSizes(sizes)}
+              >
+                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
+                  <div className="h-full overflow-y-auto">
+                    <div className="p-6">
+                      <DocumentThumbnailView 
+                        onViewDetails={handleViewDetails} 
+                        documents={epaDocuments} 
+                        onDocumentSelect={handleDocumentSelect}
+                      />
+                    </div>
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
@@ -256,20 +262,24 @@ export function EPAInterface() {
                 </ResizablePanel>
               </ResizablePanelGroup>
             ) : (
-              <div className="p-6">
-                <DocumentThumbnailView 
-                  onViewDetails={handleViewDetails} 
-                  documents={epaDocuments} 
-                  onDocumentSelect={handleDocumentSelect}
-                />
+              <div className="h-full overflow-y-auto">
+                <div className="p-6">
+                  <DocumentThumbnailView 
+                    onViewDetails={handleViewDetails} 
+                    documents={epaDocuments} 
+                    onDocumentSelect={handleDocumentSelect}
+                  />
+                </div>
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="plus" className="mt-0">
-            <div className="p-6">
-              <div className="text-center text-muted-foreground">
-                Tab "+" noch nicht implementiert
+          <TabsContent value="plus" className="mt-0 flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto">
+              <div className="p-6">
+                <div className="text-center text-muted-foreground">
+                  Tab "+" noch nicht implementiert
+                </div>
               </div>
             </div>
           </TabsContent>
