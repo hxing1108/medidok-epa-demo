@@ -201,6 +201,7 @@ export function EPAInterface() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [panelSizes, setPanelSizes] = useState([65, 35]);
   const [localDocumentsList, setLocalDocumentsList] = useState<Document[]>(localDocuments);
+  const [importedEpaDocumentIds, setImportedEpaDocumentIds] = useState<Set<string>>(new Set());
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -240,6 +241,9 @@ export function EPAInterface() {
 
     // Add to local documents list
     setLocalDocumentsList(prev => [...prev, localDocument]);
+    
+    // Mark the original ePA document as imported
+    setImportedEpaDocumentIds(prev => new Set(prev).add(document.id));
     
     // Switch to local tab to show the downloaded document
     setCurrentTab('lokal');
@@ -338,6 +342,7 @@ export function EPAInterface() {
                           documents={localDocumentsList}
                           localDocuments={localDocumentsList}
                           isFromEPA={false}
+                          importedEpaDocumentIds={importedEpaDocumentIds}
                         />
                       ) : (
                         <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -351,6 +356,9 @@ export function EPAInterface() {
                         onViewDetails={handleViewDetails} 
                         documents={epaDocuments} 
                         onDocumentSelect={handleDocumentSelect}
+                        localDocuments={localDocumentsList}
+                        isFromEPA={true}
+                        importedEpaDocumentIds={importedEpaDocumentIds}
                       />
                     </div>
                   </TabsContent>
@@ -417,6 +425,7 @@ export function EPAInterface() {
                       documents={localDocumentsList}
                       localDocuments={localDocumentsList}
                       isFromEPA={false}
+                      importedEpaDocumentIds={importedEpaDocumentIds}
                     />
                   ) : (
                     <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -432,6 +441,7 @@ export function EPAInterface() {
                     onDocumentSelect={handleDocumentSelect}
                     localDocuments={localDocumentsList}
                     isFromEPA={true}
+                    importedEpaDocumentIds={importedEpaDocumentIds}
                   />
                 </div>
               </TabsContent>
