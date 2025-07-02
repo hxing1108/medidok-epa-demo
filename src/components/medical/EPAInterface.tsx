@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Search, Filter, Import } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +84,7 @@ export function EPAInterface() {
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [isMetadataCollapsed, setIsMetadataCollapsed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -102,7 +104,30 @@ export function EPAInterface() {
     setIsMetadataCollapsed(!isMetadataCollapsed);
   };
 
+  const handleFullscreen = () => {
+    setIsFullscreen(true);
+  };
+
+  const handleExitFullscreen = () => {
+    setIsFullscreen(false);
+  };
+
   const currentDocuments = currentTab === 'lokal' ? localDocuments : epaDocuments;
+
+  // Fullscreen overlay
+  if (isFullscreen && selectedDocument) {
+    return (
+      <div className="fixed inset-0 z-50 bg-background">
+        <DocumentPreview 
+          document={selectedDocument} 
+          onClose={handleExitFullscreen}
+          onFullscreen={() => {}} // No-op since we're already in fullscreen
+          isMetadataCollapsed={isMetadataCollapsed}
+          onToggleMetadata={handleToggleMetadata}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -155,8 +180,35 @@ export function EPAInterface() {
           </TabsList>
 
           <TabsContent value="lokal" className="mt-0">
-            <div className="flex h-full">
-              <div className={`p-6 ${selectedDocument ? 'w-2/3' : 'w-full'} transition-all duration-300`}>
+            {selectedDocument ? (
+              <ResizablePanelGroup direction="horizontal" className="h-full">
+                <ResizablePanel defaultSize={65} minSize={30}>
+                  <div className="p-6 h-full">
+                    {viewMode === 'thumbnail' ? (
+                      <DocumentThumbnailView 
+                        onViewDetails={handleViewDetails} 
+                        onDocumentSelect={handleDocumentSelect}
+                      />
+                    ) : (
+                      <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                    )}
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel defaultSize={35} minSize={25}>
+                  <div className="bg-card h-full">
+                    <DocumentPreview 
+                      document={selectedDocument} 
+                      onClose={() => setSelectedDocument(null)}
+                      onFullscreen={handleFullscreen}
+                      isMetadataCollapsed={isMetadataCollapsed}
+                      onToggleMetadata={handleToggleMetadata}
+                    />
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : (
+              <div className="p-6">
                 {viewMode === 'thumbnail' ? (
                   <DocumentThumbnailView 
                     onViewDetails={handleViewDetails} 
@@ -166,39 +218,43 @@ export function EPAInterface() {
                   <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
                 )}
               </div>
-              {selectedDocument && (
-                <div className="w-1/3 border-l bg-card">
-                  <DocumentPreview 
-                    document={selectedDocument} 
-                    onClose={() => setSelectedDocument(null)}
-                    isMetadataCollapsed={isMetadataCollapsed}
-                    onToggleMetadata={handleToggleMetadata}
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </TabsContent>
 
           <TabsContent value="epa" className="mt-0">
-            <div className="flex h-full">
-              <div className={`p-6 ${selectedDocument ? 'w-2/3' : 'w-full'} transition-all duration-300`}>
+            {selectedDocument ? (
+              <ResizablePanelGroup direction="horizontal" className="h-full">
+                <ResizablePanel defaultSize={65} minSize={30}>
+                  <div className="p-6 h-full">
+                    <DocumentThumbnailView 
+                      onViewDetails={handleViewDetails} 
+                      documents={epaDocuments} 
+                      onDocumentSelect={handleDocumentSelect}
+                    />
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel defaultSize={35} minSize={25}>
+                  <div className="bg-card h-full">
+                    <DocumentPreview 
+                      document={selectedDocument} 
+                      onClose={() => setSelectedDocument(null)}
+                      onFullscreen={handleFullscreen}
+                      isMetadataCollapsed={isMetadataCollapsed}
+                      onToggleMetadata={handleToggleMetadata}
+                    />
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : (
+              <div className="p-6">
                 <DocumentThumbnailView 
                   onViewDetails={handleViewDetails} 
                   documents={epaDocuments} 
                   onDocumentSelect={handleDocumentSelect}
                 />
               </div>
-              {selectedDocument && (
-                <div className="w-1/3 border-l bg-card">
-                  <DocumentPreview 
-                    document={selectedDocument} 
-                    onClose={() => setSelectedDocument(null)}
-                    isMetadataCollapsed={isMetadataCollapsed}
-                    onToggleMetadata={handleToggleMetadata}
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </TabsContent>
 
           <TabsContent value="plus" className="mt-0">

@@ -9,18 +9,19 @@ import { Document } from "./DocumentThumbnailView";
 interface DocumentPreviewProps {
   document: Document;
   onClose?: () => void;
+  onFullscreen?: () => void;
   isMetadataCollapsed: boolean;
   onToggleMetadata: () => void;
 }
 
-export function DocumentPreview({ document, onClose, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
+export function DocumentPreview({ document, onClose, onFullscreen, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
   return (
     <div className="h-full flex flex-col">
       <CardHeader className="border-b">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={onFullscreen}>
               <Maximize className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={onClose}>
