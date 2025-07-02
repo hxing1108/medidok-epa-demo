@@ -11,11 +11,12 @@ interface DocumentPreviewProps {
   document: Document;
   onClose?: () => void;
   onFullscreen?: () => void;
+  onDownload?: (document: Document) => void;
   isMetadataCollapsed: boolean;
   onToggleMetadata: () => void;
 }
 
-export function DocumentPreview({ document, onClose, onFullscreen, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
+export function DocumentPreview({ document, onClose, onFullscreen, onDownload, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
   const { toast } = useToast();
 
   const handleDownload = async () => {
@@ -28,6 +29,11 @@ export function DocumentPreview({ document, onClose, onFullscreen, isMetadataCol
 
       // Simulate download process (replace with actual download logic)
       await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Call the download handler to transfer document to local
+      if (onDownload) {
+        onDownload(document);
+      }
 
       // Show success notification
       toast({

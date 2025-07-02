@@ -86,6 +86,7 @@ export function EPAInterface() {
   const [isMetadataCollapsed, setIsMetadataCollapsed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [panelSizes, setPanelSizes] = useState([65, 35]);
+  const [localDocumentsList, setLocalDocumentsList] = useState<Document[]>(localDocuments);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -113,7 +114,27 @@ export function EPAInterface() {
     setIsFullscreen(false);
   };
 
-  const currentDocuments = currentTab === 'lokal' ? localDocuments : epaDocuments;
+  const handleDownloadDocument = (document: Document) => {
+    // Convert ePA document to local document
+    const localDocument: Document = {
+      ...document,
+      id: `local_${Date.now()}`, // Generate new local ID
+      source: "local",
+      importedFromEPA: true,
+      uploadDate: new Date().toLocaleDateString('de-DE'),
+    };
+
+    // Add to local documents list
+    setLocalDocumentsList(prev => [...prev, localDocument]);
+    
+    // Switch to local tab to show the downloaded document
+    setCurrentTab('lokal');
+    
+    // Auto-select the newly downloaded document
+    setSelectedDocument(localDocument);
+  };
+
+  const currentDocuments = currentTab === 'lokal' ? localDocumentsList : epaDocuments;
 
   // Fullscreen overlay
   if (isFullscreen && selectedDocument) {
@@ -123,6 +144,7 @@ export function EPAInterface() {
           document={selectedDocument} 
           onClose={handleExitFullscreen}
           onFullscreen={() => {}} // No-op since we're already in fullscreen
+          onDownload={handleDownloadDocument}
           isMetadataCollapsed={isMetadataCollapsed}
           onToggleMetadata={handleToggleMetadata}
         />
@@ -194,6 +216,7 @@ export function EPAInterface() {
                         <DocumentThumbnailView 
                           onViewDetails={handleViewDetails} 
                           onDocumentSelect={handleDocumentSelect}
+                          documents={localDocumentsList}
                         />
                       ) : (
                         <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -208,6 +231,7 @@ export function EPAInterface() {
                       document={selectedDocument} 
                       onClose={() => setSelectedDocument(null)}
                       onFullscreen={handleFullscreen}
+                      onDownload={handleDownloadDocument}
                       isMetadataCollapsed={isMetadataCollapsed}
                       onToggleMetadata={handleToggleMetadata}
                     />
@@ -221,6 +245,7 @@ export function EPAInterface() {
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
                       onDocumentSelect={handleDocumentSelect}
+                      documents={localDocumentsList}
                     />
                   ) : (
                     <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
@@ -255,6 +280,7 @@ export function EPAInterface() {
                       document={selectedDocument} 
                       onClose={() => setSelectedDocument(null)}
                       onFullscreen={handleFullscreen}
+                      onDownload={handleDownloadDocument}
                       isMetadataCollapsed={isMetadataCollapsed}
                       onToggleMetadata={handleToggleMetadata}
                     />
