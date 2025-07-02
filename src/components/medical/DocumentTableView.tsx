@@ -7,7 +7,80 @@ interface DocumentTableViewProps {
   onBack: () => void;
 }
 
+// Mock data to match the screenshot
+const mockDocuments: Document[] = [
+  {
+    id: "1",
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI",
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-"
+  },
+  {
+    id: "2", 
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI",
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-"
+  },
+  {
+    id: "3",
+    name: "Patienteneinverständnis...",
+    category: "BESC", 
+    type: "LEI",
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-"
+  },
+  {
+    id: "4",
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI", 
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-"
+  },
+  {
+    id: "5",
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI",
+    creationDate: "08.11.2021", 
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle",
+    uploader: "-",
+    department: "-"
+  },
+  {
+    id: "6",
+    name: "Patienteneinverständnis...",
+    category: "BESC",
+    type: "LEI",
+    creationDate: "08.11.2021",
+    uploadDate: "08.11.2021",
+    author: "Dr. Christian Ummerle", 
+    uploader: "-",
+    department: "-"
+  }
+];
+
 export function DocumentTableView({ documents, onBack }: DocumentTableViewProps) {
+  // Use mock data to match the screenshot
+  const displayDocuments = mockDocuments;
+  
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -31,25 +104,27 @@ export function DocumentTableView({ documents, onBack }: DocumentTableViewProps)
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documents.map((doc, index) => (
-              <TableRow key={doc.id} className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}>
+            {displayDocuments.map((doc, index) => (
+              <TableRow key={doc.id} className={index % 2 === 0 ? "bg-background" : "bg-muted/10"}>
                 <TableCell className="px-4 py-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-6 h-8 bg-muted border rounded flex-shrink-0"></div>
-                    <span className="text-sm">{doc.name}</span>
+                    <div className="w-6 h-8 bg-card border border-border rounded flex-shrink-0 flex items-center justify-center">
+                      <div className="w-4 h-5 bg-muted rounded-sm"></div>
+                    </div>
+                    <span className="text-sm text-foreground">{doc.name}</span>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-sm">{doc.category}</TableCell>
-                <TableCell className="px-4 py-3 text-sm">{doc.type}</TableCell>
-                <TableCell className="px-4 py-3 text-sm">
+                <TableCell className="px-4 py-3 text-sm text-foreground">{doc.category}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">{doc.type}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">
                   <div>
                     <div>{doc.creationDate}</div>
                     <div className="text-xs text-muted-foreground">10:14</div>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-sm">{doc.author}</TableCell>
-                <TableCell className="px-4 py-3 text-sm">-</TableCell>
-                <TableCell className="px-4 py-3 text-sm">-</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">{doc.author}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.uploader}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.department}</TableCell>
                 <TableCell className="px-4 py-3">
                   <Button 
                     size="sm" 
