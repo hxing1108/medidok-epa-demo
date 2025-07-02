@@ -85,6 +85,7 @@ export function EPAInterface() {
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [isMetadataCollapsed, setIsMetadataCollapsed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [panelSizes, setPanelSizes] = useState([65, 35]);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -181,8 +182,12 @@ export function EPAInterface() {
 
           <TabsContent value="lokal" className="mt-0">
             {selectedDocument ? (
-              <ResizablePanelGroup direction="horizontal" className="h-full">
-                <ResizablePanel defaultSize={65} minSize={30}>
+              <ResizablePanelGroup 
+                direction="horizontal" 
+                className="h-full" 
+                onLayout={(sizes) => setPanelSizes(sizes)}
+              >
+                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
                   <div className="p-6 h-full">
                     {viewMode === 'thumbnail' ? (
                       <DocumentThumbnailView 
@@ -195,7 +200,7 @@ export function EPAInterface() {
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
-                <ResizablePanel defaultSize={35} minSize={25}>
+                <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
                   <div className="bg-card h-full">
                     <DocumentPreview 
                       document={selectedDocument} 
@@ -223,8 +228,12 @@ export function EPAInterface() {
 
           <TabsContent value="epa" className="mt-0">
             {selectedDocument ? (
-              <ResizablePanelGroup direction="horizontal" className="h-full">
-                <ResizablePanel defaultSize={65} minSize={30}>
+              <ResizablePanelGroup 
+                direction="horizontal" 
+                className="h-full" 
+                onLayout={(sizes) => setPanelSizes(sizes)}
+              >
+                <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
                   <div className="p-6 h-full">
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
@@ -234,7 +243,7 @@ export function EPAInterface() {
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
-                <ResizablePanel defaultSize={35} minSize={25}>
+                <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
                   <div className="bg-card h-full">
                     <DocumentPreview 
                       document={selectedDocument} 
