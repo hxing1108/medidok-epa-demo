@@ -250,6 +250,8 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
         if (doc.name.includes('CT')) className = 'CT Untersuchungen';
         else if (doc.name.includes('MRT')) className = 'MRT Untersuchungen';
         else className = 'Radiologie Bilder';
+      } else if (doc.type === 'FOT' && doc.category === 'DERM') {
+        className = 'Dermatologie Bilder';
       } else if (doc.category === 'BESC') {
         className = 'Befundberichte';
       } else if (doc.category === 'LAB') {
