@@ -81,12 +81,12 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
       
       <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Document Preview Area */}
-        <div className={`bg-muted rounded-lg p-4 flex items-center justify-center ${isMetadataCollapsed ? 'flex-1' : 'min-h-64'}`}>
+        <div className={`bg-muted rounded-lg p-4 flex items-center justify-center ${isMetadataCollapsed ? 'h-full flex-1' : 'min-h-64'}`}>
           {document.thumbnailUrl ? (
             <img 
               src={document.thumbnailUrl} 
               alt={`Preview of ${document.name}`}
-              className={`object-contain rounded ${isMetadataCollapsed ? 'max-h-full max-w-full' : 'max-w-full max-h-64'}`}
+              className={`object-contain rounded ${isMetadataCollapsed ? 'max-h-full max-w-full h-full' : 'max-w-full max-h-64'}`}
             />
           ) : (
             <div className="text-center">
