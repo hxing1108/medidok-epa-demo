@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import befundberichtPreview from "@/assets/befundbericht-preview.jpg";
+import einstellbriefPreview from "@/assets/einstellbrief-preview.jpg";
+import wundbeurteilungPreview from "@/assets/wundbeurteilung-preview.jpg";
 
 export interface Document {
   id: string;
@@ -39,7 +42,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dr. Peter Schmidt",
         uploader: "Dr. Peter Schmidt",
         department: "Chirurgische Praxis",
-        pageCount: "1 Seiten"
+        pageCount: "1 Seiten",
+        thumbnailUrl: befundberichtPreview
       },
       {
         id: "2", 
@@ -51,7 +55,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dr. Peter Schmidt",
         uploader: "Dr. Peter Schmidt",
         department: "Chirurgische Praxis",
-        pageCount: "2 Seiten"
+        pageCount: "2 Seiten",
+        thumbnailUrl: befundberichtPreview
       },
       {
         id: "3",
@@ -63,7 +68,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dr. Peter Schmidt",
         uploader: "Dr. Peter Schmidt",
         department: "Chirurgische Praxis",
-        pageCount: "4 Seiten"
+        pageCount: "4 Seiten",
+        thumbnailUrl: befundberichtPreview
       },
       {
         id: "4",
@@ -75,7 +81,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dr. Peter Schmidt", 
         uploader: "Dr. Peter Schmidt",
         department: "Chirurgische Praxis",
-        pageCount: "2 Seiten"
+        pageCount: "2 Seiten",
+        thumbnailUrl: befundberichtPreview
       },
       {
         id: "5",
@@ -87,7 +94,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dr. Peter Schmidt",
         uploader: "Dr. Peter Schmidt", 
         department: "Chirurgische Praxis",
-        pageCount: "2 Seiten"
+        pageCount: "2 Seiten",
+        thumbnailUrl: befundberichtPreview
       }
     ]
   },
@@ -105,7 +113,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Praxis für Interdisziplinäre Onkologie",
         uploader: "Praxis für Interdisziplinäre Onkologie",
         department: "Onkologie",
-        pageCount: "3 Seiten"
+        pageCount: "3 Seiten",
+        thumbnailUrl: einstellbriefPreview
       },
       {
         id: "7",
@@ -117,7 +126,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Praxis für Interdisziplinäre Onkologie",
         uploader: "Praxis für Interdisziplinäre Onkologie",
         department: "Onkologie",
-        pageCount: "2 Seiten"
+        pageCount: "2 Seiten",
+        thumbnailUrl: einstellbriefPreview
       },
       {
         id: "8",
@@ -129,7 +139,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Praxis für Interdisziplinäre Onkologie",
         uploader: "Praxis für Interdisziplinäre Onkologie",
         department: "Onkologie", 
-        pageCount: "4 Seiten"
+        pageCount: "4 Seiten",
+        thumbnailUrl: einstellbriefPreview
       }
     ]
   },
@@ -147,7 +158,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dermatologische Praxis",
         uploader: "Dermatologische Praxis",
         department: "Dermatologie",
-        pageCount: "30 Bilder"
+        pageCount: "30 Bilder",
+        thumbnailUrl: wundbeurteilungPreview
       },
       {
         id: "10", 
@@ -159,7 +171,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dermatologische Praxis",
         uploader: "Dermatologische Praxis",
         department: "Dermatologie",
-        pageCount: "24 Bilder"
+        pageCount: "24 Bilder",
+        thumbnailUrl: wundbeurteilungPreview
       },
       {
         id: "11",
@@ -171,7 +184,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dermatologische Praxis", 
         uploader: "Dermatologische Praxis",
         department: "Dermatologie",
-        pageCount: "18 Bilder"
+        pageCount: "18 Bilder",
+        thumbnailUrl: wundbeurteilungPreview
       },
       {
         id: "12",
@@ -183,7 +197,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dermatologische Praxis",
         uploader: "Dermatologische Praxis",
         department: "Dermatologie",
-        pageCount: "24 Bilder"
+        pageCount: "24 Bilder",
+        thumbnailUrl: wundbeurteilungPreview
       },
       {
         id: "13",
@@ -195,7 +210,8 @@ const mockCategories: DocumentCategory[] = [
         author: "Dermatologische Praxis",
         uploader: "Dermatologische Praxis", 
         department: "Dermatologie",
-        pageCount: "24 Bilder"
+        pageCount: "24 Bilder",
+        thumbnailUrl: wundbeurteilungPreview
       }
     ]
   }
@@ -252,7 +268,7 @@ export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThum
                 {category.documents.map((doc) => (
                   <div key={doc.id} className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
                     <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
-                      {doc.thumbnailUrl && documents ? (
+                      {doc.thumbnailUrl ? (
                         <img 
                           src={doc.thumbnailUrl} 
                           alt={`Preview of ${doc.name}`}
