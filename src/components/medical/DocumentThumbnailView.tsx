@@ -252,7 +252,7 @@ export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThum
                 {category.documents.map((doc) => (
                   <div key={doc.id} className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
                     <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
-                      {doc.thumbnailUrl ? (
+                      {doc.thumbnailUrl && documents ? (
                         <img 
                           src={doc.thumbnailUrl} 
                           alt={`Preview of ${doc.name}`}
@@ -269,33 +269,13 @@ export function DocumentThumbnailView({ onViewDetails, documents }: DocumentThum
                       <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
                       <p className="text-xs text-muted-foreground">{doc.pageCount}</p>
                       <p className="text-xs text-muted-foreground">{doc.author}</p>
-                      <div className="flex space-x-1 mt-2">
-                        <Button 
-                          size="sm" 
-                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
-                          onClick={() => onViewDetails([doc])}
-                        >
-                          📄
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
-                        >
-                          📥
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
-                        >
-                          🔗
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          className="h-6 px-2 text-xs bg-primary hover:bg-primary/90"
-                        >
-                          📤
-                        </Button>
-                      </div>
+                      {doc.importedFromEPA && (
+                        <div className="mt-2">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
+                            ePA Import
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
