@@ -52,6 +52,22 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				medical: {
+					success: 'hsl(var(--medical-success))',
+					'success-foreground': 'hsl(var(--medical-success-foreground))',
+					warning: 'hsl(var(--medical-warning))',
+					'warning-foreground': 'hsl(var(--medical-warning-foreground))',
+					error: 'hsl(var(--medical-error))',
+					'error-foreground': 'hsl(var(--medical-error-foreground))',
+					info: 'hsl(var(--medical-info))',
+					'info-foreground': 'hsl(var(--medical-info-foreground))'
+				},
+				status: {
+					connected: 'hsl(var(--status-connected))',
+					warning: 'hsl(var(--status-warning))',
+					error: 'hsl(var(--status-error))',
+					offline: 'hsl(var(--status-offline))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

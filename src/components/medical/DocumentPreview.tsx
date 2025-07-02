@@ -1,0 +1,131 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Download, Eye, FileText, X } from "lucide-react";
+import { Document } from "./EPAInterface";
+
+interface DocumentPreviewProps {
+  document: Document;
+}
+
+export function DocumentPreview({ document }: DocumentPreviewProps) {
+  return (
+    <div className="h-full flex flex-col">
+      <CardHeader className="border-b">
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
+          <Button variant="ghost" size="sm">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
+        {/* Document Preview Area */}
+        <div className="bg-muted rounded-lg p-8 min-h-64 flex items-center justify-center">
+          <div className="text-center">
+            <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground">
+              Dokumentvorschau für {document.name}
+            </p>
+          </div>
+        </div>
+
+        {/* Document Metadata */}
+        <div className="space-y-4">
+          <h3 className="font-semibold">Metadaten</h3>
+          
+          <div className="grid grid-cols-1 gap-3 text-sm">
+            <div>
+              <span className="font-medium text-muted-foreground">Titel:</span>
+              <p className="mt-1">{document.name}</p>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Kategorie:</span>
+              <p className="mt-1">{document.category}</p>
+            </div>
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Dokumenttyp:</span>
+              <p className="mt-1">{document.type}</p>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Erstellungsdatum:</span>
+              <p className="mt-1">{document.creationDate}</p>
+            </div>
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Upload-Datum:</span>
+              <p className="mt-1">{document.uploadDate}</p>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Autor:</span>
+              <p className="mt-1">{document.author}</p>
+            </div>
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Einsteller:</span>
+              <p className="mt-1">{document.uploader}</p>
+            </div>
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Fachgruppe:</span>
+              <p className="mt-1">{document.department}</p>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <span className="font-medium text-muted-foreground">Status:</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {document.isNew && (
+                  <Badge className="bg-medical-info text-medical-info-foreground">
+                    Neu
+                  </Badge>
+                )}
+                {document.isLocal && (
+                  <Badge className="bg-secondary text-secondary-foreground">
+                    Lokal gespeichert
+                  </Badge>
+                )}
+                {document.isOwn && (
+                  <Badge className="bg-medical-success text-medical-success-foreground">
+                    Eigenes Dokument
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          <Button className="w-full">
+            <Eye className="h-4 w-4 mr-2" />
+            Vollbild anzeigen
+          </Button>
+          <Button variant="outline" className="w-full">
+            <Download className="h-4 w-4 mr-2" />
+            Herunterladen
+          </Button>
+          {!document.isLocal && (
+            <Button variant="outline" className="w-full">
+              <Download className="h-4 w-4 mr-2" />
+              Nach mediDOK übernehmen
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </div>
+  );
+}
