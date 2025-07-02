@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Download, ArrowUpDown } from "lucide-react";
-import { Document } from "./EPAInterface";
+import { Document } from "./DocumentThumbnailView";
 
 interface DocumentListProps {
   documents: Document[];
@@ -43,19 +43,6 @@ export function DocumentList({ documents, onSelectDocument, selectedDocument }: 
     }
   });
 
-  const getDocumentBadgeClass = (doc: Document) => {
-    if (doc.isNew) return "bg-medical-info text-medical-info-foreground";
-    if (doc.isLocal && doc.isOwn) return "bg-medical-success text-medical-success-foreground";
-    if (doc.isLocal) return "bg-secondary text-secondary-foreground";
-    return "";
-  };
-
-  const getDocumentBadgeText = (doc: Document) => {
-    if (doc.isNew) return "Neu";
-    if (doc.isLocal && doc.isOwn) return "Lokal + Eigen";
-    if (doc.isLocal) return "Lokal";
-    return "";
-  };
 
   return (
     <div className="border rounded-lg">
@@ -123,13 +110,6 @@ export function DocumentList({ documents, onSelectDocument, selectedDocument }: 
               <TableCell>{doc.author}</TableCell>
               <TableCell>{doc.uploader}</TableCell>
               <TableCell>{doc.department}</TableCell>
-              <TableCell>
-                {(doc.isNew || doc.isLocal) && (
-                  <Badge className={getDocumentBadgeClass(doc)}>
-                    {getDocumentBadgeText(doc)}
-                  </Badge>
-                )}
-              </TableCell>
               <TableCell>
                 <div className="flex space-x-1">
                   <Button 

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Download, Eye, FileText, X } from "lucide-react";
-import { Document } from "./EPAInterface";
+import { Document } from "./DocumentThumbnailView";
 
 interface DocumentPreviewProps {
   document: Document;
@@ -86,24 +86,8 @@ export function DocumentPreview({ document }: DocumentPreviewProps) {
             <Separator />
             
             <div>
-              <span className="font-medium text-muted-foreground">Status:</span>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {document.isNew && (
-                  <Badge className="bg-medical-info text-medical-info-foreground">
-                    Neu
-                  </Badge>
-                )}
-                {document.isLocal && (
-                  <Badge className="bg-secondary text-secondary-foreground">
-                    Lokal gespeichert
-                  </Badge>
-                )}
-                {document.isOwn && (
-                  <Badge className="bg-medical-success text-medical-success-foreground">
-                    Eigenes Dokument
-                  </Badge>
-                )}
-              </div>
+              <span className="font-medium text-muted-foreground">Dokument-ID:</span>
+              <p className="mt-1">{document.id}</p>
             </div>
           </div>
         </div>
@@ -118,12 +102,6 @@ export function DocumentPreview({ document }: DocumentPreviewProps) {
             <Download className="h-4 w-4 mr-2" />
             Herunterladen
           </Button>
-          {!document.isLocal && (
-            <Button variant="outline" className="w-full">
-              <Download className="h-4 w-4 mr-2" />
-              Nach mediDOK übernehmen
-            </Button>
-          )}
         </div>
       </CardContent>
     </div>
