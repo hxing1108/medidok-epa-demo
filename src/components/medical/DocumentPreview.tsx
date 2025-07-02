@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Download, Eye, FileText, X, ChevronDown, ChevronRight, Maximize } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Document } from "./DocumentThumbnailView";
 
 interface DocumentPreviewProps {
@@ -15,6 +16,40 @@ interface DocumentPreviewProps {
 }
 
 export function DocumentPreview({ document, onClose, onFullscreen, isMetadataCollapsed, onToggleMetadata }: DocumentPreviewProps) {
+  const { toast } = useToast();
+
+  const handleDownload = async () => {
+    try {
+      // Show loading state
+      toast({
+        title: "Download gestartet",
+        description: `${document.name} wird heruntergeladen...`,
+      });
+
+      // Simulate download process (replace with actual download logic)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Show success notification
+      toast({
+        title: "Download erfolgreich",
+        description: `${document.name} wurde erfolgreich heruntergeladen und lokal gespeichert.`,
+        variant: "default",
+      });
+
+      // TODO: Implement actual file download logic
+      // TODO: Record download in document history  
+      // TODO: Forward to PVS system if needed
+      
+    } catch (error) {
+      // Show error notification
+      toast({
+        title: "Download fehlgeschlagen",
+        description: `Fehler beim Herunterladen von ${document.name}. Bitte versuchen Sie es erneut.`,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       <CardHeader className="border-b">
@@ -122,6 +157,14 @@ export function DocumentPreview({ document, onClose, onFullscreen, isMetadataCol
         </Collapsible>
 
       </CardContent>
+
+      {/* Download Section at Bottom */}
+      <div className="border-t p-4">
+        <Button onClick={handleDownload} className="w-full">
+          <Download className="h-4 w-4 mr-2" />
+          Dokument herunterladen
+        </Button>
+      </div>
     </div>
   );
 }
