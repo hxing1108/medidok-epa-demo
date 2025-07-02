@@ -193,7 +193,7 @@ const epaDocuments: Document[] = [
 ];
 
 export function EPAInterface() {
-  const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('epa');
+  const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('lokal');
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
@@ -266,8 +266,8 @@ export function EPAInterface() {
     );
   }
 
-    return (
-      <div className="h-screen flex flex-col bg-background overflow-hidden">
+  return (
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Header */}
       <div className="border-b bg-card px-6 py-3">
         <div className="flex items-center justify-between">
@@ -292,37 +292,36 @@ export function EPAInterface() {
         </div>
       </div>
 
-      {/* Navigation Tabs and Content Container */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="border-b bg-card px-6">
-          <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="w-full h-full flex flex-col">
-            <TabsList className="h-10 bg-transparent p-0 border-none">
-              <TabsTrigger 
-                value="lokal" 
-                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                Lokal
-              </TabsTrigger>
-              <TabsTrigger 
-                value="epa"
-                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                ePA
-              </TabsTrigger>
-              <TabsTrigger 
-                value="plus"
-                className="h-10 px-4 text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                +
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
+          <TabsContent value="lokal" className="mt-0 h-full flex flex-col">
+            {/* Tab Navigation */}
+            <div className="p-6 pb-0">
+              <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
+                <TabsTrigger 
+                  value="lokal" 
+                  className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                >
+                  Tab1
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="epa"
+                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                >
+                  Tab2
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="plus"
+                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                >
+                  +
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-        {/* Tab Content Container with Fixed Height */}
-        <div className="flex-1 min-h-0">
-          <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full">
-            <TabsContent value="lokal" className="mt-0 h-full">
+            {/* Content Area */}
+            <div className="flex-1 min-h-0">
               {selectedDocument ? (
                 <ResizablePanelGroup 
                   direction="horizontal" 
@@ -331,7 +330,7 @@ export function EPAInterface() {
                 >
                   <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
                     <div className="h-full flex flex-col">
-                      <div className="flex-1 overflow-y-auto p-6">
+                      <div className="flex-1 overflow-y-auto px-6">
                         {viewMode === 'thumbnail' ? (
                           <DocumentThumbnailView 
                             onViewDetails={handleViewDetails} 
@@ -360,7 +359,7 @@ export function EPAInterface() {
                 </ResizablePanelGroup>
               ) : (
                 <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto p-6">
+                  <div className="flex-1 overflow-y-auto px-6">
                     {viewMode === 'thumbnail' ? (
                       <DocumentThumbnailView 
                         onViewDetails={handleViewDetails} 
@@ -373,9 +372,36 @@ export function EPAInterface() {
                   </div>
                 </div>
               )}
-            </TabsContent>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="epa" className="mt-0 h-full">
+          <TabsContent value="epa" className="mt-0 h-full flex flex-col">
+            {/* Tab Navigation */}
+            <div className="p-6 pb-0">
+              <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
+                <TabsTrigger 
+                  value="lokal" 
+                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                >
+                  Tab1
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="epa"
+                  className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                >
+                  Tab2
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="plus"
+                  className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                >
+                  +
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 min-h-0">
               {selectedDocument ? (
                 <ResizablePanelGroup 
                   direction="horizontal" 
@@ -384,7 +410,7 @@ export function EPAInterface() {
                 >
                   <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
                     <div className="h-full flex flex-col">
-                      <div className="flex-1 overflow-y-auto p-6">
+                      <div className="flex-1 overflow-y-auto px-6">
                         <DocumentThumbnailView 
                           onViewDetails={handleViewDetails} 
                           documents={epaDocuments} 
@@ -409,7 +435,7 @@ export function EPAInterface() {
                 </ResizablePanelGroup>
               ) : (
                 <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto p-6">
+                  <div className="flex-1 overflow-y-auto px-6">
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
                       documents={epaDocuments} 
@@ -418,19 +444,19 @@ export function EPAInterface() {
                   </div>
                 </div>
               )}
-            </TabsContent>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="plus" className="mt-0 h-full">
-              <div className="h-full flex flex-col">
-                <div className="flex-1 overflow-y-auto p-6">
-                  <div className="text-center text-muted-foreground">
-                    Tab "+" noch nicht implementiert
-                  </div>
+          <TabsContent value="plus" className="mt-0 h-full flex flex-col">
+            <div className="h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="text-center text-muted-foreground">
+                  Tab "+" noch nicht implementiert
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
