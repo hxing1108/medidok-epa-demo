@@ -180,7 +180,7 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
           variant={isAlreadyImported ? "secondary" : "default"}
         >
           <Download className="h-4 w-4 mr-2" />
-          {isAlreadyImported ? "Bereits importiert" : "Dokument herunterladen"}
+          {isAlreadyImported ? "Bereits importiert" : "ePA zur lokalen Bilderliste herunterladen"}
         </Button>
       </div>
     </div>

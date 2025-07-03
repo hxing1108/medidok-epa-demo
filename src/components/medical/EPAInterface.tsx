@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Search, Filter, Import } from "lucide-react";
+import { Search, Filter, Import, ArrowUpDown, LayoutGrid, List, MoreHorizontal, Maximize2, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuCheckboxItem
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { DocumentThumbnailView, Document } from "./DocumentThumbnailView";
 import { DocumentTableView } from "./DocumentTableView";
 import { DocumentPreview } from "./DocumentPreview";
@@ -286,6 +296,23 @@ export function EPAInterface() {
   const [panelSizes, setPanelSizes] = useState([65, 35]);
   const [localDocumentsList, setLocalDocumentsList] = useState<Document[]>(localDocuments);
   const [importedEpaDocumentIds, setImportedEpaDocumentIds] = useState<Set<string>>(new Set());
+  
+  // New toolbar state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'category' | 'author'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [activeFilters, setActiveFilters] = useState<{
+    category: string[];
+    type: string[];
+    dateRange: { from?: string; to?: string };
+    author: string[];
+  }>({
+    category: [],
+    type: [],
+    dateRange: {},
+    author: []
+  });
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -313,6 +340,133 @@ export function EPAInterface() {
     setIsFullscreen(false);
   };
 
+  // Filter and search functions
+  const filterAndSortDocuments = (documents: Document[]) => {
+    let filtered = [...documents];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(doc => 
+        doc.name.toLowerCase().includes(query) ||
+        doc.author.toLowerCase().includes(query) ||
+        doc.category.toLowerCase().includes(query) ||
+        doc.department?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filters
+    if (activeFilters.category.length > 0) {
+      filtered = filtered.filter(doc => activeFilters.category.includes(doc.category));
+    }
+
+    // Apply type filters
+    if (activeFilters.type.length > 0) {
+      filtered = filtered.filter(doc => activeFilters.type.includes(doc.type));
+    }
+
+    // Apply author filters
+    if (activeFilters.author.length > 0) {
+      filtered = filtered.filter(doc => activeFilters.author.includes(doc.author));
+    }
+
+    // Apply date range filter
+    if (activeFilters.dateRange.from || activeFilters.dateRange.to) {
+      filtered = filtered.filter(doc => {
+        const docDate = new Date(doc.creationDate.split('.').reverse().join('-'));
+        const fromDate = activeFilters.dateRange.from ? new Date(activeFilters.dateRange.from) : null;
+        const toDate = activeFilters.dateRange.to ? new Date(activeFilters.dateRange.to) : null;
+        
+        if (fromDate && docDate < fromDate) return false;
+        if (toDate && docDate > toDate) return false;
+        return true;
+      });
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue: string | Date;
+      let bValue: string | Date;
+
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'date':
+          aValue = new Date(a.creationDate.split('.').reverse().join('-'));
+          bValue = new Date(b.creationDate.split('.').reverse().join('-'));
+          break;
+        case 'category':
+          aValue = a.category.toLowerCase();
+          bValue = b.category.toLowerCase();
+          break;
+        case 'author':
+          aValue = a.author.toLowerCase();
+          bValue = b.author.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  };
+
+  const handleSort = (field: 'name' | 'date' | 'category' | 'author') => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const handleFilterChange = (filterType: keyof typeof activeFilters, value: any) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setActiveFilters({
+      category: [],
+      type: [],
+      dateRange: {},
+      author: []
+    });
+    setSearchQuery('');
+  };
+
+  const getActiveFilterCount = () => {
+    return activeFilters.category.length + 
+           activeFilters.type.length + 
+           activeFilters.author.length +
+           (activeFilters.dateRange.from || activeFilters.dateRange.to ? 1 : 0) +
+           (searchQuery.trim() ? 1 : 0);
+  };
+
+  // Get filtered documents for current tab
+  const getCurrentDocuments = () => {
+    const documents = currentTab === 'lokal' ? localDocumentsList : epaDocuments;
+    return filterAndSortDocuments(documents);
+  };
+
+  // Get unique values for filter options
+  const getFilterOptions = () => {
+    const documents = currentTab === 'lokal' ? localDocumentsList : epaDocuments;
+    return {
+      categories: [...new Set(documents.map(doc => doc.category))],
+      types: [...new Set(documents.map(doc => doc.type))],
+      authors: [...new Set(documents.map(doc => doc.author))]
+    };
+  };
+
   const handleDownloadDocument = (document: Document) => {
     // Convert ePA document to local document
     const localDocument: Document = {
@@ -334,6 +488,206 @@ export function EPAInterface() {
     
     // Auto-select the newly downloaded document
     setSelectedDocument(localDocument);
+  };
+
+  // Filter Bar Component
+  const FilterBar = () => {
+    const filterOptions = getFilterOptions();
+    
+    if (!showFilters) return null;
+
+    return (
+      <div className="border-b bg-gray-50 px-6 py-3">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium">Filter</h3>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearFilters}
+              className="h-7 px-2 text-xs"
+            >
+              Zurücksetzen
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowFilters(false)}
+              className="h-7 w-7 p-0"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-4 gap-4">
+          {/* Category Filter */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">Kategorie</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full justify-between h-8">
+                  <span className="text-xs">
+                    {activeFilters.category.length ? `${activeFilters.category.length} selected` : 'Alle'}
+                  </span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                {filterOptions.categories.map(category => (
+                  <DropdownMenuCheckboxItem
+                    key={category}
+                    checked={activeFilters.category.includes(category)}
+                    onCheckedChange={(checked) => {
+                      const newCategories = checked
+                        ? [...activeFilters.category, category]
+                        : activeFilters.category.filter(c => c !== category);
+                      handleFilterChange('category', newCategories);
+                    }}
+                  >
+                    {category}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Type Filter */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">Typ</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full justify-between h-8">
+                  <span className="text-xs">
+                    {activeFilters.type.length ? `${activeFilters.type.length} selected` : 'Alle'}
+                  </span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                {filterOptions.types.map(type => (
+                  <DropdownMenuCheckboxItem
+                    key={type}
+                    checked={activeFilters.type.includes(type)}
+                    onCheckedChange={(checked) => {
+                      const newTypes = checked
+                        ? [...activeFilters.type, type]
+                        : activeFilters.type.filter(t => t !== type);
+                      handleFilterChange('type', newTypes);
+                    }}
+                  >
+                    {type}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Author Filter */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">Autor</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full justify-between h-8">
+                  <span className="text-xs">
+                    {activeFilters.author.length ? `${activeFilters.author.length} selected` : 'Alle'}
+                  </span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                {filterOptions.authors.map(author => (
+                  <DropdownMenuCheckboxItem
+                    key={author}
+                    checked={activeFilters.author.includes(author)}
+                    onCheckedChange={(checked) => {
+                      const newAuthors = checked
+                        ? [...activeFilters.author, author]
+                        : activeFilters.author.filter(a => a !== author);
+                      handleFilterChange('author', newAuthors);
+                    }}
+                  >
+                    {author}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Date Range Filter */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">Datum</label>
+            <div className="flex gap-1">
+              <Input
+                type="date"
+                value={activeFilters.dateRange.from || ''}
+                onChange={(e) => handleFilterChange('dateRange', { ...activeFilters.dateRange, from: e.target.value })}
+                className="h-8 text-xs"
+                placeholder="Von"
+              />
+              <Input
+                type="date"
+                value={activeFilters.dateRange.to || ''}
+                onChange={(e) => handleFilterChange('dateRange', { ...activeFilters.dateRange, to: e.target.value })}
+                className="h-8 text-xs"
+                placeholder="Bis"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Active Filters Display */}
+        {getActiveFilterCount() > 0 && (
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t">
+            <span className="text-xs text-gray-600">Aktive Filter:</span>
+            {activeFilters.category.map(cat => (
+              <Badge key={cat} variant="secondary" className="text-xs">
+                {cat}
+                <button 
+                  onClick={() => handleFilterChange('category', activeFilters.category.filter(c => c !== cat))}
+                  className="ml-1 hover:bg-gray-300 rounded-full"
+                >
+                  <X className="h-2 w-2" />
+                </button>
+              </Badge>
+            ))}
+            {activeFilters.type.map(type => (
+              <Badge key={type} variant="secondary" className="text-xs">
+                {type}
+                <button 
+                  onClick={() => handleFilterChange('type', activeFilters.type.filter(t => t !== type))}
+                  className="ml-1 hover:bg-gray-300 rounded-full"
+                >
+                  <X className="h-2 w-2" />
+                </button>
+              </Badge>
+            ))}
+            {activeFilters.author.map(author => (
+              <Badge key={author} variant="secondary" className="text-xs">
+                {author}
+                <button 
+                  onClick={() => handleFilterChange('author', activeFilters.author.filter(a => a !== author))}
+                  className="ml-1 hover:bg-gray-300 rounded-full"
+                >
+                  <X className="h-2 w-2" />
+                </button>
+              </Badge>
+            ))}
+            {searchQuery && (
+              <Badge variant="secondary" className="text-xs">
+                Suche: {searchQuery}
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="ml-1 hover:bg-gray-300 rounded-full"
+                >
+                  <X className="h-2 w-2" />
+                </button>
+              </Badge>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const currentDocuments = currentTab === 'lokal' ? localDocumentsList : epaDocuments;
@@ -417,31 +771,109 @@ export function EPAInterface() {
                     </TabsTrigger>
                   </TabsList>
                   
-                  {/* Edit Function Buttons */}
+                  {/* Enhanced Toolbar Buttons */}
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                      </svg>
+                    {/* Sort Button */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-8 w-8 p-0 ${sortBy !== 'date' || sortOrder !== 'desc' ? 'bg-blue-100' : ''}`}
+                        >
+                          <ArrowUpDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Sortieren nach</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleSort('name')}>
+                          Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('date')}>
+                          Datum {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('category')}>
+                          Kategorie {sortBy === 'category' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('author')}>
+                          Autor {sortBy === 'author' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Filter Button */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-8 w-8 p-0 ${showFilters || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                      onClick={() => setShowFilters(!showFilters)}
+                    >
+                      <Filter className="h-4 w-4" />
+                      {getActiveFilterCount() > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {getActiveFilterCount()}
+                        </span>
+                      )}
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                      </svg>
+
+                    {/* Search Input */}
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Zum Suchen eingeben..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="h-8 w-48 text-xs pl-8"
+                      />
+                      <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                      {searchQuery && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1 h-6 w-6 p-0"
+                          onClick={() => setSearchQuery('')}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Layout Toggle */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0"
+                      onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+                    >
+                      {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Search className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4m-4 0l5.656 5.656M20 8V4m0 0h-4m4 0l-5.656 5.656M4 16v4m0 0h4m-4 0l5.656-5.656M20 16v4m0 0h-4m4 0l-5.656-5.656" />
-                      </svg>
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </Button>
+
+                    {/* More Options Menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={clearFilters}>
+                          Filter zurücksetzen
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setViewMode('thumbnail')}>
+                          Kachel-Ansicht
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setViewMode('table')}>
+                          Listen-Ansicht
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          Exportieren
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Import Button */}
                     <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
                       <Import className="h-3 w-3 mr-1" />
                       Import
@@ -449,6 +881,9 @@ export function EPAInterface() {
                   </div>
                 </div>
               </div>
+
+              {/* Filter Bar */}
+              <FilterBar />
                   
                   <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
@@ -456,7 +891,7 @@ export function EPAInterface() {
                         <DocumentThumbnailView 
                           onViewDetails={handleViewDetails} 
                           onDocumentSelect={handleDocumentSelect}
-                          documents={localDocumentsList}
+                          documents={getCurrentDocuments()}
                           localDocuments={localDocumentsList}
                           isFromEPA={false}
                           importedEpaDocumentIds={importedEpaDocumentIds}
@@ -471,7 +906,7 @@ export function EPAInterface() {
                     <div className="h-full overflow-y-auto px-6">
                       <DocumentThumbnailView 
                         onViewDetails={handleViewDetails} 
-                        documents={epaDocuments} 
+                        documents={getCurrentDocuments()}
                         onDocumentSelect={handleDocumentSelect}
                         localDocuments={localDocumentsList}
                         isFromEPA={true}
@@ -511,27 +946,141 @@ export function EPAInterface() {
             {/* Tab Navigation for Bilderlist only */}
             <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
               <div className="p-6 pb-0">
-                <TabsList className="h-8 bg-transparent p-0 border-none mb-4">
-                  <TabsTrigger 
-                    value="lokal" 
-                    className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                  >
-                    Lokal
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="epa"
-                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                  >
-                    ePA
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="plus"
-                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                  >
-                    +
-                  </TabsTrigger>
-                </TabsList>
+                <div className="flex items-center justify-between mb-4">
+                  <TabsList className="h-8 bg-transparent p-0 border-none">
+                    <TabsTrigger 
+                      value="lokal" 
+                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                    >
+                      Lokal
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="epa"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                    >
+                      ePA
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="plus"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                    >
+                      +
+                    </TabsTrigger>
+                  </TabsList>
+
+                  {/* Enhanced Toolbar Buttons for full screen */}
+                  <div className="flex items-center gap-1">
+                    {/* Sort Button */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-8 w-8 p-0 ${sortBy !== 'date' || sortOrder !== 'desc' ? 'bg-blue-100' : ''}`}
+                        >
+                          <ArrowUpDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Sortieren nach</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleSort('name')}>
+                          Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('date')}>
+                          Datum {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('category')}>
+                          Kategorie {sortBy === 'category' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('author')}>
+                          Autor {sortBy === 'author' && (sortOrder === 'asc' ? '↑' : '↓')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Filter Button */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-8 w-8 p-0 ${showFilters || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                      onClick={() => setShowFilters(!showFilters)}
+                    >
+                      <Filter className="h-4 w-4" />
+                      {getActiveFilterCount() > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {getActiveFilterCount()}
+                        </span>
+                      )}
+                    </Button>
+
+                    {/* Search Input */}
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Zum Suchen eingeben..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="h-8 w-48 text-xs pl-8"
+                      />
+                      <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                      {searchQuery && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1 h-6 w-6 p-0"
+                          onClick={() => setSearchQuery('')}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Layout Toggle */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0"
+                      onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+                    >
+                      {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+                    </Button>
+
+                    {/* More Options Menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={clearFilters}>
+                          Filter zurücksetzen
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setViewMode('thumbnail')}>
+                          Kachel-Ansicht
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setViewMode('table')}>
+                          Listen-Ansicht
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          Exportieren
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Import Button */}
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
+                      <Import className="h-3 w-3 mr-1" />
+                      Import
+                    </Button>
+                  </div>
+                </div>
               </div>
+
+              {/* Filter Bar for full screen */}
+              <FilterBar />
               
               <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                 <div className="h-full overflow-y-auto px-6">
@@ -539,7 +1088,7 @@ export function EPAInterface() {
                     <DocumentThumbnailView 
                       onViewDetails={handleViewDetails} 
                       onDocumentSelect={handleDocumentSelect}
-                      documents={localDocumentsList}
+                      documents={getCurrentDocuments()}
                       localDocuments={localDocumentsList}
                       isFromEPA={false}
                       importedEpaDocumentIds={importedEpaDocumentIds}
@@ -554,7 +1103,7 @@ export function EPAInterface() {
                 <div className="h-full overflow-y-auto px-6">
                   <DocumentThumbnailView 
                     onViewDetails={handleViewDetails} 
-                    documents={epaDocuments} 
+                    documents={getCurrentDocuments()}
                     onDocumentSelect={handleDocumentSelect}
                     localDocuments={localDocumentsList}
                     isFromEPA={true}

@@ -284,7 +284,7 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
   return (
     <div className="space-y-4">
       {displayCategories.map((category) => {
-        const isExpanded = expandedCategories.has(category.name) || documents;
+        const isExpanded = expandedCategories.has(category.name);
         return (
           <div key={category.name} className="border-b border-border pb-4">
             <div 
