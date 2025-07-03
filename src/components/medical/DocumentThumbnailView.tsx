@@ -319,7 +319,7 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
                   return (
                     <div 
                       key={doc.id} 
-                      className={`bg-card border rounded-lg p-3 transition-all cursor-pointer relative group ${
+                      className={`bg-card border rounded-lg p-2 transition-all cursor-pointer relative group ${
                         multiSelectMode && isSelected
                           ? 'border-blue-500 border-2 bg-blue-50/30'
                           : selectedDocumentId === doc.id && !multiSelectMode

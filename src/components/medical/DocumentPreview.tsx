@@ -26,18 +26,7 @@ export function DocumentPreview({ document, documents, onClose, onFullscreen, on
   const isMultipleDocuments = documents && documents.length > 1;
   const singleDocument = document || (documents && documents.length === 1 ? documents[0] : null);
   
-  console.log('DocumentPreview render:', {
-    document: document ? `${document.id} - ${document.name}` : null,
-    documentsArray: documents ? documents.map(d => `${d.id} - ${d.name}`) : null,
-    documentsCount: documents?.length || 0,
-    isMultipleDocuments,
-    singleDocument: singleDocument ? `${singleDocument.id} - ${singleDocument.name}` : null,
-    conditionCheck: {
-      hasDocuments: !!documents,
-      lengthGreaterThan1: documents && documents.length > 1,
-      actualLength: documents?.length
-    }
-  });
+
 
   // Check if this document is already imported to local (for single document view)
   const isAlreadyImported = singleDocument && localDocuments?.some(localDoc => 
@@ -110,11 +99,11 @@ export function DocumentPreview({ document, documents, onClose, onFullscreen, on
               </h3>
             </div>
             <div className={`grid gap-2 ${
-              documents!.length <= 2 ? 'grid-cols-2' : 
+              documents!.length <= 2 ? 'grid-cols-1' : 
               documents!.length <= 4 ? 'grid-cols-2' : 
               documents!.length <= 6 ? 'grid-cols-3' : 'grid-cols-3'
             } ${
-              documents!.length <= 2 ? 'grid-rows-1' : 
+              documents!.length <= 2 ? 'grid-rows-2' : 
               documents!.length <= 4 ? 'grid-rows-2' : 
               documents!.length <= 9 ? 'grid-rows-3' : 'grid-rows-3'
             }`}>

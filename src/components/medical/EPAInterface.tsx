@@ -573,6 +573,38 @@ export function EPAInterface() {
     setSelectedDocument(localDocument);
   };
 
+  const handleDownloadMultiSelected = () => {
+    const allDocs = getCurrentDocuments();
+    const selectedDocs = allDocs.filter(doc => multiSelectedDocuments.has(doc.id));
+    
+    if (selectedDocs.length > 0 && currentTab === 'epa') {
+      const newLocalDocuments: Document[] = selectedDocs.map(doc => ({
+        ...doc,
+        id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate unique local ID
+        source: "local",
+        importedFromEPA: true,
+        uploadDate: new Date().toLocaleDateString('de-DE'),
+      }));
+
+      // Add all selected documents to local documents list
+      setLocalDocumentsList(prev => [...prev, ...newLocalDocuments]);
+      
+      // Mark all original ePA documents as imported
+      setImportedEpaDocumentIds(prev => {
+        const newSet = new Set(prev);
+        selectedDocs.forEach(doc => newSet.add(doc.id));
+        return newSet;
+      });
+      
+      // Exit multi-select mode
+      setMultiSelectMode(false);
+      setMultiSelectedDocuments(new Set());
+      
+      // Switch to local tab to show the downloaded documents
+      setCurrentTab('lokal');
+    }
+  };
+
   // Inline Multi-Select Bar Component (for tab header)
   const InlineMultiSelectBar = () => {
     return (
@@ -588,16 +620,16 @@ export function EPAInterface() {
           >
             Öffnen
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-7 px-3 text-blue-700 hover:bg-blue-100"
-            onClick={() => {
-              // TODO: Implement publish functionality
-            }}
-          >
-            Veröffentlichen
-          </Button>
+          {currentTab === 'epa' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+              onClick={handleDownloadMultiSelected}
+            >
+              Herunterladen
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             size="sm" 
@@ -631,16 +663,16 @@ export function EPAInterface() {
               >
                 Öffnen
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-3 text-blue-700 hover:bg-blue-100"
-                onClick={() => {
-                  // TODO: Implement publish functionality
-                }}
-              >
-                Veröffentlichen
-              </Button>
+              {currentTab === 'epa' && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+                  onClick={handleDownloadMultiSelected}
+                >
+                  Herunterladen
+                </Button>
+              )}
             </div>
           </div>
           <Button 
