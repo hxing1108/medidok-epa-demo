@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import befundberichtPreview from "@/assets/befundbericht-preview.jpg";
 import einstellbriefPreview from "@/assets/einstellbrief-preview.jpg";
 import wundbeurteilungPreview from "/lovable-uploads/1544ef16-9b39-411e-8fe9-1dc19f2c89ad.png";
@@ -224,9 +225,13 @@ interface DocumentThumbnailViewProps {
   localDocuments?: Document[]; // For checking import status in local tab
   isFromEPA?: boolean; // Whether this is the ePA tab
   importedEpaDocumentIds?: Set<string>; // IDs of ePA documents that have been imported
+  multiSelectMode?: boolean;
+  multiSelectedDocuments?: Set<string>;
+  onMultiSelectToggle?: (documentId: string) => void;
+  onEnableMultiSelect?: (documentId: string) => void;
 }
 
-export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect, localDocuments, isFromEPA, importedEpaDocumentIds }: DocumentThumbnailViewProps) {
+export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect, localDocuments, isFromEPA, importedEpaDocumentIds, multiSelectMode, multiSelectedDocuments, onMultiSelectToggle, onEnableMultiSelect }: DocumentThumbnailViewProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
@@ -309,19 +314,49 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
             
             {isExpanded && (
               <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start">
-                {category.documents.map((doc) => (
-                <div 
-                  key={doc.id} 
-                  className={`bg-card border rounded-lg p-3 hover:bg-card/20 transition-all cursor-pointer ${
-                    selectedDocumentId === doc.id 
-                      ? 'border-primary border-2' 
-                      : 'border-border hover:border-primary/30'
-                  }`}
-                  onClick={() => {
-                    setSelectedDocumentId(doc.id);
-                    onDocumentSelect?.(doc);
-                  }}
-                >
+                {category.documents.map((doc) => {
+                  const isSelected = multiSelectedDocuments?.has(doc.id) || false;
+                  return (
+                    <div 
+                      key={doc.id} 
+                      className={`bg-card border rounded-lg p-3 transition-all cursor-pointer relative group ${
+                        multiSelectMode && isSelected
+                          ? 'border-blue-500 border-2 bg-blue-50/30'
+                          : selectedDocumentId === doc.id && !multiSelectMode
+                          ? 'border-primary border-2' 
+                          : 'border-border hover:border-primary/30'
+                      }`}
+                      onClick={(e) => {
+                        if (multiSelectMode) {
+                          onMultiSelectToggle?.(doc.id);
+                        } else {
+                          setSelectedDocumentId(doc.id);
+                          onDocumentSelect?.(doc);
+                        }
+                      }}
+                    >
+                      {/* Hover Checkbox */}
+                      <div className={`absolute top-2 left-2 z-10 transition-opacity ${
+                        multiSelectMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}>
+                        <div 
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-colors ${
+                            isSelected 
+                              ? 'bg-blue-500 border-blue-500' 
+                              : 'bg-white border-gray-300 hover:border-blue-400'
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (multiSelectMode) {
+                              onMultiSelectToggle?.(doc.id);
+                            } else {
+                              onEnableMultiSelect?.(doc.id);
+                            }
+                          }}
+                        >
+                          {isSelected && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                      </div>
                   <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
                     {doc.thumbnailUrl ? (
                       <img 
@@ -350,7 +385,8 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
                     )}
                   </div>
                 </div>
-                ))}
+                );
+                })}
               </div>
             )}
           </div>

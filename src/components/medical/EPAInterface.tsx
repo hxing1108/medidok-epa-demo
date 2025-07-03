@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Search, Filter, Import, ArrowUpDown, LayoutGrid, List, MoreHorizontal, Maximize2, X, ChevronDown, ChevronUp, ArrowLeft, Calendar, User, FileText, Settings } from "lucide-react";
@@ -321,6 +321,29 @@ export function EPAInterface() {
 
   // Add new state for right panel
   const [rightPanelType, setRightPanelType] = useState<PanelType>(null);
+  
+  // Multi-select functionality state
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+  const [multiSelectedDocuments, setMultiSelectedDocuments] = useState<Set<string>>(new Set());
+
+  // Debug effect to track selectedDocuments changes
+  useEffect(() => {
+    console.log('selectedDocuments changed:', {
+      count: selectedDocuments.length,
+      documents: selectedDocuments.map(d => `${d.id} - ${d.name}`),
+      isFullscreen,
+      selectedDocument: selectedDocument?.name
+    });
+  }, [selectedDocuments, isFullscreen, selectedDocument]);
+
+  // Debug effect to track isFullscreen changes
+  useEffect(() => {
+    console.log('isFullscreen changed:', {
+      isFullscreen,
+      showingResizablePanel: !isFullscreen,
+      selectedDocumentsCount: selectedDocuments.length
+    });
+  }, [isFullscreen, selectedDocuments.length]);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -328,7 +351,85 @@ export function EPAInterface() {
   };
 
   const handleDocumentSelect = (document: Document) => {
+    if (multiSelectMode) {
+      // Don't change single selection in multi-select mode
+      return;
+    }
     setSelectedDocument(document);
+  };
+
+  // Multi-select handlers
+  const handleMultiSelectToggle = (documentId: string) => {
+    const newSelected = new Set(multiSelectedDocuments);
+    if (newSelected.has(documentId)) {
+      newSelected.delete(documentId);
+      console.log('Removed from selection:', documentId);
+    } else {
+      newSelected.add(documentId);
+      console.log('Added to selection:', documentId);
+    }
+    setMultiSelectedDocuments(newSelected);
+    console.log('Updated selection:', Array.from(newSelected));
+    
+    // If no documents are selected, exit multi-select mode
+    if (newSelected.size === 0) {
+      setMultiSelectMode(false);
+    }
+  };
+
+  const handleEnableMultiSelect = (documentId: string) => {
+    console.log('Enabling multi-select mode with:', documentId);
+    setMultiSelectMode(true);
+    setMultiSelectedDocuments(new Set([documentId]));
+  };
+
+  const handleExitMultiSelect = () => {
+    setMultiSelectMode(false);
+    setMultiSelectedDocuments(new Set());
+  };
+
+  const handleClearSelection = () => {
+    setMultiSelectedDocuments(new Set());
+    setMultiSelectMode(false);
+  };
+
+  const handleOpenMultiSelected = () => {
+    const allDocs = getCurrentDocuments();
+    const selectedDocs = allDocs.filter(doc => multiSelectedDocuments.has(doc.id));
+    
+    console.log('Multi-select debug:', {
+      allDocsCount: allDocs.length,
+      multiSelectedIds: Array.from(multiSelectedDocuments),
+      selectedDocsCount: selectedDocs.length,
+      selectedDocs: selectedDocs.map(d => ({ id: d.id, name: d.name }))
+    });
+    
+    if (selectedDocs.length > 0) {
+      // Switch to resizable mode to show side panel if currently in full-screen
+      console.log('Current mode before switch:', { isFullscreen });
+      if (isFullscreen) {
+        console.log('Switching from full-screen to resizable mode');
+        setIsFullscreen(false);
+      } else {
+        console.log('Already in resizable mode');
+      }
+      
+      // For single document, open normally
+      if (selectedDocs.length === 1) {
+        console.log('Opening single document:', selectedDocs[0].name);
+        setSelectedDocument(selectedDocs[0]);
+        setSelectedDocuments([]); // Clear multi-selection
+      } else {
+        // For multiple documents, pass them to preview component
+        console.log('Opening multiple documents:', selectedDocs.length);
+        console.log('Documents being set:', selectedDocs.map(d => `${d.id} - ${d.name}`));
+        setSelectedDocument(null); // Clear single selection
+        setSelectedDocuments(selectedDocs); // Set multi-selection for preview
+        console.log('After setSelectedDocuments called');
+      }
+    } else {
+      console.log('No documents selected or found');
+    }
   };
 
   const handleToggleMetadata = () => {
@@ -341,6 +442,19 @@ export function EPAInterface() {
 
   const handleExitFullscreen = () => {
     setIsFullscreen(false);
+  };
+
+  const handleTabChange = (value: string) => {
+    // Clear multi-select when switching tabs
+    if (multiSelectMode) {
+      setMultiSelectMode(false);
+      setMultiSelectedDocuments(new Set());
+    }
+    // Clear any selected documents
+    setSelectedDocument(null);
+    setSelectedDocuments([]);
+    // Switch tab
+    setCurrentTab(value as 'lokal' | 'epa');
   };
 
   // Filter and search functions
@@ -491,6 +605,66 @@ export function EPAInterface() {
     
     // Auto-select the newly downloaded document
     setSelectedDocument(localDocument);
+  };
+
+  // Multi-Select Bar Component
+  const MultiSelectBar = () => {
+    if (!multiSelectMode || multiSelectedDocuments.size === 0) return null;
+
+    return (
+      <div className="border-b bg-blue-50 px-6 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-blue-900">
+              {multiSelectedDocuments.size} ausgewählt
+            </span>
+            <div className="flex items-center gap-2">
+              <Button 
+                size="sm" 
+                className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  console.log('Öffnen button clicked!');
+                  handleOpenMultiSelected();
+                }}
+              >
+                Öffnen
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+                onClick={() => {
+                  // TODO: Implement publish functionality
+                  console.log('Publishing documents:', Array.from(multiSelectedDocuments));
+                }}
+              >
+                Veröffentlichen
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
+              onClick={handleExitMultiSelect}
+              title="Kontrollkästchen ausblenden"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
+              onClick={handleClearSelection}
+              title="Auswahl entfernen"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Filter Bar Component
@@ -1050,7 +1224,7 @@ export function EPAInterface() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0">
-        {selectedDocument ? (
+        {(selectedDocument || selectedDocuments.length > 0) ? (
           <ResizablePanelGroup 
             direction="horizontal" 
             className="h-full" 
@@ -1071,7 +1245,7 @@ export function EPAInterface() {
                 )}
                 
                 {/* Tab Navigation for Bilderlist only */}
-                <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
+                <Tabs value={currentTab} onValueChange={handleTabChange} className="h-full flex flex-col">
               <div className="p-6 pb-0">
                 <div className="flex items-center justify-between mb-4">
                   <TabsList className="h-8 bg-transparent p-0 border-none">
@@ -1173,8 +1347,11 @@ export function EPAInterface() {
                 </div>
               </div>
 
-                  {/* Filter Bar */}
-                  <FilterBar />
+                                {/* Filter Bar */}
+              <FilterBar />
+              
+              {/* Multi-Select Bar */}
+              <MultiSelectBar />
                   
                   <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
@@ -1186,9 +1363,20 @@ export function EPAInterface() {
                           localDocuments={localDocumentsList}
                           isFromEPA={false}
                           importedEpaDocumentIds={importedEpaDocumentIds}
+                          multiSelectMode={multiSelectMode}
+                          multiSelectedDocuments={multiSelectedDocuments}
+                          onMultiSelectToggle={handleMultiSelectToggle}
+                          onEnableMultiSelect={handleEnableMultiSelect}
                         />
                       ) : (
-                        <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                        <DocumentTableView 
+                          documents={getCurrentDocuments()} 
+                          onDocumentSelect={handleDocumentSelect}
+                          multiSelectMode={multiSelectMode}
+                          multiSelectedDocuments={multiSelectedDocuments}
+                          onMultiSelectToggle={handleMultiSelectToggle}
+                          onEnableMultiSelect={handleEnableMultiSelect}
+                        />
                       )}
                     </div>
                   </TabsContent>
@@ -1203,9 +1391,20 @@ export function EPAInterface() {
                           localDocuments={localDocumentsList}
                           isFromEPA={true}
                           importedEpaDocumentIds={importedEpaDocumentIds}
+                          multiSelectMode={multiSelectMode}
+                          multiSelectedDocuments={multiSelectedDocuments}
+                          onMultiSelectToggle={handleMultiSelectToggle}
+                          onEnableMultiSelect={handleEnableMultiSelect}
                         />
                       ) : (
-                        <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                        <DocumentTableView 
+                          documents={getCurrentDocuments()} 
+                          onDocumentSelect={handleDocumentSelect}
+                          multiSelectMode={multiSelectMode}
+                          multiSelectedDocuments={multiSelectedDocuments}
+                          onMultiSelectToggle={handleMultiSelectToggle}
+                          onEnableMultiSelect={handleEnableMultiSelect}
+                        />
                       )}
                     </div>
                   </TabsContent>
@@ -1224,8 +1423,18 @@ export function EPAInterface() {
             <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
               <div className="bg-card h-full">
                 <DocumentPreview 
+                  key={`${selectedDocument?.id || 'multi'}-${selectedDocuments.length}-${selectedDocuments.map(d => d.id).join(',')}`}
                   document={selectedDocument} 
-                  onClose={() => setSelectedDocument(null)}
+                  documents={selectedDocuments.length > 0 ? selectedDocuments : undefined}
+                  onClose={() => {
+                    setSelectedDocument(null);
+                    setSelectedDocuments([]);
+                    // Also clear multi-select when closing preview
+                    if (multiSelectMode) {
+                      setMultiSelectMode(false);
+                      setMultiSelectedDocuments(new Set());
+                    }
+                  }}
                   onFullscreen={handleFullscreen}
                   onDownload={handleDownloadDocument}
                   isMetadataCollapsed={isMetadataCollapsed}
@@ -1251,7 +1460,7 @@ export function EPAInterface() {
             )}
             
             {/* Tab Navigation for Bilderlist only */}
-            <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
+            <Tabs value={currentTab} onValueChange={handleTabChange} className="h-full flex flex-col">
               <div className="p-6 pb-0">
                 <div className="flex items-center justify-between mb-4">
                   <TabsList className="h-8 bg-transparent p-0 border-none">
@@ -1356,6 +1565,9 @@ export function EPAInterface() {
               {/* Filter Bar for full screen */}
               <FilterBar />
               
+              {/* Multi-Select Bar for full screen */}
+              <MultiSelectBar />
+              
               <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                 <div className="h-full overflow-y-auto px-6">
                   {viewMode === 'thumbnail' ? (
@@ -1366,9 +1578,20 @@ export function EPAInterface() {
                       localDocuments={localDocumentsList}
                       isFromEPA={false}
                       importedEpaDocumentIds={importedEpaDocumentIds}
+                      multiSelectMode={multiSelectMode}
+                      multiSelectedDocuments={multiSelectedDocuments}
+                      onMultiSelectToggle={handleMultiSelectToggle}
+                      onEnableMultiSelect={handleEnableMultiSelect}
                     />
                   ) : (
-                    <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                    <DocumentTableView 
+                      documents={getCurrentDocuments()} 
+                      onDocumentSelect={handleDocumentSelect}
+                      multiSelectMode={multiSelectMode}
+                      multiSelectedDocuments={multiSelectedDocuments}
+                      onMultiSelectToggle={handleMultiSelectToggle}
+                      onEnableMultiSelect={handleEnableMultiSelect}
+                    />
                   )}
                 </div>
               </TabsContent>
@@ -1383,9 +1606,20 @@ export function EPAInterface() {
                       localDocuments={localDocumentsList}
                       isFromEPA={true}
                       importedEpaDocumentIds={importedEpaDocumentIds}
+                      multiSelectMode={multiSelectMode}
+                      multiSelectedDocuments={multiSelectedDocuments}
+                      onMultiSelectToggle={handleMultiSelectToggle}
+                      onEnableMultiSelect={handleEnableMultiSelect}
                     />
                   ) : (
-                    <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                    <DocumentTableView 
+                      documents={getCurrentDocuments()} 
+                      onDocumentSelect={handleDocumentSelect}
+                      multiSelectMode={multiSelectMode}
+                      multiSelectedDocuments={multiSelectedDocuments}
+                      onMultiSelectToggle={handleMultiSelectToggle}
+                      onEnableMultiSelect={handleEnableMultiSelect}
+                    />
                   )}
                 </div>
               </TabsContent>
