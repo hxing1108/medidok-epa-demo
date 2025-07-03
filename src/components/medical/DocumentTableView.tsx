@@ -1,10 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Document } from "./DocumentThumbnailView";
+import { useState } from "react";
 
 interface DocumentTableViewProps {
   documents: Document[];
-  onBack: () => void;
+  onDocumentSelect?: (document: Document) => void;
 }
 
 // Mock data to match the screenshot
@@ -77,17 +77,18 @@ const mockDocuments: Document[] = [
   }
 ];
 
-export function DocumentTableView({ documents, onBack }: DocumentTableViewProps) {
-  // Use mock data to match the screenshot
-  const displayDocuments = mockDocuments;
+export function DocumentTableView({ documents, onDocumentSelect }: DocumentTableViewProps) {
+  // Use the actual documents passed as props, fallback to mockDocuments if empty
+  const displayDocuments = documents.length > 0 ? documents : mockDocuments;
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+
+  const handleRowClick = (doc: Document) => {
+    setSelectedDocumentId(doc.id);
+    onDocumentSelect?.(doc);
+  };
   
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={onBack}>
-          ← Zurück zur Übersicht
-        </Button>
-      </div>
       
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <Table>
@@ -100,12 +101,21 @@ export function DocumentTableView({ documents, onBack }: DocumentTableViewProps)
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Autor</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsteller</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayDocuments.map((doc, index) => (
-              <TableRow key={doc.id} className={index % 2 === 0 ? "bg-background" : "bg-muted/10"}>
+            {displayDocuments.map((doc, index) => {
+              const isSelected = selectedDocumentId === doc.id;
+              return (
+                <TableRow 
+                  key={doc.id} 
+                  className={`cursor-pointer hover:bg-muted/30 transition-colors ${
+                    isSelected 
+                      ? "border-l-4 border-l-blue-500 bg-blue-50/50" 
+                      : index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                  }`}
+                  onClick={() => handleRowClick(doc)}
+                >
                 <TableCell className="px-4 py-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-6 h-8 bg-card border border-border rounded flex-shrink-0 flex items-center justify-center">
@@ -119,22 +129,17 @@ export function DocumentTableView({ documents, onBack }: DocumentTableViewProps)
                 <TableCell className="px-4 py-3 text-sm text-foreground">
                   <div>
                     <div>{doc.creationDate}</div>
-                    <div className="text-xs text-muted-foreground">10:14</div>
+                    <div className="text-xs text-muted-foreground">
+                      {doc.uploadDate && doc.uploadDate !== doc.creationDate ? doc.uploadDate : "10:14"}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">{doc.author}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.uploader}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.department}</TableCell>
-                <TableCell className="px-4 py-3">
-                  <Button 
-                    size="sm" 
-                    className="h-8 px-4 bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    Button
-                  </Button>
-                </TableCell>
+                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.uploader || "-"}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.department || "-"}</TableCell>
               </TableRow>
-            ))}
+            );
+            })}
           </TableBody>
         </Table>
       </div>

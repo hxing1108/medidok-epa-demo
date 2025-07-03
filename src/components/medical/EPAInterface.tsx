@@ -327,11 +327,6 @@ export function EPAInterface() {
     setViewMode('table');
   };
 
-  const handleBackToThumbnails = () => {
-    setSelectedDocuments([]);
-    setViewMode('thumbnail');
-  };
-
   const handleDocumentSelect = (document: Document) => {
     setSelectedDocument(document);
   };
@@ -1193,21 +1188,25 @@ export function EPAInterface() {
                           importedEpaDocumentIds={importedEpaDocumentIds}
                         />
                       ) : (
-                        <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                        <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
                       )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="epa" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
-                      <DocumentThumbnailView 
-                        onViewDetails={handleViewDetails} 
-                        documents={getCurrentDocuments()}
-                        onDocumentSelect={handleDocumentSelect}
-                        localDocuments={localDocumentsList}
-                        isFromEPA={true}
-                        importedEpaDocumentIds={importedEpaDocumentIds}
-                      />
+                      {viewMode === 'thumbnail' ? (
+                        <DocumentThumbnailView 
+                          onViewDetails={handleViewDetails} 
+                          documents={getCurrentDocuments()}
+                          onDocumentSelect={handleDocumentSelect}
+                          localDocuments={localDocumentsList}
+                          isFromEPA={true}
+                          importedEpaDocumentIds={importedEpaDocumentIds}
+                        />
+                      ) : (
+                        <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                      )}
                     </div>
                   </TabsContent>
 
@@ -1369,21 +1368,25 @@ export function EPAInterface() {
                       importedEpaDocumentIds={importedEpaDocumentIds}
                     />
                   ) : (
-                    <DocumentTableView documents={selectedDocuments} onBack={handleBackToThumbnails} />
+                    <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
                   )}
                 </div>
               </TabsContent>
 
               <TabsContent value="epa" className="flex-1 min-h-0 mt-0">
                 <div className="h-full overflow-y-auto px-6">
-                  <DocumentThumbnailView 
-                    onViewDetails={handleViewDetails} 
-                    documents={getCurrentDocuments()}
-                    onDocumentSelect={handleDocumentSelect}
-                    localDocuments={localDocumentsList}
-                    isFromEPA={true}
-                    importedEpaDocumentIds={importedEpaDocumentIds}
-                  />
+                  {viewMode === 'thumbnail' ? (
+                    <DocumentThumbnailView 
+                      onViewDetails={handleViewDetails} 
+                      documents={getCurrentDocuments()}
+                      onDocumentSelect={handleDocumentSelect}
+                      localDocuments={localDocumentsList}
+                      isFromEPA={true}
+                      importedEpaDocumentIds={importedEpaDocumentIds}
+                    />
+                  ) : (
+                    <DocumentTableView documents={getCurrentDocuments()} onDocumentSelect={handleDocumentSelect} />
+                  )}
                 </div>
               </TabsContent>
 
