@@ -171,18 +171,20 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
 
       </CardContent>
 
-      {/* Download Section at Bottom */}
-      <div className="border-t p-4">
-        <Button 
-          onClick={handleDownload} 
-          className="w-full" 
-          disabled={isAlreadyImported}
-          variant={isAlreadyImported ? "secondary" : "default"}
-        >
-          <Download className="h-4 w-4 mr-2" />
-          {isAlreadyImported ? "Bereits importiert" : "ePA zur lokalen Bilderliste herunterladen"}
-        </Button>
-      </div>
+      {/* Download Section at Bottom - Only show for ePA documents */}
+      {isFromEPA && (
+        <div className="border-t p-4">
+          <Button 
+            onClick={handleDownload} 
+            className="w-full" 
+            disabled={isAlreadyImported}
+            variant={isAlreadyImported ? "secondary" : "default"}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {isAlreadyImported ? "Bereits importiert" : "ePA zur lokalen Bilderliste herunterladen"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
