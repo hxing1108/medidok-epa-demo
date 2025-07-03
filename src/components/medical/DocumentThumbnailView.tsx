@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import befundberichtPreview from "@/assets/befundbericht-preview.jpg";
@@ -227,22 +227,8 @@ interface DocumentThumbnailViewProps {
 }
 
 export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSelect, localDocuments, isFromEPA, importedEpaDocumentIds }: DocumentThumbnailViewProps) {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["Befundbericht", "Einstellbrief", "Wundbeurteilung"]));
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
-
-  const toggleCategory = (categoryName: string) => {
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryName)) {
-      newExpanded.delete(categoryName);
-    } else {
-      newExpanded.add(categoryName);
-    }
-    setExpandedCategories(newExpanded);
-  };
-
-  // If custom documents are provided, group them by type/class
-  const displayCategories = documents ? 
-    groupDocumentsByClass(documents) : mockCategories;
 
   // Function to group documents by their medical class
   function groupDocumentsByClass(docs: Document[]): DocumentCategory[] {
@@ -280,6 +266,27 @@ export function DocumentThumbnailView({ onViewDetails, documents, onDocumentSele
       documents
     }));
   }
+
+  // If custom documents are provided, group them by type/class
+  const displayCategories = useMemo(() => {
+    return documents ? groupDocumentsByClass(documents) : mockCategories;
+  }, [documents]);
+
+  // Update expanded categories when display categories change - expand all by default
+  useEffect(() => {
+    const allCategoryNames = displayCategories.map(cat => cat.name);
+    setExpandedCategories(new Set(allCategoryNames));
+  }, [displayCategories]);
+
+  const toggleCategory = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
 
   return (
     <div className="space-y-4">

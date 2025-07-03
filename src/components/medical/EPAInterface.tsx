@@ -1077,31 +1077,31 @@ export function EPAInterface() {
                 
                 {/* Tab Navigation for Bilderlist only */}
                 <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
-                  <div className="p-6 pb-0">
-                    <div className="flex items-center justify-between mb-4">
-                      <TabsList className="h-8 bg-transparent p-0 border-none">
-                        <TabsTrigger 
-                          value="lokal" 
-                          className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                        >
-                          Lokal
-                        </TabsTrigger>
-                        <TabsTrigger 
-                          value="epa"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                        >
-                          ePA
-                        </TabsTrigger>
-                        <TabsTrigger 
-                          value="plus"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                        >
-                          +
-                        </TabsTrigger>
-                      </TabsList>
-                      
+              <div className="p-6 pb-0">
+                <div className="flex items-center justify-between mb-4">
+                  <TabsList className="h-8 bg-transparent p-0 border-none">
+                    <TabsTrigger 
+                      value="lokal" 
+                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                    >
+                      Lokal
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="epa"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                    >
+                      ePA
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="plus"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                    >
+                      +
+                    </TabsTrigger>
+                  </TabsList>
+                  
                       {/* Enhanced Toolbar Buttons */}
-                      <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1">
                         {/* Sort Button */}
                         <Button 
                           variant="ghost" 
@@ -1110,7 +1110,7 @@ export function EPAInterface() {
                           onClick={() => handleOpenPanel('sorting')}
                         >
                           <ArrowUpDown className="h-4 w-4" />
-                        </Button>
+                    </Button>
 
                         {/* Filter Button */}
                         <Button 
@@ -1125,7 +1125,7 @@ export function EPAInterface() {
                               {getActiveFilterCount()}
                             </span>
                           )}
-                        </Button>
+                    </Button>
 
                         {/* Search Input */}
                         <div className="relative">
@@ -1145,7 +1145,7 @@ export function EPAInterface() {
                               onClick={() => setSearchQuery('')}
                             >
                               <X className="h-3 w-3" />
-                            </Button>
+                    </Button>
                           )}
                         </div>
 
@@ -1157,7 +1157,7 @@ export function EPAInterface() {
                           onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
                         >
                           {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-                        </Button>
+                    </Button>
 
                         {/* More Options Button */}
                         <Button 
@@ -1167,16 +1167,16 @@ export function EPAInterface() {
                           onClick={() => handleOpenPanel('options')}
                         >
                           <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                    </Button>
 
                         {/* Import Button */}
-                        <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
-                          <Import className="h-3 w-3 mr-1" />
-                          Import
-                        </Button>
-                      </div>
-                    </div>
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
+                      <Import className="h-3 w-3 mr-1" />
+                      Import
+                    </Button>
                   </div>
+                </div>
+              </div>
 
                   {/* Filter Bar */}
                   <FilterBar />
@@ -1256,25 +1256,25 @@ export function EPAInterface() {
               <div className="p-6 pb-0">
                 <div className="flex items-center justify-between mb-4">
                   <TabsList className="h-8 bg-transparent p-0 border-none">
-                    <TabsTrigger 
-                      value="lokal" 
-                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                    >
-                      Lokal
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="epa"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                    >
-                      ePA
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="plus"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                    >
-                      +
-                    </TabsTrigger>
-                  </TabsList>
+                  <TabsTrigger 
+                    value="lokal" 
+                    className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                  >
+                    Lokal
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="epa"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                  >
+                    ePA
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="plus"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                  >
+                    +
+                  </TabsTrigger>
+                </TabsList>
 
                   {/* Enhanced Toolbar Buttons for full screen */}
                   <div className="flex items-center gap-1">
@@ -1323,7 +1323,7 @@ export function EPAInterface() {
                           <X className="h-3 w-3" />
                         </Button>
                       )}
-                    </div>
+              </div>
 
                     {/* Layout Toggle */}
                     <Button 
