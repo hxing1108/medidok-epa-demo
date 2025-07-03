@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Search, Filter, Import, ArrowUpDown, LayoutGrid, List, MoreHorizontal, Maximize2, X, ChevronDown } from "lucide-react";
+import { Search, Filter, Import, ArrowUpDown, LayoutGrid, List, MoreHorizontal, Maximize2, X, ChevronDown, ChevronUp, ArrowLeft, Calendar, User, FileText, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -21,6 +21,9 @@ import ctThoraxPreview from "@/assets/ct-thorax-preview.jpg";
 import mrtKopfPreview from "@/assets/mrt-kopf-preview.jpg";
 import consentFormPreview from "@/assets/consent-form-preview.jpg";
 import labResultsPreview from "@/assets/lab-results-preview.jpg";
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // Mock data for local documents (Bilderliste)
 const localDocuments: Document[] = [
@@ -286,6 +289,8 @@ const epaDocuments: Document[] = [
   }
 ];
 
+type PanelType = 'sorting' | 'filter' | 'options' | null;
+
 export function EPAInterface() {
   const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('lokal');
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
@@ -313,6 +318,9 @@ export function EPAInterface() {
     dateRange: {},
     author: []
   });
+
+  // Add new state for right panel
+  const [rightPanelType, setRightPanelType] = useState<PanelType>(null);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -690,6 +698,329 @@ export function EPAInterface() {
     );
   };
 
+  const handleOpenPanel = (panelType: PanelType) => {
+    setRightPanelType(rightPanelType === panelType ? null : panelType);
+  };
+
+  const handleClosePanel = () => {
+    setRightPanelType(null);
+  };
+
+  // Right Panel Component
+  const RightPanel = () => {
+    if (!rightPanelType) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 pointer-events-none">
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/20 pointer-events-auto"
+          onClick={handleClosePanel}
+        />
+        
+        {/* Panel */}
+        <div 
+          className={`absolute top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 pointer-events-auto ${
+            rightPanelType ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          {rightPanelType === 'sorting' && <SortingPanel />}
+          {rightPanelType === 'filter' && <FilterPanel />}
+          {rightPanelType === 'options' && <OptionsPanel />}
+        </div>
+      </div>
+    );
+  };
+
+  const SortingPanel = () => (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={handleClosePanel}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <span className="font-medium">Sortierung</span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={handleClosePanel}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="flex-1 p-4">
+        <div className="space-y-4">
+          <div>
+            <span className="text-sm text-gray-600 mb-2 block">
+              Hier kannst du ein bestimmtes Kriterium auswählen.
+            </span>
+            
+            <div className="space-y-3">
+              <Select value={sortBy} onValueChange={(value: any) => handleSort(value)}>
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">Datum</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="category">Kategorie</SelectItem>
+                  <SelectItem value="author">Autor</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={sortOrder} onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}>
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center gap-2">
+                    <ArrowUpDown className="h-4 w-4" />
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Absteigend</SelectItem>
+                  <SelectItem value="asc">Aufsteigend</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const FilterPanel = () => (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={handleClosePanel}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <span className="font-medium">Filter</span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={handleClosePanel}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="space-y-4">
+          {/* Reset Button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={clearFilters}
+            className="w-full justify-start text-left h-auto p-2"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border border-current rounded-sm flex items-center justify-center">
+                <ArrowLeft className="h-3 w-3 transform rotate-180" />
+              </div>
+              <span className="text-sm">Zurücksetzen</span>
+            </div>
+          </Button>
+
+          {/* Active Filters */}
+          {getActiveFilterCount() > 0 && (
+            <div className="space-y-2">
+              <span className="text-sm font-medium">Aktive Filter:</span>
+              <div className="flex flex-wrap gap-2">
+                {/* Show active filter badges */}
+                {Object.entries(activeFilters).map(([key, value]) => {
+                  if (!value || (Array.isArray(value) && value.length === 0)) return null;
+                  return (
+                    <Badge key={key} variant="secondary" className="text-xs">
+                      {key}: {Array.isArray(value) ? value.join(', ') : String(value)}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-1 h-auto p-0"
+                        onClick={() => handleFilterChange(key as keyof typeof activeFilters, Array.isArray(value) ? [] : '')}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Filter Options */}
+          <div className="space-y-3">
+            <span className="text-sm font-medium">Filter hinzufügen:</span>
+            
+            {/* Date Filter */}
+            <div className="border rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar className="h-4 w-4" />
+                <span className="text-sm font-medium">Datum</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="date"
+                  value={activeFilters.dateRange.from || ''}
+                  onChange={(e) => handleFilterChange('dateRange', { ...activeFilters.dateRange, from: e.target.value })}
+                  className="text-xs"
+                />
+                <Input
+                  type="date"
+                  value={activeFilters.dateRange.to || ''}
+                  onChange={(e) => handleFilterChange('dateRange', { ...activeFilters.dateRange, to: e.target.value })}
+                  className="text-xs"
+                />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="border rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="h-4 w-4" />
+                <span className="text-sm font-medium">Kategorie</span>
+              </div>
+              <Select 
+                value={Array.isArray(activeFilters.category) ? activeFilters.category[0] || '' : ''} 
+                onValueChange={(value) => handleFilterChange('category', value ? [value] : [])}
+              >
+                <SelectTrigger className="w-full text-xs">
+                  <SelectValue placeholder="Alle Kategorien" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getFilterOptions().categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Author Filter */}
+            <div className="border rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <User className="h-4 w-4" />
+                <span className="text-sm font-medium">Einsender</span>
+              </div>
+              <Select 
+                value={Array.isArray(activeFilters.author) ? activeFilters.author[0] || '' : ''} 
+                onValueChange={(value) => handleFilterChange('author', value ? [value] : [])}
+              >
+                <SelectTrigger className="w-full text-xs">
+                  <SelectValue placeholder="Alle Autoren" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getFilterOptions().authors.map((author) => (
+                    <SelectItem key={author} value={author}>{author}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Document Type Filter */}
+            <div className="border rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="h-4 w-4" />
+                <span className="text-sm font-medium">Dateityp</span>
+              </div>
+              <Select 
+                value={Array.isArray(activeFilters.type) ? activeFilters.type[0] || '' : ''} 
+                onValueChange={(value) => handleFilterChange('type', value ? [value] : [])}
+              >
+                <SelectTrigger className="w-full text-xs">
+                  <SelectValue placeholder="Alle Typen" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getFilterOptions().types.map((type) => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const OptionsPanel = () => (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <span className="font-medium">Optionen anzeigen</span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={handleClosePanel}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="flex-1 p-4">
+        <div className="space-y-2">
+          {/* Layout Option */}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-between h-auto p-3 border rounded"
+            onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+          >
+            <div className="flex items-center gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              <span className="text-sm">Layout</span>
+            </div>
+            <span className="text-xs text-gray-500">
+              {viewMode === 'thumbnail' ? 'Kacheln' : 'Liste'}
+            </span>
+          </Button>
+
+          {/* Display Fields Option */}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-between h-auto p-3 border rounded"
+          >
+            <div className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+              <span className="text-sm">Angezeigte Felder</span>
+            </div>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+
+          {/* Filter Option */}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-between h-auto p-3 border rounded"
+            onClick={() => setRightPanelType('filter')}
+          >
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              <span className="text-sm">Filter</span>
+            </div>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+
+          {/* Sorting Option */}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-between h-auto p-3 border rounded"
+            onClick={() => setRightPanelType('sorting')}
+          >
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-4 w-4" />
+              <span className="text-sm">Sortierung</span>
+            </div>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+
+          {/* Grouping Option */}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-between h-auto p-3 border rounded"
+          >
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="text-sm">Gruppierung</span>
+            </div>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   const currentDocuments = currentTab === 'lokal' ? localDocumentsList : epaDocuments;
 
   // Fullscreen overlay
@@ -719,20 +1050,6 @@ export function EPAInterface() {
             <h1 className="text-lg font-medium text-foreground">Musterman, Max</h1>
             <div className="text-sm text-muted-foreground">*01.06.1980 | 1234</div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-              <Search className="h-3 w-3 mr-1" />
-              Suchen
-            </Button>
-            <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-              <Filter className="h-3 w-3 mr-1" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-              <Import className="h-3 w-3 mr-1" />
-              Import
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -745,145 +1062,124 @@ export function EPAInterface() {
             onLayout={(sizes) => setPanelSizes(sizes)}
           >
             <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
-              <div className="h-full flex flex-col">
+              <div className="h-full flex flex-col relative">
+                {/* Right Panel for split view */}
+                {rightPanelType && (
+                  <div className="absolute inset-0 z-50 flex">
+                    <div className="flex-1" onClick={handleClosePanel} />
+                    <div className="w-80 bg-white shadow-xl border-l">
+                      {rightPanelType === 'sorting' && <SortingPanel />}
+                      {rightPanelType === 'filter' && <FilterPanel />}
+                      {rightPanelType === 'options' && <OptionsPanel />}
+                    </div>
+                  </div>
+                )}
+                
                 {/* Tab Navigation for Bilderlist only */}
                 <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
-              <div className="p-6 pb-0">
-                <div className="flex items-center justify-between mb-4">
-                  <TabsList className="h-8 bg-transparent p-0 border-none">
-                    <TabsTrigger 
-                      value="lokal" 
-                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                    >
-                      Lokal
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="epa"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                    >
-                      ePA
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="plus"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                    >
-                      +
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  {/* Enhanced Toolbar Buttons */}
-                  <div className="flex items-center gap-1">
-                    {/* Sort Button */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                  <div className="p-6 pb-0">
+                    <div className="flex items-center justify-between mb-4">
+                      <TabsList className="h-8 bg-transparent p-0 border-none">
+                        <TabsTrigger 
+                          value="lokal" 
+                          className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                        >
+                          Lokal
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="epa"
+                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                        >
+                          ePA
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="plus"
+                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                        >
+                          +
+                        </TabsTrigger>
+                      </TabsList>
+                      
+                      {/* Enhanced Toolbar Buttons */}
+                      <div className="flex items-center gap-1">
+                        {/* Sort Button */}
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className={`h-8 w-8 p-0 ${sortBy !== 'date' || sortOrder !== 'desc' ? 'bg-blue-100' : ''}`}
+                          className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
+                          onClick={() => handleOpenPanel('sorting')}
                         >
                           <ArrowUpDown className="h-4 w-4" />
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>Sortieren nach</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleSort('name')}>
-                          Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('date')}>
-                          Datum {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('category')}>
-                          Kategorie {sortBy === 'category' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('author')}>
-                          Autor {sortBy === 'author' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
 
-                    {/* Filter Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className={`h-8 w-8 p-0 ${showFilters || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
-                      onClick={() => setShowFilters(!showFilters)}
-                    >
-                      <Filter className="h-4 w-4" />
-                      {getActiveFilterCount() > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {getActiveFilterCount()}
-                        </span>
-                      )}
-                    </Button>
-
-                    {/* Search Input */}
-                    <div className="relative">
-                      <Input
-                        type="text"
-                        placeholder="Zum Suchen eingeben..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-8 w-48 text-xs pl-8"
-                      />
-                      <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
-                      {searchQuery && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-1 top-1 h-6 w-6 p-0"
-                          onClick={() => setSearchQuery('')}
+                        {/* Filter Button */}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                          onClick={() => handleOpenPanel('filter')}
                         >
-                          <X className="h-3 w-3" />
+                          <Filter className="h-4 w-4" />
+                          {getActiveFilterCount() > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                              {getActiveFilterCount()}
+                            </span>
+                          )}
                         </Button>
-                      )}
-                    </div>
 
-                    {/* Layout Toggle */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 w-8 p-0"
-                      onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
-                    >
-                      {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-                    </Button>
+                        {/* Search Input */}
+                        <div className="relative">
+                          <Input
+                            type="text"
+                            placeholder="Zum Suchen eingeben..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="h-8 w-48 text-xs pl-8"
+                          />
+                          <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                          {searchQuery && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0"
+                              onClick={() => setSearchQuery('')}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
 
-                    {/* More Options Menu */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        {/* Layout Toggle */}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+                        >
+                          {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+                        </Button>
+
+                        {/* More Options Button */}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
+                          onClick={() => handleOpenPanel('options')}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={clearFilters}>
-                          Filter zurücksetzen
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setViewMode('thumbnail')}>
-                          Kachel-Ansicht
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setViewMode('table')}>
-                          Listen-Ansicht
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          Exportieren
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
 
-                    {/* Import Button */}
-                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
-                      <Import className="h-3 w-3 mr-1" />
-                      Import
-                    </Button>
+                        {/* Import Button */}
+                        <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
+                          <Import className="h-3 w-3 mr-1" />
+                          Import
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Filter Bar */}
-              <FilterBar />
+                  {/* Filter Bar */}
+                  <FilterBar />
                   
                   <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
@@ -942,7 +1238,19 @@ export function EPAInterface() {
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col relative">
+            {/* Right Panel for full screen */}
+            {rightPanelType && (
+              <div className="absolute inset-0 z-50 flex">
+                <div className="flex-1" onClick={handleClosePanel} />
+                <div className="w-80 bg-white shadow-xl border-l">
+                  {rightPanelType === 'sorting' && <SortingPanel />}
+                  {rightPanelType === 'filter' && <FilterPanel />}
+                  {rightPanelType === 'options' && <OptionsPanel />}
+                </div>
+              </div>
+            )}
+            
             {/* Tab Navigation for Bilderlist only */}
             <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'lokal' | 'epa')} className="h-full flex flex-col">
               <div className="p-6 pb-0">
@@ -971,40 +1279,21 @@ export function EPAInterface() {
                   {/* Enhanced Toolbar Buttons for full screen */}
                   <div className="flex items-center gap-1">
                     {/* Sort Button */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className={`h-8 w-8 p-0 ${sortBy !== 'date' || sortOrder !== 'desc' ? 'bg-blue-100' : ''}`}
-                        >
-                          <ArrowUpDown className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>Sortieren nach</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleSort('name')}>
-                          Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('date')}>
-                          Datum {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('category')}>
-                          Kategorie {sortBy === 'category' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSort('author')}>
-                          Autor {sortBy === 'author' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
+                      onClick={() => handleOpenPanel('sorting')}
+                    >
+                      <ArrowUpDown className="h-4 w-4" />
+                    </Button>
 
                     {/* Filter Button */}
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className={`h-8 w-8 p-0 ${showFilters || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
-                      onClick={() => setShowFilters(!showFilters)}
+                      className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                      onClick={() => handleOpenPanel('filter')}
                     >
                       <Filter className="h-4 w-4" />
                       {getActiveFilterCount() > 0 && (
@@ -1046,29 +1335,15 @@ export function EPAInterface() {
                       {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
                     </Button>
 
-                    {/* More Options Menu */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={clearFilters}>
-                          Filter zurücksetzen
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setViewMode('thumbnail')}>
-                          Kachel-Ansicht
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setViewMode('table')}>
-                          Listen-Ansicht
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          Exportieren
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {/* More Options Button */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
+                      onClick={() => handleOpenPanel('options')}
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
 
                     {/* Import Button */}
                     <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">

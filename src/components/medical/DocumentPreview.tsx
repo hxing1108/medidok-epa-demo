@@ -79,7 +79,7 @@ export function DocumentPreview({ document, onClose, onFullscreen, onDownload, i
         </div>
       </CardHeader>
       
-      <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
+      <CardContent className="flex-1 p-4 space-y-4 overflow-y-auto">
         {/* Document Preview Area */}
         <div className={`bg-muted rounded-lg p-4 flex items-center justify-center ${isMetadataCollapsed ? 'h-full flex-1' : 'min-h-64'}`}>
           {document.thumbnailUrl ? (
