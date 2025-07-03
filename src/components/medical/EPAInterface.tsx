@@ -326,24 +326,7 @@ export function EPAInterface() {
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [multiSelectedDocuments, setMultiSelectedDocuments] = useState<Set<string>>(new Set());
 
-  // Debug effect to track selectedDocuments changes
-  useEffect(() => {
-    console.log('selectedDocuments changed:', {
-      count: selectedDocuments.length,
-      documents: selectedDocuments.map(d => `${d.id} - ${d.name}`),
-      isFullscreen,
-      selectedDocument: selectedDocument?.name
-    });
-  }, [selectedDocuments, isFullscreen, selectedDocument]);
 
-  // Debug effect to track isFullscreen changes
-  useEffect(() => {
-    console.log('isFullscreen changed:', {
-      isFullscreen,
-      showingResizablePanel: !isFullscreen,
-      selectedDocumentsCount: selectedDocuments.length
-    });
-  }, [isFullscreen, selectedDocuments.length]);
 
   const handleViewDetails = (documents: Document[]) => {
     setSelectedDocuments(documents);
@@ -397,38 +380,21 @@ export function EPAInterface() {
     const allDocs = getCurrentDocuments();
     const selectedDocs = allDocs.filter(doc => multiSelectedDocuments.has(doc.id));
     
-    console.log('Multi-select debug:', {
-      allDocsCount: allDocs.length,
-      multiSelectedIds: Array.from(multiSelectedDocuments),
-      selectedDocsCount: selectedDocs.length,
-      selectedDocs: selectedDocs.map(d => ({ id: d.id, name: d.name }))
-    });
-    
     if (selectedDocs.length > 0) {
       // Switch to resizable mode to show side panel if currently in full-screen
-      console.log('Current mode before switch:', { isFullscreen });
       if (isFullscreen) {
-        console.log('Switching from full-screen to resizable mode');
         setIsFullscreen(false);
-      } else {
-        console.log('Already in resizable mode');
       }
       
       // For single document, open normally
       if (selectedDocs.length === 1) {
-        console.log('Opening single document:', selectedDocs[0].name);
         setSelectedDocument(selectedDocs[0]);
         setSelectedDocuments([]); // Clear multi-selection
       } else {
         // For multiple documents, pass them to preview component
-        console.log('Opening multiple documents:', selectedDocs.length);
-        console.log('Documents being set:', selectedDocs.map(d => `${d.id} - ${d.name}`));
         setSelectedDocument(null); // Clear single selection
         setSelectedDocuments(selectedDocs); // Set multi-selection for preview
-        console.log('After setSelectedDocuments called');
       }
-    } else {
-      console.log('No documents selected or found');
     }
   };
 
@@ -607,6 +573,45 @@ export function EPAInterface() {
     setSelectedDocument(localDocument);
   };
 
+  // Inline Multi-Select Bar Component (for tab header)
+  const InlineMultiSelectBar = () => {
+    return (
+      <div className="flex items-center gap-4 bg-white rounded-lg px-4 py-2 shadow-sm border">
+        <span className="text-sm font-medium text-blue-900">
+          {multiSelectedDocuments.size} ausgewählt
+        </span>
+        <div className="flex items-center gap-2">
+          <Button 
+            size="sm" 
+            className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleOpenMultiSelected}
+          >
+            Öffnen
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+            onClick={() => {
+              // TODO: Implement publish functionality
+            }}
+          >
+            Veröffentlichen
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
+            onClick={handleExitMultiSelect}
+            title="Mehrfachauswahl beenden"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   // Multi-Select Bar Component
   const MultiSelectBar = () => {
     if (!multiSelectMode || multiSelectedDocuments.size === 0) return null;
@@ -622,10 +627,7 @@ export function EPAInterface() {
               <Button 
                 size="sm" 
                 className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => {
-                  console.log('Öffnen button clicked!');
-                  handleOpenMultiSelected();
-                }}
+                onClick={handleOpenMultiSelected}
               >
                 Öffnen
               </Button>
@@ -635,33 +637,21 @@ export function EPAInterface() {
                 className="h-7 px-3 text-blue-700 hover:bg-blue-100"
                 onClick={() => {
                   // TODO: Implement publish functionality
-                  console.log('Publishing documents:', Array.from(multiSelectedDocuments));
                 }}
               >
                 Veröffentlichen
               </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
-              onClick={handleExitMultiSelect}
-              title="Kontrollkästchen ausblenden"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
-              onClick={handleClearSelection}
-              title="Auswahl entfernen"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 w-7 p-0 text-blue-700 hover:bg-blue-100"
+            onClick={handleExitMultiSelect}
+            title="Mehrfachauswahl beenden"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     );
@@ -1269,89 +1259,90 @@ export function EPAInterface() {
                     </TabsTrigger>
                   </TabsList>
                   
-                      {/* Enhanced Toolbar Buttons */}
-                  <div className="flex items-center gap-1">
-                        {/* Sort Button */}
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
-                          onClick={() => handleOpenPanel('sorting')}
-                        >
-                          <ArrowUpDown className="h-4 w-4" />
-                    </Button>
+                  {/* Conditional Right Section: Multi-Select Bar OR Toolbar Buttons */}
+                  {multiSelectMode && multiSelectedDocuments.size > 0 ? (
+                    <InlineMultiSelectBar />
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      {/* Sort Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('sorting')}
+                      >
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
 
-                        {/* Filter Button */}
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
-                          onClick={() => handleOpenPanel('filter')}
-                        >
-                          <Filter className="h-4 w-4" />
-                          {getActiveFilterCount() > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                              {getActiveFilterCount()}
-                            </span>
-                          )}
-                    </Button>
+                      {/* Filter Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('filter')}
+                      >
+                        <Filter className="h-4 w-4" />
+                        {getActiveFilterCount() > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {getActiveFilterCount()}
+                          </span>
+                        )}
+                      </Button>
 
-                        {/* Search Input */}
-                        <div className="relative">
-                          <Input
-                            type="text"
-                            placeholder="Zum Suchen eingeben..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-8 w-48 text-xs pl-8"
-                          />
-                          <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
-                          {searchQuery && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-1 top-1 h-6 w-6 p-0"
-                              onClick={() => setSearchQuery('')}
-                            >
-                              <X className="h-3 w-3" />
-                    </Button>
-                          )}
-                        </div>
+                      {/* Search Input */}
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Zum Suchen eingeben..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="h-8 w-48 text-xs pl-8"
+                        />
+                        <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                        {searchQuery && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-6 w-6 p-0"
+                            onClick={() => setSearchQuery('')}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
 
-                        {/* Layout Toggle */}
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0"
-                          onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
-                        >
-                          {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-                    </Button>
+                      {/* Layout Toggle */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+                      >
+                        {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+                      </Button>
 
-                        {/* More Options Button */}
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
-                          onClick={() => handleOpenPanel('options')}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                      {/* More Options Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('options')}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
 
-                        {/* Import Button */}
-                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
-                      <Import className="h-3 w-3 mr-1" />
-                      Import
-                    </Button>
-                  </div>
+                      {/* Import Button */}
+                      <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
+                        <Import className="h-3 w-3 mr-1" />
+                        Import
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
                                 {/* Filter Bar */}
               <FilterBar />
-              
-              {/* Multi-Select Bar */}
-              <MultiSelectBar />
                   
                   <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                     <div className="h-full overflow-y-auto px-6">
@@ -1484,89 +1475,90 @@ export function EPAInterface() {
                   </TabsTrigger>
                 </TabsList>
 
-                  {/* Enhanced Toolbar Buttons for full screen */}
-                  <div className="flex items-center gap-1">
-                    {/* Sort Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOpenPanel('sorting')}
-                    >
-                      <ArrowUpDown className="h-4 w-4" />
-                    </Button>
+                  {/* Conditional Right Section: Multi-Select Bar OR Toolbar Buttons for full screen */}
+                  {multiSelectMode && multiSelectedDocuments.size > 0 ? (
+                    <InlineMultiSelectBar />
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      {/* Sort Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'sorting' ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('sorting')}
+                      >
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
 
-                    {/* Filter Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOpenPanel('filter')}
-                    >
-                      <Filter className="h-4 w-4" />
-                      {getActiveFilterCount() > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {getActiveFilterCount()}
-                        </span>
-                      )}
-                    </Button>
+                      {/* Filter Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'filter' || getActiveFilterCount() > 0 ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('filter')}
+                      >
+                        <Filter className="h-4 w-4" />
+                        {getActiveFilterCount() > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {getActiveFilterCount()}
+                          </span>
+                        )}
+                      </Button>
 
-                    {/* Search Input */}
-                    <div className="relative">
-                      <Input
-                        type="text"
-                        placeholder="Zum Suchen eingeben..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-8 w-48 text-xs pl-8"
-                      />
-                      <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
-                      {searchQuery && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-1 top-1 h-6 w-6 p-0"
-                          onClick={() => setSearchQuery('')}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      )}
-              </div>
+                      {/* Search Input */}
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Zum Suchen eingeben..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="h-8 w-48 text-xs pl-8"
+                        />
+                        <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                        {searchQuery && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-6 w-6 p-0"
+                            onClick={() => setSearchQuery('')}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
 
-                    {/* Layout Toggle */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 w-8 p-0"
-                      onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
-                    >
-                      {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-                    </Button>
+                      {/* Layout Toggle */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={() => setViewMode(viewMode === 'thumbnail' ? 'table' : 'thumbnail')}
+                      >
+                        {viewMode === 'thumbnail' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+                      </Button>
 
-                    {/* More Options Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
-                      onClick={() => handleOpenPanel('options')}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                      {/* More Options Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={`h-8 w-8 p-0 ${rightPanelType === 'options' ? 'bg-blue-100' : ''}`}
+                        onClick={() => handleOpenPanel('options')}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
 
-                    {/* Import Button */}
-                    <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
-                      <Import className="h-3 w-3 mr-1" />
-                      Import
-                    </Button>
-                  </div>
+                      {/* Import Button */}
+                      <Button variant="outline" size="sm" className="h-8 px-3 text-xs bg-white">
+                        <Import className="h-3 w-3 mr-1" />
+                        Import
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Filter Bar for full screen */}
               <FilterBar />
-              
-              {/* Multi-Select Bar for full screen */}
-              <MultiSelectBar />
               
               <TabsContent value="lokal" className="flex-1 min-h-0 mt-0">
                 <div className="h-full overflow-y-auto px-6">
