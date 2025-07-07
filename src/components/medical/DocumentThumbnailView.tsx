@@ -415,9 +415,11 @@ export function DocumentThumbnailView({
                         {/* Show pill based on context and import/share status */}
                         {(isFromEPA || doc.importedFromEPA || doc.sharedFromLocal || sharedFromLocalIds?.has(doc.id)) && (
                           <div className="mt-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
                               {doc.sharedFromLocal
                                 ? 'von lokal exportiert'
+                                : isFromEPA && importedEpaDocumentIds?.has(doc.id)
+                                ? 'ePA heruntergeladen'
                                 : isFromEPA && !importedEpaDocumentIds?.has(doc.id)
                                 ? 'ePA'
                                 : doc.importedFromEPA
