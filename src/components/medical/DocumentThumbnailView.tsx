@@ -20,6 +20,7 @@ export interface Document {
   thumbnailUrl?: string;
   source?: 'local' | 'epa';
   importedFromEPA?: boolean;
+  sharedFromLocal?: boolean;
 }
 
 interface DocumentCategory {
@@ -225,6 +226,7 @@ interface DocumentThumbnailViewProps {
   localDocuments?: Document[]; // For checking import status in local tab
   isFromEPA?: boolean; // Whether this is the ePA tab
   importedEpaDocumentIds?: Set<string>; // IDs of ePA documents that have been imported
+  sharedFromLocalIds?: Set<string>; // IDs of local documents that have been shared to ePA
   multiSelectMode?: boolean;
   multiSelectedDocuments?: Set<string>;
   onMultiSelectToggle?: (documentId: string) => void;
@@ -238,6 +240,7 @@ export function DocumentThumbnailView({
   localDocuments,
   isFromEPA,
   importedEpaDocumentIds,
+  sharedFromLocalIds,
   multiSelectMode,
   multiSelectedDocuments,
   onMultiSelectToggle,
@@ -382,7 +385,7 @@ export function DocumentThumbnailView({
                         </div>
                       </div>
                       <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
-                        {doc.thumbnailUrl ? (
+                        {doc.thumbnailUrl && !isFromEPA ? (
                           <img
                             src={doc.thumbnailUrl}
                             alt={`Preview of ${doc.name}`}
@@ -390,7 +393,11 @@ export function DocumentThumbnailView({
                           />
                         ) : (
                           <div className="text-center text-xs text-muted-foreground">
-                            <div className="w-8 h-10 bg-background border rounded mx-auto mb-1"></div>
+                            <img 
+                              src="/epa-icon.png" 
+                              alt="EPA Document" 
+                              className="w-12 h-12 mx-auto mb-1 opacity-60"
+                            />
                             Vorschau
                           </div>
                         )}
@@ -405,13 +412,19 @@ export function DocumentThumbnailView({
                         <p className="text-xs text-muted-foreground truncate">
                           {doc.author}
                         </p>
-                        {/* Show pill based on context and import status */}
-                        {(isFromEPA || doc.importedFromEPA) && (
+                        {/* Show pill based on context and import/share status */}
+                        {(isFromEPA || doc.importedFromEPA || doc.sharedFromLocal || sharedFromLocalIds?.has(doc.id)) && (
                           <div className="mt-2">
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
-                              {isFromEPA && !importedEpaDocumentIds?.has(doc.id)
+                              {doc.sharedFromLocal
+                                ? 'von lokal exportiert'
+                                : isFromEPA && !importedEpaDocumentIds?.has(doc.id)
                                 ? 'ePA'
-                                : 'ePA heruntergeladen'}
+                                : doc.importedFromEPA
+                                ? 'ePA heruntergeladen'
+                                : sharedFromLocalIds?.has(doc.id)
+                                ? 'zu ePA geteilt'
+                                : 'ePA'}
                             </span>
                           </div>
                         )}

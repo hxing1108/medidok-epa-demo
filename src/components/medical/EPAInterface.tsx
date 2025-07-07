@@ -24,6 +24,7 @@ import {
   Settings,
   Plus,
   RotateCcw,
+  Share,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +45,7 @@ import ctThoraxPreview from '@/assets/ct-thorax-preview.jpg';
 import mrtKopfPreview from '@/assets/mrt-kopf-preview.jpg';
 import consentFormPreview from '@/assets/consent-form-preview.jpg';
 import labResultsPreview from '@/assets/lab-results-preview.jpg';
+import einstellbriefPreview from '@/assets/einstellbrief-preview.jpg';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -202,6 +204,20 @@ const localDocuments: Document[] = [
     pageCount: '15 Schnitte',
     thumbnailUrl: '/lovable-uploads/4782d657-7249-47a1-9eaa-5ce20b7b5ca8.png',
   },
+  {
+    id: 'local11',
+    name: 'Einstellbrief',
+    category: 'BRIEF',
+    type: 'EIN',
+    creationDate: '03.07.2025',
+    uploadDate: '03.07.2025',
+    author: 'Dr. Zimmermann',
+    uploader: 'Dr. Zimmermann',
+    department: 'Allgemeinmedizin',
+    source: 'local',
+    pageCount: '1 Seite',
+    thumbnailUrl: einstellbriefPreview,
+  },
 ];
 
 // Mock data for ePA documents
@@ -331,7 +347,10 @@ export function EPAInterface() {
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
     null
   );
-  const [isMetadataCollapsed, setIsMetadataCollapsed] = useState(false);
+  const [metadataCollapsedState, setMetadataCollapsedState] = useState({
+    lokal: true,  // Local tab: collapsed by default
+    epa: false    // EPA tab: expanded by default
+  });
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [panelSizes, setPanelSizes] = useState([65, 35]);
   const [localDocumentsList, setLocalDocumentsList] =
@@ -339,6 +358,8 @@ export function EPAInterface() {
   const [importedEpaDocumentIds, setImportedEpaDocumentIds] = useState<
     Set<string>
   >(new Set());
+  const [sharedToEpaDocuments, setSharedToEpaDocuments] = useState<Document[]>([]);
+  const [sharedFromLocalIds, setSharedFromLocalIds] = useState<Set<string>>(new Set());
 
   // New toolbar state
   const [searchQuery, setSearchQuery] = useState('');
@@ -447,7 +468,10 @@ export function EPAInterface() {
   };
 
   const handleToggleMetadata = () => {
-    setIsMetadataCollapsed(!isMetadataCollapsed);
+    setMetadataCollapsedState(prev => ({
+      ...prev,
+      [currentTab]: !prev[currentTab]
+    }));
   };
 
   const handleFullscreen = () => {
@@ -600,10 +624,20 @@ export function EPAInterface() {
     );
   };
 
+  // Helper function to check if sorting is active (different from default)
+  const isSortingActive = () => {
+    return sortBy !== 'date' || sortOrder !== 'desc';
+  };
+
+  // Helper function to check if search is active
+  const isSearchActive = () => {
+    return searchQuery.trim() !== '';
+  };
+
   // Get filtered documents for current tab
   const getCurrentDocuments = () => {
     const documents =
-      currentTab === 'lokal' ? localDocumentsList : epaDocuments;
+      currentTab === 'lokal' ? localDocumentsList : [...epaDocuments, ...sharedToEpaDocuments];
     return filterAndSortDocuments(documents);
   };
 
@@ -675,6 +709,40 @@ export function EPAInterface() {
     }
   };
 
+  const handleShareToEpa = () => {
+    const allDocs = getCurrentDocuments();
+    const selectedDocs = allDocs.filter((doc) =>
+      multiSelectedDocuments.has(doc.id)
+    );
+
+    if (selectedDocs.length > 0 && currentTab === 'lokal') {
+      const sharedDocuments: Document[] = selectedDocs.map((doc) => ({
+        ...doc,
+        id: `epa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate unique ePA ID
+        source: 'epa',
+        sharedFromLocal: true,
+        uploadDate: new Date().toLocaleDateString('de-DE'),
+      }));
+
+      // Add all selected documents to ePA documents list
+      setSharedToEpaDocuments((prev) => [...prev, ...sharedDocuments]);
+
+      // Mark original local documents as shared
+      setSharedFromLocalIds((prev) => {
+        const newSet = new Set(prev);
+        selectedDocs.forEach((doc) => newSet.add(doc.id));
+        return newSet;
+      });
+
+      // Exit multi-select mode
+      setMultiSelectMode(false);
+      setMultiSelectedDocuments(new Set());
+
+      // Switch to ePA tab to show the shared documents
+      setCurrentTab('epa');
+    }
+  };
+
   // Inline Multi-Select Bar Component (for tab header)
   const InlineMultiSelectBar = () => {
     return (
@@ -699,6 +767,27 @@ export function EPAInterface() {
             >
               Herunterladen
             </Button>
+          )}
+          {currentTab === 'lokal' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+                >
+                  <Share className="h-4 w-4 mr-1" />
+                  Teilen
+                  <ChevronDown className="h-3 w-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleShareToEpa}>
+                  <Share className="h-4 w-4 mr-2" />
+                  zu ePA teilen
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <Button
             variant="ghost"
@@ -742,6 +831,27 @@ export function EPAInterface() {
                 >
                   Herunterladen
                 </Button>
+              )}
+              {currentTab === 'lokal' && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-3 text-blue-700 hover:bg-blue-100"
+                    >
+                      <Share className="h-4 w-4 mr-1" />
+                      Teilen
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={handleShareToEpa}>
+                      <Share className="h-4 w-4 mr-2" />
+                      zu ePA teilen
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
@@ -1770,7 +1880,7 @@ export function EPAInterface() {
           onClose={handleExitFullscreen}
           onFullscreen={() => {}} // No-op since we're already in fullscreen
           onDownload={handleDownloadDocument}
-          isMetadataCollapsed={isMetadataCollapsed}
+          isMetadataCollapsed={metadataCollapsedState[currentTab]}
           onToggleMetadata={handleToggleMetadata}
           localDocuments={localDocumentsList}
           isFromEPA={currentTab === 'epa'}
@@ -1855,19 +1965,24 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 ${
-                              rightPanelType === 'sorting' ? 'bg-blue-100' : ''
+                            className={`h-8 w-8 p-0 relative ${
+                              rightPanelType === 'sorting' || isSortingActive() ? 'bg-blue-100' : ''
                             }`}
                             onClick={() => handleOpenPanel('sorting')}
                           >
                             <ArrowUpDown className="h-4 w-4" />
+                            {isSortingActive() && (
+                              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                •
+                              </span>
+                            )}
                           </Button>
 
                           {/* Filter Button */}
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 ${
+                            className={`h-8 w-8 p-0 relative ${
                               rightPanelType === 'filter' ||
                               getActiveFilterCount() > 0
                                 ? 'bg-blue-100'
@@ -1889,10 +2004,17 @@ export function EPAInterface() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0"
+                                className={`h-8 w-8 p-0 relative ${
+                                  isSearchActive() ? 'bg-blue-100' : ''
+                                }`}
                                 onClick={handleSearchToggle}
                               >
                                 <Search className="h-4 w-4" />
+                                {isSearchActive() && (
+                                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                    •
+                                  </span>
+                                )}
                               </Button>
                             ) : (
                               <div className="relative flex items-center">
@@ -1942,19 +2064,24 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 ${
+                            className={`h-8 w-8 p-0 relative ${
                               rightPanelType === 'options' ? 'bg-blue-100' : ''
                             }`}
                             onClick={() => handleOpenPanel('options')}
                           >
                             <MoreHorizontal className="h-4 w-4" />
+                            {rightPanelType === 'options' && (
+                              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                •
+                              </span>
+                            )}
                           </Button>
 
                           {/* Import Button */}
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 px-3 text-xs bg-white"
+                            className="h-8 px-3 text-xs bg-white hover:bg-gray-50 active:bg-gray-100 border-gray-300 text-gray-700 hover:text-gray-900 shadow-sm transition-all duration-200"
                           >
                             <Import className="h-3 w-3 mr-1" />
                             Import
@@ -1974,9 +2101,10 @@ export function EPAInterface() {
                           onViewDetails={handleViewDetails}
                           onDocumentSelect={handleDocumentSelect}
                           documents={getCurrentDocuments()}
-                          localDocuments={localDocumentsList}
-                          isFromEPA={false}
-                          importedEpaDocumentIds={importedEpaDocumentIds}
+                                                localDocuments={localDocumentsList}
+                      isFromEPA={false}
+                      importedEpaDocumentIds={importedEpaDocumentIds}
+                      sharedFromLocalIds={sharedFromLocalIds}
                           multiSelectMode={multiSelectMode}
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
@@ -2005,6 +2133,7 @@ export function EPAInterface() {
                           localDocuments={localDocumentsList}
                           isFromEPA={true}
                           importedEpaDocumentIds={importedEpaDocumentIds}
+                          sharedFromLocalIds={sharedFromLocalIds}
                           multiSelectMode={multiSelectMode}
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
@@ -2055,7 +2184,7 @@ export function EPAInterface() {
                   }}
                   onFullscreen={handleFullscreen}
                   onDownload={handleDownloadDocument}
-                  isMetadataCollapsed={isMetadataCollapsed}
+                  isMetadataCollapsed={metadataCollapsedState[currentTab]}
                   onToggleMetadata={handleToggleMetadata}
                   localDocuments={localDocumentsList}
                   isFromEPA={currentTab === 'epa'}
@@ -2115,19 +2244,24 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`h-8 w-8 p-0 ${
-                          rightPanelType === 'sorting' ? 'bg-blue-100' : ''
+                        className={`h-8 w-8 p-0 relative ${
+                          rightPanelType === 'sorting' || isSortingActive() ? 'bg-blue-100' : ''
                         }`}
                         onClick={() => handleOpenPanel('sorting')}
                       >
                         <ArrowUpDown className="h-4 w-4" />
+                        {isSortingActive() && (
+                          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            •
+                          </span>
+                        )}
                       </Button>
 
                       {/* Filter Button */}
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`h-8 w-8 p-0 ${
+                        className={`h-8 w-8 p-0 relative ${
                           rightPanelType === 'filter' ||
                           getActiveFilterCount() > 0
                             ? 'bg-blue-100'
@@ -2149,10 +2283,17 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className={`h-8 w-8 p-0 relative ${
+                              isSearchActive() ? 'bg-blue-100' : ''
+                            }`}
                             onClick={handleSearchToggle}
                           >
                             <Search className="h-4 w-4" />
+                            {isSearchActive() && (
+                              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                •
+                              </span>
+                            )}
                           </Button>
                         ) : (
                           <div className="relative flex items-center">
@@ -2200,19 +2341,24 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`h-8 w-8 p-0 ${
+                        className={`h-8 w-8 p-0 relative ${
                           rightPanelType === 'options' ? 'bg-blue-100' : ''
                         }`}
                         onClick={() => handleOpenPanel('options')}
                       >
                         <MoreHorizontal className="h-4 w-4" />
+                        {rightPanelType === 'options' && (
+                          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            •
+                          </span>
+                        )}
                       </Button>
 
                       {/* Import Button */}
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 px-3 text-xs bg-white"
+                        className="h-8 px-3 text-xs bg-white hover:bg-gray-50 active:bg-gray-100 border-gray-300 text-gray-700 hover:text-gray-900 shadow-sm transition-all duration-200"
                       >
                         <Import className="h-3 w-3 mr-1" />
                         Import
@@ -2235,6 +2381,7 @@ export function EPAInterface() {
                       localDocuments={localDocumentsList}
                       isFromEPA={false}
                       importedEpaDocumentIds={importedEpaDocumentIds}
+                      sharedFromLocalIds={sharedFromLocalIds}
                       multiSelectMode={multiSelectMode}
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}
@@ -2263,6 +2410,7 @@ export function EPAInterface() {
                       localDocuments={localDocumentsList}
                       isFromEPA={true}
                       importedEpaDocumentIds={importedEpaDocumentIds}
+                      sharedFromLocalIds={sharedFromLocalIds}
                       multiSelectMode={multiSelectMode}
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}

@@ -100,8 +100,8 @@ export function DocumentPreview({
 
   return (
     <div className="h-full flex flex-col">
-      <CardHeader className="border-b">
-        <div className="flex items-start justify-between">
+      <CardHeader className="border-b py-2 px-6">
+        <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" onClick={onFullscreen}>
@@ -152,7 +152,7 @@ export function DocumentPreview({
                   key={doc.id}
                   className="bg-background rounded border p-2 flex flex-col justify-between h-full min-h-[100px]"
                 >
-                  {doc.thumbnailUrl ? (
+                  {doc.thumbnailUrl && !isFromEPA ? (
                     <img
                       src={doc.thumbnailUrl}
                       alt={`Preview of ${doc.name}`}
@@ -160,7 +160,15 @@ export function DocumentPreview({
                     />
                   ) : (
                     <div className="flex-1 flex items-center justify-center min-h-[60px]">
-                      <FileText className="h-8 w-8 text-muted-foreground" />
+                      {isFromEPA ? (
+                        <img 
+                          src="/epa-icon.png" 
+                          alt="EPA Document" 
+                          className="w-8 h-8 opacity-60"
+                        />
+                      ) : (
+                        <FileText className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                   )}
                   <p className="text-xs text-center text-muted-foreground truncate w-full">
@@ -182,8 +190,8 @@ export function DocumentPreview({
               )}
             </div>
           </div>
-        ) : singleDocument ? (
-          // Single document view
+        ) : singleDocument && !isFromEPA ? (
+          // Single document view - only for non-EPA documents
           <div
             className={`bg-muted rounded-lg p-4 ${
               isMetadataCollapsed
@@ -209,6 +217,20 @@ export function DocumentPreview({
                 </p>
               </div>
             )}
+          </div>
+        ) : singleDocument && isFromEPA ? (
+          // EPA document view - no preview, just a placeholder
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-center min-h-64">
+            <div className="text-center">
+              <img 
+                src="/epa-icon.png" 
+                alt="EPA Document" 
+                className="w-16 h-16 mx-auto mb-4 opacity-60"
+              />
+              <p className="text-sm text-muted-foreground">
+                EPA Dokument - Vorschau nur in lokaler Ansicht verfügbar
+              </p>
+            </div>
           </div>
         ) : (
           // No document selected
@@ -247,7 +269,7 @@ export function DocumentPreview({
 
       {/* Document Metadata - Only show for single document, positioned above download button */}
       {singleDocument && !isMultipleDocuments && (
-        <div className="border-t p-4">
+        <div className="border-t">
           <Collapsible
             open={!isMetadataCollapsed}
             onOpenChange={(open) => onToggleMetadata()}
@@ -255,7 +277,7 @@ export function DocumentPreview({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full justify-between p-0 h-auto"
+                className="w-full justify-between p-4 h-auto hover:bg-accent hover:bg-opacity-50 transition-colors duration-200 rounded-none"
               >
                 <h3 className="font-semibold">Metadaten</h3>
                 {isMetadataCollapsed ? (
@@ -266,7 +288,7 @@ export function DocumentPreview({
               </Button>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="space-y-4 mt-4">
+            <CollapsibleContent className="space-y-4 mt-4 px-4">
               <div className="grid grid-cols-1 gap-3 text-sm">
                 <div>
                   <span className="font-medium text-muted-foreground">
