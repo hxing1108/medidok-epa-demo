@@ -143,7 +143,7 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Autor</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsteller</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>
+              {isFromEPA && <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -212,7 +212,7 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
                 </TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">{doc.author}</TableCell>
                 <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.uploader || "-"}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{getDepartmentDisplayText(doc.department || "-")}</TableCell>
+                {isFromEPA && <TableCell className="px-4 py-3 text-sm text-muted-foreground">{getDepartmentDisplayText(doc.department || "-")}</TableCell>}
               </TableRow>
             );
             })}
