@@ -193,12 +193,16 @@ export function DocumentPreview({ document, documents, onClose, onFullscreen, on
                 <Separator />
                 
                 <div>
-                  <span className="font-medium text-muted-foreground">Kategorie:</span>
+                  <span className="font-medium text-muted-foreground">
+                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumentklasse:" : "Kategorie:"}
+                  </span>
                   <p className="mt-1">{singleDocument.category}</p>
                 </div>
                 
                 <div>
-                  <span className="font-medium text-muted-foreground">Dokumenttyp:</span>
+                  <span className="font-medium text-muted-foreground">
+                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumenttyp:" : "Dateityp:"}
+                  </span>
                   <p className="mt-1">{singleDocument.type}</p>
                 </div>
                 
