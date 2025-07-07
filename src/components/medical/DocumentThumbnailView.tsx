@@ -340,13 +340,14 @@ export function DocumentThumbnailView({
                   return (
                     <div
                       key={doc.id}
-                      className={`bg-card border rounded-lg p-2 transition-all cursor-pointer relative group ${
+                      className={`border rounded-lg p-2 transition-all cursor-pointer relative group ${
                         multiSelectMode && isSelected
                           ? 'border-blue-500 border-2 bg-blue-50/30'
                           : selectedDocumentId === doc.id && !multiSelectMode
                           ? 'border-primary border-2'
                           : 'border-border hover:border-primary/30'
                       }`}
+                      style={{ backgroundColor: '#FCFDFE' }}
                       onClick={(e) => {
                         if (multiSelectMode) {
                           onMultiSelectToggle?.(doc.id);

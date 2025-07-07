@@ -1906,7 +1906,7 @@ export function EPAInterface() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0" style={{ backgroundColor: '#F4F7FA' }}>
         {selectedDocument || selectedDocuments.length > 0 ? (
           <ResizablePanelGroup
             direction="horizontal"
