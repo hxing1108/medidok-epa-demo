@@ -108,6 +108,22 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
     return dokumentenklasseData.documentTypes[type as keyof typeof dokumentenklasseData.documentTypes] || type;
   };
 
+  // Function to get file type display text for local documents
+  const getFileTypeDisplayText = (type: string, name: string) => {
+    // For local documents, determine file type based on document type or name
+    if (type === 'FOT') return 'JPG';
+    if (type === 'BLD') return 'DICOM';
+    if (type === 'LEI' || type === 'EIN' || type === 'DIA' || type === 'BEF') return 'PDF';
+    
+    // Fallback: try to extract from filename
+    const extension = name.split('.').pop()?.toUpperCase();
+    if (extension && ['PDF', 'JPG', 'JPEG', 'PNG', 'DICOM', 'DCM'].includes(extension)) {
+      return extension === 'DCM' ? 'DICOM' : extension;
+    }
+    
+    return 'PDF'; // Default fallback
+  };
+
   // Function to get department display text
   const getDepartmentDisplayText = (department: string) => {
     if (department === '-' || !department) return '-';
@@ -123,7 +139,7 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
             <TableRow>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumententitel</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumentenklasse" : "Kategorie"}</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumententyp</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumententyp" : "Dateityp"}</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Autor</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsteller</TableHead>
@@ -183,7 +199,9 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">{getCategoryDisplayText(doc.category)}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-foreground">{getDocumentTypeDisplayText(doc.type)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">
+                  {isFromEPA ? getDocumentTypeDisplayText(doc.type) : getFileTypeDisplayText(doc.type, doc.name)}
+                </TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">
                   <div>
                     <div>{doc.creationDate}</div>
