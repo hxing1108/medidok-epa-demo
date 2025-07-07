@@ -141,8 +141,8 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumentenklasse" : "Kategorie"}</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumententyp" : "Dateityp"}</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Autor</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsteller</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Initiator</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsender</TableHead>
               {isFromEPA && <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>}
             </TableRow>
           </TableHeader>
