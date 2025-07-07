@@ -71,7 +71,7 @@ const localDocuments: Document[] = [
     uploadDate: '02.07.2025',
     author: 'Dr. Schmidt',
     uploader: 'Dr. Schmidt',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '1 Seite',
     thumbnailUrl: ctThoraxPreview,
@@ -85,7 +85,7 @@ const localDocuments: Document[] = [
     uploadDate: '01.07.2025',
     author: 'Dr. Weber',
     uploader: 'Dr. Weber',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '1 Seite',
     thumbnailUrl: mrtKopfPreview,
@@ -100,7 +100,7 @@ const localDocuments: Document[] = [
     uploadDate: '30.06.2025',
     author: 'Dr. Müller',
     uploader: 'Dr. Müller',
-    department: 'Dermatologie',
+    department: 'DERM',
     source: 'local',
     pageCount: '3 Bilder',
     thumbnailUrl: '/lovable-uploads/897e15d5-167b-4e31-888b-45159123c762.png',
@@ -114,7 +114,7 @@ const localDocuments: Document[] = [
     uploadDate: '29.06.2025',
     author: 'Dr. Müller',
     uploader: 'Dr. Müller',
-    department: 'Dermatologie',
+    department: 'DERM',
     source: 'local',
     pageCount: '2 Bilder',
     thumbnailUrl: '/lovable-uploads/6eaa638f-8841-423b-9ed8-dee6aeba1c57.png',
@@ -128,7 +128,7 @@ const localDocuments: Document[] = [
     uploadDate: '28.06.2025',
     author: 'Dr. Müller',
     uploader: 'Dr. Müller',
-    department: 'Dermatologie',
+    department: 'DERM',
     source: 'local',
     pageCount: '2 Bilder',
     thumbnailUrl: '/lovable-uploads/fa10067b-ca25-4731-b422-ab4948ba925c.png',
@@ -142,7 +142,7 @@ const localDocuments: Document[] = [
     uploadDate: '27.06.2025',
     author: 'Dr. Müller',
     uploader: 'Dr. Müller',
-    department: 'Dermatologie',
+    department: 'DERM',
     source: 'local',
     pageCount: '1 Bild',
     thumbnailUrl: '/lovable-uploads/49eec6c8-b17d-4064-8e1c-1722d7c0d7e1.png',
@@ -157,7 +157,7 @@ const localDocuments: Document[] = [
     uploadDate: '26.06.2025',
     author: 'Dr. Weber',
     uploader: 'Dr. Weber',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '24 Schnitte',
     thumbnailUrl: '/lovable-uploads/8e0e9323-7286-476e-a984-b0a45ff452f2.png',
@@ -171,7 +171,7 @@ const localDocuments: Document[] = [
     uploadDate: '26.06.2025',
     author: 'Dr. Weber',
     uploader: 'Dr. Weber',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '20 Schnitte',
     thumbnailUrl: '/lovable-uploads/1ea6381e-64a6-4574-8292-9737114875f7.png',
@@ -185,7 +185,7 @@ const localDocuments: Document[] = [
     uploadDate: '26.06.2025',
     author: 'Dr. Weber',
     uploader: 'Dr. Weber',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '18 Schnitte',
     thumbnailUrl: '/lovable-uploads/884f88e2-1435-46d4-9e03-8ba89ff1ee51.png',
@@ -199,7 +199,7 @@ const localDocuments: Document[] = [
     uploadDate: '26.06.2025',
     author: 'Dr. Weber',
     uploader: 'Dr. Weber',
-    department: 'Radiologie',
+    department: 'RAD',
     source: 'local',
     pageCount: '15 Schnitte',
     thumbnailUrl: '/lovable-uploads/4782d657-7249-47a1-9eaa-5ce20b7b5ca8.png',
@@ -213,7 +213,7 @@ const localDocuments: Document[] = [
     uploadDate: '03.07.2025',
     author: 'Dr. Zimmermann',
     uploader: 'Dr. Zimmermann',
-    department: 'Allgemeinmedizin',
+    department: 'ALLG',
     source: 'local',
     pageCount: '1 Seite',
     thumbnailUrl: einstellbriefPreview,
@@ -225,7 +225,7 @@ const epaDocuments: Document[] = [
   {
     id: 'epa1',
     name: 'Patienteneinverständnis...',
-    category: 'BESC',
+    category: 'EINVERST',
     type: 'LEI',
     creationDate: '08.11.2021',
     uploadDate: '08.11.2021',
@@ -241,12 +241,12 @@ const epaDocuments: Document[] = [
     id: 'epa2',
     name: 'Laborwerte Blutbild',
     category: 'LAB',
-    type: 'BEF',
+    type: 'DIA',
     creationDate: '05.11.2021',
     uploadDate: '05.11.2021',
     author: 'Dr. Müller',
     uploader: '-',
-    department: 'Labor',
+    department: 'LABOR',
     source: 'epa',
     importedFromEPA: true,
     pageCount: '3 Seiten',
@@ -256,12 +256,12 @@ const epaDocuments: Document[] = [
     id: 'epa3',
     name: 'Neurologischer Befund Gina Ortmann',
     category: 'BESC',
-    type: 'BEF',
+    type: 'DIA',
     creationDate: '14.03.1991',
     uploadDate: '14.03.1991',
     author: 'Dr. med. Kathrin Hilbert',
     uploader: '-',
-    department: 'Neurologie',
+    department: 'NEURO',
     source: 'epa',
     pageCount: '2 Seiten',
     thumbnailUrl: '/lovable-uploads/8cae94e0-2f38-4e68-8c3a-892c27d9737d.png',
@@ -269,13 +269,13 @@ const epaDocuments: Document[] = [
   {
     id: 'epa4',
     name: 'Echokardiographie Sylvia',
-    category: 'BESC',
-    type: 'BEF',
+    category: 'PROTO',
+    type: 'FUN',
     creationDate: '24.10.64',
     uploadDate: '24.10.64',
     author: 'Dr. med. Frank Towae',
     uploader: '-',
-    department: 'Kardiologie',
+    department: 'KARDIO',
     source: 'epa',
     pageCount: '1 Seite',
     thumbnailUrl: '/lovable-uploads/ab9f6edf-0cba-4d66-91a9-bc06361442ab.png',
@@ -283,13 +283,13 @@ const epaDocuments: Document[] = [
   {
     id: 'epa5',
     name: 'Histopathologischer Befund Sofie Buchinger',
-    category: 'BESC',
-    type: 'BEF',
+    category: 'GUTACH',
+    type: 'PAT',
     creationDate: '04.08.2022',
     uploadDate: '08.08.2022',
     author: 'Pathologie Ingolstadt',
     uploader: '-',
-    department: 'Pathologie',
+    department: 'PATHO',
     source: 'epa',
     pageCount: '2 Seiten',
     thumbnailUrl: '/lovable-uploads/6f562a21-8024-4997-af46-2b5ab9795ab5.png',
@@ -298,12 +298,12 @@ const epaDocuments: Document[] = [
     id: 'epa6',
     name: 'Befundbericht Sina Hazet',
     category: 'BESC',
-    type: 'BEF',
+    type: 'DIA',
     creationDate: '04.05.2022',
     uploadDate: '04.05.2022',
     author: 'Priv.-Doz. Dr. med. Thomas Schmidt',
     uploader: '-',
-    department: 'Neurologie',
+    department: 'NEURO',
     source: 'epa',
     pageCount: '2 Seiten',
     thumbnailUrl: '/lovable-uploads/12077eaa-68d7-48ce-b4cc-abf50d07abbb.png',
@@ -317,7 +317,7 @@ const epaDocuments: Document[] = [
     uploadDate: '08.05.2023',
     author: 'Dr.med. Kemal Cabadag',
     uploader: '-',
-    department: 'Onkologie',
+    department: 'IONKO',
     source: 'epa',
     pageCount: '1 Seite',
     thumbnailUrl: '/lovable-uploads/e193902b-cc7a-47da-b505-65107a38930e.png',
@@ -325,13 +325,13 @@ const epaDocuments: Document[] = [
   {
     id: 'epa8',
     name: 'Ileo-/Koloskopie Stefanie Welsch-Seibel',
-    category: 'BESC',
-    type: 'BEF',
+    category: 'PROTO',
+    type: 'FUN',
     creationDate: '15.12.2022',
     uploadDate: '15.12.2022',
     author: 'Dr. Frank Küppers',
     uploader: '-',
-    department: 'Gastroenterologie',
+    department: 'GASTRO',
     source: 'epa',
     pageCount: '1 Seite',
     thumbnailUrl: '/lovable-uploads/62f8033e-7725-4828-b0d5-1265c6405663.png',
@@ -2114,6 +2114,7 @@ export function EPAInterface() {
                         <DocumentTableView
                           documents={getCurrentDocuments()}
                           onDocumentSelect={handleDocumentSelect}
+                          isFromEPA={false}
                           multiSelectMode={multiSelectMode}
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
@@ -2143,6 +2144,7 @@ export function EPAInterface() {
                         <DocumentTableView
                           documents={getCurrentDocuments()}
                           onDocumentSelect={handleDocumentSelect}
+                          isFromEPA={true}
                           multiSelectMode={multiSelectMode}
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
@@ -2391,6 +2393,7 @@ export function EPAInterface() {
                     <DocumentTableView
                       documents={getCurrentDocuments()}
                       onDocumentSelect={handleDocumentSelect}
+                      isFromEPA={false}
                       multiSelectMode={multiSelectMode}
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}
@@ -2420,6 +2423,7 @@ export function EPAInterface() {
                     <DocumentTableView
                       documents={getCurrentDocuments()}
                       onDocumentSelect={handleDocumentSelect}
+                      isFromEPA={true}
                       multiSelectMode={multiSelectMode}
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}

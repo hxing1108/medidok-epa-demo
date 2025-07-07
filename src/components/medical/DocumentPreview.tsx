@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Document } from './DocumentThumbnailView';
+import dokumentenklasseData from '@/data/dokumentenklasse.json';
 
 interface DocumentPreviewProps {
   document?: Document | null;
@@ -59,6 +60,26 @@ export function DocumentPreview({
           localDoc.creationDate === singleDocument.creationDate
       )) ||
     false;
+
+  // Function to get category display text based on context
+  const getCategoryDisplayText = (category: string) => {
+    if (isFromEPA || singleDocument?.importedFromEPA) {
+      return dokumentenklasseData.documentClasses[category as keyof typeof dokumentenklasseData.documentClasses] || category;
+    } else {
+      return dokumentenklasseData.localCategories[category as keyof typeof dokumentenklasseData.localCategories] || category;
+    }
+  };
+
+  // Function to get document type display text
+  const getDocumentTypeDisplayText = (type: string) => {
+    return dokumentenklasseData.documentTypes[type as keyof typeof dokumentenklasseData.documentTypes] || type;
+  };
+
+  // Function to get department display text
+  const getDepartmentDisplayText = (department: string) => {
+    if (department === '-' || !department) return '-';
+    return dokumentenklasseData.departments[department as keyof typeof dokumentenklasseData.departments] || department;
+  };
 
   const handleDownload = async () => {
     if (!singleDocument) return;
@@ -303,14 +324,14 @@ export function DocumentPreview({
                   <span className="font-medium text-muted-foreground">
                     {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumentklasse:" : "Kategorie:"}
                   </span>
-                  <p className="mt-1">{singleDocument.category}</p>
+                  <p className="mt-1">{getCategoryDisplayText(singleDocument.category)}</p>
                 </div>
 
                 <div>
                   <span className="font-medium text-muted-foreground">
-                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumenttyp:" : "Dateityp:"}
+                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumententyp:" : "Dateityp:"}
                   </span>
-                  <p className="mt-1">{singleDocument.type}</p>
+                  <p className="mt-1">{getDocumentTypeDisplayText(singleDocument.type)}</p>
                 </div>
 
                 <Separator />
@@ -349,7 +370,7 @@ export function DocumentPreview({
                   <span className="font-medium text-muted-foreground">
                     Fachgruppe:
                   </span>
-                  <p className="mt-1">{singleDocument.department}</p>
+                  <p className="mt-1">{getDepartmentDisplayText(singleDocument.department)}</p>
                 </div>
 
                 <Separator />

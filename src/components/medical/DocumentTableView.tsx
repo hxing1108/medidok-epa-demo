@@ -2,10 +2,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Document } from "./DocumentThumbnailView";
 import { useState } from "react";
 import { Check } from "lucide-react";
+import dokumentenklasseData from "@/data/dokumentenklasse.json";
 
 interface DocumentTableViewProps {
   documents: Document[];
   onDocumentSelect?: (document: Document) => void;
+  isFromEPA?: boolean;
   multiSelectMode?: boolean;
   multiSelectedDocuments?: Set<string>;
   onMultiSelectToggle?: (documentId: string) => void;
@@ -82,7 +84,7 @@ const mockDocuments: Document[] = [
   }
 ];
 
-export function DocumentTableView({ documents, onDocumentSelect, multiSelectMode, multiSelectedDocuments, onMultiSelectToggle, onEnableMultiSelect }: DocumentTableViewProps) {
+export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, multiSelectMode, multiSelectedDocuments, onMultiSelectToggle, onEnableMultiSelect }: DocumentTableViewProps) {
   // Use the actual documents passed as props, fallback to mockDocuments if empty
   const displayDocuments = documents.length > 0 ? documents : mockDocuments;
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
@@ -90,6 +92,26 @@ export function DocumentTableView({ documents, onDocumentSelect, multiSelectMode
   const handleRowClick = (doc: Document) => {
     setSelectedDocumentId(doc.id);
     onDocumentSelect?.(doc);
+  };
+
+  // Function to get category display text based on context
+  const getCategoryDisplayText = (category: string) => {
+    if (isFromEPA) {
+      return dokumentenklasseData.documentClasses[category as keyof typeof dokumentenklasseData.documentClasses] || category;
+    } else {
+      return dokumentenklasseData.localCategories[category as keyof typeof dokumentenklasseData.localCategories] || category;
+    }
+  };
+
+  // Function to get document type display text
+  const getDocumentTypeDisplayText = (type: string) => {
+    return dokumentenklasseData.documentTypes[type as keyof typeof dokumentenklasseData.documentTypes] || type;
+  };
+
+  // Function to get department display text
+  const getDepartmentDisplayText = (department: string) => {
+    if (department === '-' || !department) return '-';
+    return dokumentenklasseData.departments[department as keyof typeof dokumentenklasseData.departments] || department;
   };
   
   return (
@@ -100,8 +122,8 @@ export function DocumentTableView({ documents, onDocumentSelect, multiSelectMode
           <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumententitel</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Kategorie</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumenttyp</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumentenklasse" : "Kategorie"}</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumententyp</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Autor</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsteller</TableHead>
@@ -160,8 +182,8 @@ export function DocumentTableView({ documents, onDocumentSelect, multiSelectMode
                     <span className="text-sm text-foreground">{doc.name}</span>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-sm text-foreground">{doc.category}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-foreground">{doc.type}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">{getCategoryDisplayText(doc.category)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-foreground">{getDocumentTypeDisplayText(doc.type)}</TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">
                   <div>
                     <div>{doc.creationDate}</div>
@@ -172,7 +194,7 @@ export function DocumentTableView({ documents, onDocumentSelect, multiSelectMode
                 </TableCell>
                 <TableCell className="px-4 py-3 text-sm text-foreground">{doc.author}</TableCell>
                 <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.uploader || "-"}</TableCell>
-                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{doc.department || "-"}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-muted-foreground">{getDepartmentDisplayText(doc.department || "-")}</TableCell>
               </TableRow>
             );
             })}
