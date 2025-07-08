@@ -318,16 +318,18 @@ export function DocumentThumbnailView({
         return (
           <div key={category.name} className="border-b border-border pb-4">
             <div
-              className="flex items-center cursor-pointer mb-3 hover:bg-muted/50 p-2 rounded"
+              className="flex items-center justify-between cursor-pointer mb-3 hover:bg-muted/50 p-2 rounded"
               onClick={() => toggleCategory(category.name)}
             >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4 mr-2 text-muted-foreground" />
-              ) : (
-                <ChevronRight className="h-4 w-4 mr-2 text-muted-foreground" />
-              )}
-              <h3 className="font-medium text-foreground">{category.name}</h3>
-              <span className="ml-2 text-sm text-muted-foreground">
+              <div className="flex items-center">
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4 mr-2 text-muted-foreground" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-2 text-muted-foreground" />
+                )}
+                <h3 className="font-medium text-foreground">{category.name}</h3>
+              </div>
+              <span className="text-sm text-muted-foreground">
                 {category.count} Untersuchungen
               </span>
             </div>
