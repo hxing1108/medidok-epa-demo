@@ -1,13 +1,17 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Document } from "./DocumentThumbnailView";
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, FileText } from "lucide-react";
 import dokumentenklasseData from "@/data/dokumentenklasse.json";
+import consentFormPreview from '@/assets/consent-form-preview.jpg';
+import labResultsPreview from '@/assets/lab-results-preview.jpg';
 
 interface DocumentTableViewProps {
   documents: Document[];
   onDocumentSelect?: (document: Document) => void;
   isFromEPA?: boolean;
+  localDocuments?: Document[]; // For checking import status
+  importedEpaDocumentIds?: Set<string>; // IDs of ePA documents that have been imported
   multiSelectMode?: boolean;
   multiSelectedDocuments?: Set<string>;
   onMultiSelectToggle?: (documentId: string) => void;
@@ -84,10 +88,44 @@ const mockDocuments: Document[] = [
   }
 ];
 
-export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, multiSelectMode, multiSelectedDocuments, onMultiSelectToggle, onEnableMultiSelect }: DocumentTableViewProps) {
+export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, localDocuments, importedEpaDocumentIds, multiSelectMode, multiSelectedDocuments, onMultiSelectToggle, onEnableMultiSelect }: DocumentTableViewProps) {
   // Use the actual documents passed as props, fallback to mockDocuments if empty
   const displayDocuments = documents.length > 0 ? documents : mockDocuments;
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+
+  // Helper function to get thumbnail URL for downloaded ePA documents
+  const getDownloadedThumbnailUrl = (document: Document): string | undefined => {
+    // If it's an ePA document that has been downloaded, get the thumbnail from local documents
+    if (isFromEPA && importedEpaDocumentIds?.has(document.id)) {
+      const localVersion = localDocuments?.find(local => local.id === document.id && local.importedFromEPA);
+      if (localVersion?.thumbnailUrl) {
+        return localVersion.thumbnailUrl;
+      }
+      
+      // Fallback: map specific documents to their preview images by ID
+      switch (document.id) {
+        case 'epa1':
+          return consentFormPreview;
+        case 'epa2':
+          return labResultsPreview;
+        case 'epa3':
+          return '/lovable-uploads/8cae94e0-2f38-4e68-8c3a-892c27d9737d.png';
+        case 'epa4':
+          return '/lovable-uploads/ab9f6edf-0cba-4d66-91a9-bc06361442ab.png';
+        case 'epa5':
+          return '/lovable-uploads/6f562a21-8024-4997-af46-2b5ab9795ab5.png';
+        case 'epa6':
+          return '/lovable-uploads/12077eaa-68d7-48ce-b4cc-abf50d07abbb.png';
+        case 'epa7':
+          return '/lovable-uploads/e193902b-cc7a-47da-b505-65107a38930e.png';
+        case 'epa8':
+          return '/lovable-uploads/62f8033e-7725-4828-b0d5-1265c6405663.png';
+        default:
+          return undefined;
+      }
+    }
+    return document.thumbnailUrl;
+  };
 
   const handleRowClick = (doc: Document) => {
     setSelectedDocumentId(doc.id);
@@ -133,17 +171,17 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
   return (
     <div className="space-y-4">
       
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/30">
-            <TableRow>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Dokumententitel</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumentenklasse" : "Kategorie"}</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumententyp" : "Dateityp"}</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Initiator</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Einsender</TableHead>
-              {isFromEPA && <TableHead className="text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>}
+          <TableHeader className="[&_tr]:border-b-0">
+            <TableRow className="transition-colors border-b-0">
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">Dokumententitel</TableHead>
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumentenklasse" : "Kategorie"}</TableHead>
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">{isFromEPA ? "Dokumententyp" : "Dateityp"}</TableHead>
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">Erstellungsdatum</TableHead>
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">Initiator</TableHead>
+              <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">Einsender</TableHead>
+              {isFromEPA && <TableHead className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3">Fachgruppe</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -153,13 +191,13 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
               return (
                 <TableRow 
                   key={doc.id} 
-                  className={`cursor-pointer hover:bg-muted/30 transition-colors group relative ${
+                  className={`cursor-pointer transition-colors group relative border-b-0 hover:bg-blue-100 ${
                     multiSelectMode && isMultiSelected
-                      ? "border-l-4 border-l-blue-500 bg-blue-50/50"
+                      ? "border-l-4 border-l-blue-500"
                       : isRowSelected && !multiSelectMode
-                      ? "border-l-4 border-l-blue-500 bg-blue-50/50" 
-                      : index % 2 === 0 ? "bg-background" : "bg-muted/10"
-                  }`}
+                      ? "border-l-4 border-l-blue-500" 
+                      : ""
+                  } ${index % 2 === 1 ? "bg-[#EBEEF1]" : ""}`}
                   onClick={(e) => {
                     if (multiSelectMode) {
                       onMultiSelectToggle?.(doc.id);
@@ -178,7 +216,7 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-colors ${
                           isMultiSelected 
                             ? 'bg-blue-500 border-blue-500' 
-                            : 'bg-white border-gray-300 hover:border-blue-400'
+                            : 'border-gray-300 hover:border-blue-400'
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -192,8 +230,27 @@ export function DocumentTableView({ documents, onDocumentSelect, isFromEPA, mult
                         {isMultiSelected && <Check className="h-3 w-3 text-white" />}
                       </div>
                     </div>
-                    <div className="w-6 h-8 bg-card border border-border rounded flex-shrink-0 flex items-center justify-center">
-                      <div className="w-4 h-5 bg-muted rounded-sm"></div>
+                    <div className="w-6 h-8 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-sm">
+                      {(() => {
+                        const thumbnailUrl = getDownloadedThumbnailUrl(doc);
+                        const shouldShowThumbnail = thumbnailUrl && (!isFromEPA || doc.sharedFromLocal || doc.importedFromEPA || (isFromEPA && importedEpaDocumentIds?.has(doc.id)));
+                        
+                        return shouldShowThumbnail ? (
+                          <img
+                            src={thumbnailUrl}
+                            alt={`Preview of ${doc.name}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : isFromEPA ? (
+                          <img 
+                            src="/epa-icon.png" 
+                            alt="EPA Document" 
+                            className="w-4 h-4 opacity-60"
+                          />
+                        ) : (
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                        );
+                      })()}
                     </div>
                     <span className="text-sm text-foreground">{doc.name}</span>
                   </div>

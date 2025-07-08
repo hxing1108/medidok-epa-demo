@@ -5,6 +5,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import befundberichtPreview from '@/assets/befundbericht-preview.jpg';
 import einstellbriefPreview from '@/assets/einstellbrief-preview.jpg';
 import wundbeurteilungPreview from '/lovable-uploads/1544ef16-9b39-411e-8fe9-1dc19f2c89ad.png';
+import consentFormPreview from '@/assets/consent-form-preview.jpg';
+import labResultsPreview from '@/assets/lab-results-preview.jpg';
 
 export interface Document {
   id: string;
@@ -253,6 +255,40 @@ export function DocumentThumbnailView({
     null
   );
 
+  // Helper function to get thumbnail URL for downloaded ePA documents
+  const getDownloadedThumbnailUrl = (document: Document): string | undefined => {
+    // If it's an ePA document that has been downloaded, get the thumbnail from local documents
+    if (isFromEPA && importedEpaDocumentIds?.has(document.id)) {
+      const localVersion = localDocuments?.find(local => local.id === document.id && local.importedFromEPA);
+      if (localVersion?.thumbnailUrl) {
+        return localVersion.thumbnailUrl;
+      }
+      
+      // Fallback: map specific documents to their preview images by ID
+      switch (document.id) {
+        case 'epa1':
+          return consentFormPreview;
+        case 'epa2':
+          return labResultsPreview;
+        case 'epa3':
+          return '/lovable-uploads/8cae94e0-2f38-4e68-8c3a-892c27d9737d.png';
+        case 'epa4':
+          return '/lovable-uploads/ab9f6edf-0cba-4d66-91a9-bc06361442ab.png';
+        case 'epa5':
+          return '/lovable-uploads/6f562a21-8024-4997-af46-2b5ab9795ab5.png';
+        case 'epa6':
+          return '/lovable-uploads/12077eaa-68d7-48ce-b4cc-abf50d07abbb.png';
+        case 'epa7':
+          return '/lovable-uploads/e193902b-cc7a-47da-b505-65107a38930e.png';
+        case 'epa8':
+          return '/lovable-uploads/62f8033e-7725-4828-b0d5-1265c6405663.png';
+        default:
+          return undefined;
+      }
+    }
+    return document.thumbnailUrl;
+  };
+
   // Function to group documents by their medical class
   function groupDocumentsByClass(docs: Document[]): DocumentCategory[] {
     const grouped = docs.reduce((acc, doc) => {
@@ -387,22 +423,27 @@ export function DocumentThumbnailView({
                         </div>
                       </div>
                       <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
-                        {doc.thumbnailUrl && !isFromEPA ? (
-                          <img
-                            src={doc.thumbnailUrl}
-                            alt={`Preview of ${doc.name}`}
-                            className="w-full h-full object-cover rounded"
-                          />
-                        ) : (
-                          <div className="text-center text-xs text-muted-foreground">
-                            <img 
-                              src="/epa-icon.png" 
-                              alt="EPA Document" 
-                              className="w-12 h-12 mx-auto mb-1 opacity-60"
+                        {(() => {
+                          const thumbnailUrl = getDownloadedThumbnailUrl(doc);
+                          const shouldShowThumbnail = thumbnailUrl && (!isFromEPA || doc.sharedFromLocal || doc.importedFromEPA || (isFromEPA && importedEpaDocumentIds?.has(doc.id)));
+                          
+                          return shouldShowThumbnail ? (
+                            <img
+                              src={thumbnailUrl}
+                              alt={`Preview of ${doc.name}`}
+                              className="w-full h-full object-cover rounded"
                             />
-                            Vorschau
-                          </div>
-                        )}
+                          ) : (
+                            <div className="text-center text-xs text-muted-foreground">
+                              <img 
+                                src="/epa-icon.png" 
+                                alt="EPA Document" 
+                                className="w-12 h-12 mx-auto mb-1 opacity-60"
+                              />
+                              Vorschau
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-medium text-foreground truncate">

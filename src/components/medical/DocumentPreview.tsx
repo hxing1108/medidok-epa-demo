@@ -120,7 +120,7 @@ export function DocumentPreview({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white">
       <CardHeader className="border-b py-2 px-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Dokumentvorschau</CardTitle>
@@ -135,22 +135,17 @@ export function DocumentPreview({
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 p-4 flex flex-col overflow-y-auto">
+      <CardContent className={`flex-1 flex flex-col overflow-y-auto ${(singleDocument && !isFromEPA && singleDocument.thumbnailUrl) || isMultipleDocuments ? 'p-0' : 'p-4'}`}>
         {/* Document Preview Area */}
         {isMultipleDocuments ? (
           // Multi-document grid view
           <div
-            className={`bg-muted rounded-lg p-4 flex flex-col ${
+            className={`flex flex-col ${
               isMetadataCollapsed ? 'h-full flex-1' : 'min-h-64'
             }`}
           >
-            <div className="text-center mb-4">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                {documents!.length} Dokumente ausgewählt
-              </h3>
-            </div>
             <div
-              className={`grid gap-2 flex-1 overflow-y-auto rounded-lg p-1 ${
+              className={`grid gap-1 flex-1 overflow-y-auto ${
                 documents!.length <= 2
                   ? 'grid-cols-1'
                   : documents!.length <= 4
@@ -167,21 +162,20 @@ export function DocumentPreview({
                   ? 'auto-rows-fr'
                   : 'auto-rows-fr'
               }`}
-              style={{ backgroundColor: '#FAFBFD' }}
             >
               {documents!.slice(0, 9).map((doc, index) => (
                 <div
                   key={doc.id}
-                  className="bg-background rounded-lg border p-1 flex flex-col justify-between h-full min-h-[100px]"
+                  className="flex flex-col h-full min-h-[100px] relative"
                 >
-                  {doc.thumbnailUrl && !isFromEPA ? (
+                  {doc.thumbnailUrl && (!isFromEPA || doc.sharedFromLocal || doc.importedFromEPA) ? (
                     <img
                       src={doc.thumbnailUrl}
                       alt={`Preview of ${doc.name}`}
-                      className="w-full flex-1 object-cover rounded mb-2 min-h-[60px]"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="flex-1 flex items-center justify-center min-h-[60px]">
+                    <div className="flex-1 flex items-center justify-center bg-muted">
                       {isFromEPA ? (
                         <img 
                           src="/epa-icon.png" 
@@ -193,29 +187,29 @@ export function DocumentPreview({
                       )}
                     </div>
                   )}
-                  <p className="text-xs text-center text-muted-foreground truncate w-full">
-                    {doc.name}
-                  </p>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-1">
+                    <p className="text-xs text-center truncate w-full">
+                      {doc.name}
+                    </p>
+                  </div>
                 </div>
               ))}
               {documents!.length > 9 && (
-                <div className="bg-background rounded-lg border p-1 flex flex-col justify-between h-full min-h-[100px]">
-                  <div className="flex-1 flex items-center justify-center min-h-[60px]">
-                    <div className="text-xl font-bold text-muted-foreground">
-                      +{documents!.length - 9}
-                    </div>
+                <div className="flex flex-col h-full min-h-[100px] bg-muted items-center justify-center">
+                  <div className="text-xl font-bold text-muted-foreground">
+                    +{documents!.length - 9}
                   </div>
-                  <p className="text-xs text-center text-muted-foreground">
+                  <p className="text-xs text-center text-muted-foreground mt-1">
                     weitere
                   </p>
                 </div>
               )}
             </div>
           </div>
-        ) : singleDocument && !isFromEPA ? (
-          // Single document view - only for non-EPA documents
+        ) : singleDocument && (!isFromEPA || singleDocument.sharedFromLocal || singleDocument.importedFromEPA) ? (
+          // Single document view - for non-EPA documents or shared from local
           <div
-            className={`bg-muted rounded-lg p-4 ${
+            className={`${
               isMetadataCollapsed
                 ? 'flex-1 flex items-center justify-center h-full'
                 : 'flex items-center justify-center'
@@ -225,14 +219,14 @@ export function DocumentPreview({
               <img
                 src={singleDocument.thumbnailUrl}
                 alt={`Preview of ${singleDocument.name}`}
-                className={`object-contain rounded ${
+                className={`object-cover ${
                   isMetadataCollapsed
-                    ? 'w-full h-full max-w-full max-h-full'
-                    : 'max-w-full h-auto'
+                    ? 'w-full h-full'
+                    : 'w-full h-auto'
                 }`}
               />
             ) : (
-              <div className="text-center">
+              <div className="text-center p-4">
                 <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-sm text-muted-foreground">
                   Dokumentvorschau für {singleDocument.name}
@@ -240,8 +234,8 @@ export function DocumentPreview({
               </div>
             )}
           </div>
-        ) : singleDocument && isFromEPA ? (
-          // EPA document view - no preview, just a placeholder
+        ) : singleDocument && isFromEPA && !singleDocument.sharedFromLocal && !singleDocument.importedFromEPA ? (
+          // EPA document view - no preview, just a placeholder (only for original EPA docs)
           <div className="bg-muted rounded-lg p-4 flex items-center justify-center min-h-64">
             <div className="text-center">
               <img 
