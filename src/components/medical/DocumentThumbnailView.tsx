@@ -333,7 +333,7 @@ export function DocumentThumbnailView({
             </div>
 
             {isExpanded && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start rounded-lg p-1" style={{ backgroundColor: '#FAFBFD' }}>
                 {category.documents.map((doc) => {
                   const isSelected =
                     multiSelectedDocuments?.has(doc.id) || false;
@@ -347,7 +347,6 @@ export function DocumentThumbnailView({
                           ? 'border-primary border-2'
                           : 'border-border hover:border-primary/30'
                       }`}
-                      style={{ backgroundColor: '#FCFDFE' }}
                       onClick={(e) => {
                         if (multiSelectMode) {
                           onMultiSelectToggle?.(doc.id);

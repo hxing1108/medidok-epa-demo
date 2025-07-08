@@ -150,7 +150,7 @@ export function DocumentPreview({
               </h3>
             </div>
             <div
-              className={`grid gap-2 flex-1 overflow-y-auto ${
+              className={`grid gap-2 flex-1 overflow-y-auto rounded-lg p-1 ${
                 documents!.length <= 2
                   ? 'grid-cols-1'
                   : documents!.length <= 4
@@ -167,11 +167,12 @@ export function DocumentPreview({
                   ? 'auto-rows-fr'
                   : 'auto-rows-fr'
               }`}
+              style={{ backgroundColor: '#FAFBFD' }}
             >
               {documents!.slice(0, 9).map((doc, index) => (
                 <div
                   key={doc.id}
-                  className="bg-background rounded border p-2 flex flex-col justify-between h-full min-h-[100px]"
+                  className="bg-background rounded-lg border p-1 flex flex-col justify-between h-full min-h-[100px]"
                 >
                   {doc.thumbnailUrl && !isFromEPA ? (
                     <img
@@ -198,7 +199,7 @@ export function DocumentPreview({
                 </div>
               ))}
               {documents!.length > 9 && (
-                <div className="bg-background rounded border p-2 flex flex-col justify-between h-full min-h-[100px]">
+                <div className="bg-background rounded-lg border p-1 flex flex-col justify-between h-full min-h-[100px]">
                   <div className="flex-1 flex items-center justify-center min-h-[60px]">
                     <div className="text-xl font-bold text-muted-foreground">
                       +{documents!.length - 9}
