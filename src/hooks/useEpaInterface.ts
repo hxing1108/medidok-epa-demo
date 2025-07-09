@@ -1,15 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Document } from '@/components/medical/DocumentThumbnailView';
-import { 
-  FilterState, 
-  SortField, 
-  SortOrder, 
-  PanelType, 
-  EPAInterfaceState, 
-  SearchState, 
-  SortState, 
+import {
+  FilterState,
+  SortField,
+  SortOrder,
+  PanelType,
+  EPAInterfaceState,
+  SearchState,
+  SortState,
   MultiSelectState,
-  FilterOptions 
+  FilterOptions,
 } from '@/types/epaInterface';
 import { useToast } from '@/hooks/use-toast';
 import consentFormPreview from '@/assets/consent-form-preview.jpg';
@@ -25,17 +25,29 @@ export const useEpaInterface = (
   const [currentTab, setCurrentTab] = useState<'lokal' | 'epa'>('lokal');
   const [viewMode, setViewMode] = useState<'thumbnail' | 'table'>('thumbnail');
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([]);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(
+    null
+  );
   const [metadataCollapsedState, setMetadataCollapsedState] = useState({
     lokal: true,
-    epa: false
+    epa: false,
   });
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [panelSizes, setPanelSizes] = useState([65, 35]);
-  const [localDocumentsList, setLocalDocumentsList] = useState<Document[]>(localDocuments);
-  const [importedEpaDocumentIds, setImportedEpaDocumentIds] = useState<Set<string>>(new Set());
-  const [sharedToEpaDocuments, setSharedToEpaDocuments] = useState<Document[]>([]);
-  const [sharedFromLocalIds, setSharedFromLocalIds] = useState<Set<string>>(new Set());
+  const [localDocumentsList, setLocalDocumentsList] =
+    useState<Document[]>(localDocuments);
+  const [importedEpaDocumentIds, setImportedEpaDocumentIds] = useState<
+    Set<string>
+  >(new Set());
+  const [sharedToEpaDocuments, setSharedToEpaDocuments] = useState<Document[]>(
+    []
+  );
+  const [sharedFromLocalIds, setSharedFromLocalIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [viewedNeueEpaIds, setViewedNeueEpaIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,11 +68,15 @@ export const useEpaInterface = (
 
   // Panel state
   const [rightPanelType, setRightPanelType] = useState<PanelType>(null);
-  const [activeFilterPopup, setActiveFilterPopup] = useState<string | null>(null);
+  const [activeFilterPopup, setActiveFilterPopup] = useState<string | null>(
+    null
+  );
 
   // Multi-select state
   const [multiSelectMode, setMultiSelectMode] = useState(false);
-  const [multiSelectedDocuments, setMultiSelectedDocuments] = useState<Set<string>>(new Set());
+  const [multiSelectedDocuments, setMultiSelectedDocuments] = useState<
+    Set<string>
+  >(new Set());
 
   // Filter and search functions
   const filterAndSortDocuments = (documents: Document[]) => {
@@ -161,11 +177,8 @@ export const useEpaInterface = (
     }
   };
 
-  const handleFilterChange = (
-    filterType: keyof FilterState,
-    value: any
-  ) => {
-    setActiveFilters(prev => ({
+  const handleFilterChange = (filterType: keyof FilterState, value: any) => {
+    setActiveFilters((prev) => ({
       ...prev,
       [filterType]: value,
     }));
@@ -199,7 +212,16 @@ export const useEpaInterface = (
   };
 
   const getCurrentDocuments = () => {
-    return currentTab === 'lokal' ? localDocumentsList : [...epaDocuments, ...sharedToEpaDocuments];
+    if (currentTab === 'lokal') {
+      return localDocumentsList;
+    } else {
+      // For ePA documents, modify the neueEPA property based on viewed status
+      const modifiedEpaDocuments = epaDocuments.map((doc) => ({
+        ...doc,
+        neueEPA: doc.neueEPA && !viewedNeueEpaIds.has(doc.id),
+      }));
+      return [...modifiedEpaDocuments, ...sharedToEpaDocuments];
+    }
   };
 
   // Helper function to get thumbnail URL when downloading an ePA document
@@ -225,16 +247,25 @@ export const useEpaInterface = (
     }
 
     // Fallback to name/category matching
-    if (document.name.includes('Patienteneinverständnis') || document.category === 'EINVERST') {
+    if (
+      document.name.includes('Patienteneinverständnis') ||
+      document.category === 'EINVERST'
+    ) {
       return consentFormPreview;
     }
     if (document.name.includes('Laborwerte') || document.category === 'LAB') {
       return labResultsPreview;
     }
-    if (document.name.includes('Neurologischer') || document.department === 'NEURO') {
+    if (
+      document.name.includes('Neurologischer') ||
+      document.department === 'NEURO'
+    ) {
       return '/lovable-uploads/8cae94e0-2f38-4e68-8c3a-892c27d9737d.png';
     }
-    if (document.name.includes('Echokardiographie') || document.department === 'KARDIO') {
+    if (
+      document.name.includes('Echokardiographie') ||
+      document.department === 'KARDIO'
+    ) {
       return '/lovable-uploads/ab9f6edf-0cba-4d66-91a9-bc06361442ab.png';
     }
     // Default fallback based on category/type
@@ -271,14 +302,19 @@ export const useEpaInterface = (
       return;
     }
     setSelectedDocument(document);
+
+    // Mark neue ePA documents as viewed when opened
+    if (document.neueEPA && currentTab === 'epa') {
+      setViewedNeueEpaIds((prev) => new Set([...prev, document.id]));
+    }
   };
 
   const handleDownloadDocument = (document: Document) => {
     console.log('Downloading document:', document.name);
-    
+
     if (currentTab === 'epa') {
       // Add to imported EPA document IDs
-      setImportedEpaDocumentIds(prev => new Set([...prev, document.id]));
+      setImportedEpaDocumentIds((prev) => new Set([...prev, document.id]));
 
       // Create a new local document with thumbnailUrl and importedFromEPA flag
       const newLocalDoc = {
@@ -290,8 +326,8 @@ export const useEpaInterface = (
       };
 
       // Add to local documents list if not already there
-      setLocalDocumentsList(prev => {
-        const existingIds = new Set(prev.map(d => d.id));
+      setLocalDocumentsList((prev) => {
+        const existingIds = new Set(prev.map((d) => d.id));
         if (!existingIds.has(document.id)) {
           return [...prev, newLocalDoc];
         }
@@ -352,7 +388,9 @@ export const useEpaInterface = (
     );
 
     // Filter out documents that are already shared to avoid duplicates
-    const docsToShare = selectedDocs.filter((doc) => !sharedFromLocalIds.has(doc.id));
+    const docsToShare = selectedDocs.filter(
+      (doc) => !sharedFromLocalIds.has(doc.id)
+    );
 
     if (docsToShare.length === 0) {
       // All selected documents are already shared
@@ -372,9 +410,10 @@ export const useEpaInterface = (
     );
 
     // Show success toast
-    const documentText = docsToShare.length === 1 
-      ? `${docsToShare[0].name} wurde` 
-      : `${docsToShare.length} Dokumente wurden`;
+    const documentText =
+      docsToShare.length === 1
+        ? `${docsToShare[0].name} wurde`
+        : `${docsToShare.length} Dokumente wurden`;
 
     toast({
       title: 'Zu ePA geteilt',
@@ -449,9 +488,9 @@ export const useEpaInterface = (
   };
 
   const handleToggleMetadata = () => {
-    setMetadataCollapsedState(prev => ({
+    setMetadataCollapsedState((prev) => ({
       ...prev,
-      [currentTab]: !prev[currentTab]
+      [currentTab]: !prev[currentTab],
     }));
   };
 
@@ -595,4 +634,4 @@ export const useEpaInterface = (
     setMultiSelectMode,
     setMultiSelectedDocuments,
   };
-}; 
+};

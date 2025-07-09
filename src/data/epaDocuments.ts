@@ -15,6 +15,7 @@ export const epaDocuments: Document[] = [
     department: '-',
     source: 'epa',
     pageCount: '2 Seiten',
+    neueEPA: true, // Mark as new ePA document
   },
   {
     id: 'epa2',
@@ -28,6 +29,7 @@ export const epaDocuments: Document[] = [
     department: 'LABOR',
     source: 'epa',
     pageCount: '3 Seiten',
+    neueEPA: true, // Mark as new ePA document
   },
   {
     id: 'epa3',
@@ -115,4 +117,4 @@ export const epaDocuments: Document[] = [
     // Remove thumbnailUrl for non-downloaded ePA documents
     // thumbnailUrl: '/lovable-uploads/62f8033e-7725-4828-b0d5-1265c6405663.png',
   },
-]; 
+];

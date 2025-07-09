@@ -23,6 +23,7 @@ export interface Document {
   source?: 'local' | 'epa';
   importedFromEPA?: boolean;
   sharedFromLocal?: boolean;
+  neueEPA?: boolean; // New property for new ePA documents
 }
 
 interface DocumentCategory {
@@ -256,14 +257,18 @@ export function DocumentThumbnailView({
   );
 
   // Helper function to get thumbnail URL for downloaded ePA documents
-  const getDownloadedThumbnailUrl = (document: Document): string | undefined => {
+  const getDownloadedThumbnailUrl = (
+    document: Document
+  ): string | undefined => {
     // If it's an ePA document that has been downloaded, get the thumbnail from local documents
     if (isFromEPA && importedEpaDocumentIds?.has(document.id)) {
-      const localVersion = localDocuments?.find(local => local.id === document.id && local.importedFromEPA);
+      const localVersion = localDocuments?.find(
+        (local) => local.id === document.id && local.importedFromEPA
+      );
       if (localVersion?.thumbnailUrl) {
         return localVersion.thumbnailUrl;
       }
-      
+
       // Fallback: map specific documents to their preview images by ID
       switch (document.id) {
         case 'epa1':
@@ -318,11 +323,16 @@ export function DocumentThumbnailView({
       return acc;
     }, {} as Record<string, Document[]>);
 
-    // Convert to DocumentCategory format
+    // Convert to DocumentCategory format and sort documents within each category
     return Object.entries(grouped).map(([name, documents]) => ({
       name,
       count: documents.length,
-      documents,
+      documents: documents.sort((a, b) => {
+        // Sort neue ePA documents to the top
+        if (a.neueEPA && !b.neueEPA) return -1;
+        if (!a.neueEPA && b.neueEPA) return 1;
+        return 0;
+      }),
     }));
   }
 
@@ -371,7 +381,10 @@ export function DocumentThumbnailView({
             </div>
 
             {isExpanded && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start rounded-lg p-1" style={{ backgroundColor: '#FAFBFD' }}>
+              <div
+                className="grid grid-cols-[repeat(auto-fill,minmax(180px,200px))] gap-4 ml-6 justify-start rounded-lg p-1"
+                style={{ backgroundColor: '#FAFBFD' }}
+              >
                 {category.documents.map((doc) => {
                   const isSelected =
                     multiSelectedDocuments?.has(doc.id) || false;
@@ -422,11 +435,21 @@ export function DocumentThumbnailView({
                           )}
                         </div>
                       </div>
-                      <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden">
+                      <div className="bg-muted rounded h-32 mb-2 flex items-center justify-center overflow-hidden relative">
+                        {/* Blue dot for neue ePA documents */}
+                        {doc.neueEPA && isFromEPA && (
+                          <div className="absolute top-2 left-2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white z-10 shadow-sm"></div>
+                        )}
                         {(() => {
                           const thumbnailUrl = getDownloadedThumbnailUrl(doc);
-                          const shouldShowThumbnail = thumbnailUrl && (!isFromEPA || doc.sharedFromLocal || doc.importedFromEPA || (isFromEPA && importedEpaDocumentIds?.has(doc.id)));
-                          
+                          const shouldShowThumbnail =
+                            thumbnailUrl &&
+                            (!isFromEPA ||
+                              doc.sharedFromLocal ||
+                              doc.importedFromEPA ||
+                              (isFromEPA &&
+                                importedEpaDocumentIds?.has(doc.id)));
+
                           return shouldShowThumbnail ? (
                             <img
                               src={thumbnailUrl}
@@ -435,9 +458,9 @@ export function DocumentThumbnailView({
                             />
                           ) : (
                             <div className="text-center text-xs text-muted-foreground">
-                              <img 
-                                src="/epa-icon.png" 
-                                alt="EPA Document" 
+                              <img
+                                src="/epa-icon.png"
+                                alt="EPA Document"
                                 className="w-12 h-12 mx-auto mb-1 opacity-60"
                               />
                               Vorschau
@@ -446,7 +469,11 @@ export function DocumentThumbnailView({
                         })()}
                       </div>
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-foreground truncate">
+                        <p
+                          className={`text-sm font-medium text-foreground truncate ${
+                            doc.neueEPA ? 'font-bold' : ''
+                          }`}
+                        >
                           {doc.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -456,14 +483,27 @@ export function DocumentThumbnailView({
                           {doc.author}
                         </p>
                         {/* Show pill based on context and import/share status */}
-                        {(isFromEPA || doc.importedFromEPA || doc.sharedFromLocal || sharedFromLocalIds?.has(doc.id)) && (
+                        {(isFromEPA ||
+                          doc.importedFromEPA ||
+                          doc.sharedFromLocal ||
+                          sharedFromLocalIds?.has(doc.id)) && (
                           <div className="mt-2">
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
+                            <span
+                              className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs border ${
+                                doc.neueEPA && isFromEPA
+                                  ? 'bg-green-100 text-green-800 border-green-200'
+                                  : 'bg-blue-100 text-blue-800 border-blue-200'
+                              }`}
+                            >
                               {doc.sharedFromLocal
                                 ? 'von lokal exportiert'
-                                : isFromEPA && importedEpaDocumentIds?.has(doc.id)
+                                : doc.neueEPA && isFromEPA
+                                ? 'neue ePA'
+                                : isFromEPA &&
+                                  importedEpaDocumentIds?.has(doc.id)
                                 ? 'ePA heruntergeladen'
-                                : isFromEPA && !importedEpaDocumentIds?.has(doc.id)
+                                : isFromEPA &&
+                                  !importedEpaDocumentIds?.has(doc.id)
                                 ? 'ePA'
                                 : doc.importedFromEPA
                                 ? 'ePA heruntergeladen'

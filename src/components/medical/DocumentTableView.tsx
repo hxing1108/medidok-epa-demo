@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Check, FileText } from 'lucide-react';
 import {
   Table,
@@ -115,7 +115,17 @@ export function DocumentTableView({
   onEnableMultiSelect,
 }: DocumentTableViewProps) {
   // Use the actual documents passed as props, fallback to mockDocuments if empty
-  const displayDocuments = documents.length > 0 ? documents : mockDocuments;
+  const displayDocuments = useMemo(() => {
+    const docsToDisplay = documents.length > 0 ? documents : mockDocuments;
+    // Sort documents to put "neue ePA" documents at the top by default
+    return [...docsToDisplay].sort((a, b) => {
+      // If one is neue ePA and the other isn't, neue ePA comes first
+      if (a.neueEPA && !b.neueEPA) return -1;
+      if (!a.neueEPA && b.neueEPA) return 1;
+      // If both are or aren't neue ePA, keep original order
+      return 0;
+    });
+  }, [documents, mockDocuments]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
   );
@@ -273,9 +283,15 @@ export function DocumentTableView({
   // Function to render status pill for ePA documents
   const renderStatusPill = (doc: Document) => {
     let statusText = '';
+    let pillStyles =
+      'inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200 whitespace-nowrap';
 
     if (doc.sharedFromLocal) {
       statusText = 'von lokal exportiert';
+    } else if (doc.neueEPA && isFromEPA) {
+      statusText = 'neue ePA';
+      pillStyles =
+        'inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800 border border-green-200 whitespace-nowrap';
     } else if (isFromEPA && importedEpaDocumentIds?.has(doc.id)) {
       statusText = 'ePA heruntergeladen';
     } else if (isFromEPA && !importedEpaDocumentIds?.has(doc.id)) {
@@ -288,11 +304,7 @@ export function DocumentTableView({
       statusText = 'ePA';
     }
 
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200 whitespace-nowrap">
-        {statusText}
-      </span>
-    );
+    return <span className={pillStyles}>{statusText}</span>;
   };
 
   // Helper component for truncated text with tooltip
@@ -450,7 +462,11 @@ export function DocumentTableView({
                             )}
                           </div>
                         </div>
-                        <div className="w-6 h-8 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-sm">
+                        <div className="w-6 h-8 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-sm relative">
+                          {/* Blue dot for neue ePA documents */}
+                          {doc.neueEPA && isFromEPA && (
+                            <div className="absolute -top-0.5 -left-0.5 w-3 h-3 bg-blue-600 rounded-full border-2 border-white z-10 shadow-sm"></div>
+                          )}
                           {(() => {
                             const thumbnailUrl = getDownloadedThumbnailUrl(doc);
                             const shouldShowThumbnail =
@@ -480,7 +496,9 @@ export function DocumentTableView({
                         </div>
                         <TruncatedText
                           text={doc.name}
-                          className="text-sm text-foreground"
+                          className={`text-sm text-foreground ${
+                            doc.neueEPA ? 'font-bold' : ''
+                          }`}
                         />
                       </div>
                     </TableCell>
