@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
+import { 
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
@@ -103,8 +103,8 @@ export function EPAInterface() {
   if (isFullscreen && selectedDocument) {
     return (
       <div className="fixed inset-0 z-50 bg-background">
-        <DocumentPreview
-          document={selectedDocument}
+        <DocumentPreview 
+          document={selectedDocument} 
           onClose={handleExitFullscreen}
           onFullscreen={() => {}} // No-op since we're already in fullscreen
           onDownload={handleDownloadDocument}
@@ -153,9 +153,9 @@ export function EPAInterface() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0" style={{ backgroundColor: '#F4F7FA' }}>
         {selectedDocument || selectedDocuments.length > 0 ? (
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="h-full"
+          <ResizablePanelGroup 
+            direction="horizontal" 
+            className="h-full" 
             onLayout={(sizes) => setPanelSizes(sizes)}
           >
             <ResizablePanel defaultSize={panelSizes[0]} minSize={30}>
@@ -168,30 +168,30 @@ export function EPAInterface() {
                 >
                   {/* Header with bottom border */}
                   <div className="p-6 pb-0 border-b border-gray-200">
-                    <div className="flex items-center justify-between mb-4">
-                      <TabsList className="h-8 bg-transparent p-0 border-none">
-                        <TabsTrigger
-                          value="lokal"
-                          className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                        >
-                          Lokal
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="epa"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                        >
-                          ePA
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="plus"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                        >
-                          +
-                        </TabsTrigger>
-                      </TabsList>
-
-                      {/* Conditional Right Section: Multi-Select Bar OR Toolbar Buttons */}
-                      {multiSelectMode && multiSelectedDocuments.size > 0 ? (
+                <div className="flex items-center justify-between mb-4">
+                  <TabsList className="h-8 bg-transparent p-0 border-none">
+                    <TabsTrigger 
+                      value="lokal" 
+                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                    >
+                      Lokal
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="epa"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                    >
+                      ePA
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="plus"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                    >
+                      +
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  {/* Conditional Right Section: Multi-Select Bar OR Toolbar Buttons */}
+                  {multiSelectMode && multiSelectedDocuments.size > 0 ? (
                         <InlineMultiSelectBar
                           multiSelectedCount={multiSelectedDocuments.size}
                           currentTab={currentTab}
@@ -200,44 +200,44 @@ export function EPAInterface() {
                           onShareToEpa={handleShareToEpa}
                           onExitMultiSelect={handleExitMultiSelect}
                         />
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          {/* Sort Button */}
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      {/* Sort Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                             className={`h-8 w-8 p-0 relative ${
                               rightPanelType === 'sorting' || isSortingActive() ? 'bg-blue-100' : ''
                             }`}
-                            onClick={() => handleOpenPanel('sorting')}
-                          >
-                            <ArrowUpDown className="h-4 w-4" />
+                        onClick={() => handleOpenPanel('sorting')}
+                      >
+                        <ArrowUpDown className="h-4 w-4" />
                             {isSortingActive() && (
                               <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                                 •
                               </span>
                             )}
-                          </Button>
+                      </Button>
 
-                          {/* Filter Button */}
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                      {/* Filter Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                             className={`h-8 w-8 p-0 relative ${
                               rightPanelType === 'filter' ||
                               getActiveFilterCount() > 0
                                 ? 'bg-blue-100'
                                 : ''
                             }`}
-                            onClick={() => handleOpenPanel('filter')}
-                          >
-                            <Filter className="h-4 w-4" />
-                            {getActiveFilterCount() > 0 && (
-                              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                                {getActiveFilterCount()}
-                              </span>
-                            )}
-                          </Button>
+                        onClick={() => handleOpenPanel('filter')}
+                      >
+                        <Filter className="h-4 w-4" />
+                        {getActiveFilterCount() > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {getActiveFilterCount()}
+                          </span>
+                        )}
+                      </Button>
 
                           {/* Collapsible Search */}
                           <div className="relative flex items-center">
@@ -259,33 +259,33 @@ export function EPAInterface() {
                               </Button>
                             ) : (
                               <div className="relative flex items-center">
-                                <Input
-                                  type="text"
-                                  placeholder="Zum Suchen eingeben..."
-                                  value={searchQuery}
-                                  onChange={(e) => setSearchQuery(e.target.value)}
+                        <Input
+                          type="text"
+                          placeholder="Zum Suchen eingeben..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                                   onBlur={handleSearchBlur}
                                   className="h-8 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
                                   autoFocus
-                                />
-                                <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute right-1 top-1 h-6 w-6 p-0"
-                                  onClick={handleSearchToggle}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Layout Toggle */}
+                        />
+                        <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="absolute right-1 top-1 h-6 w-6 p-0"
+                                  onClick={handleSearchToggle}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                              </div>
+                        )}
+                      </div>
+
+                      {/* Layout Toggle */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
                             onClick={() =>
                               setViewMode(
                                 viewMode === 'thumbnail' ? 'table' : 'thumbnail'
@@ -297,21 +297,21 @@ export function EPAInterface() {
                             ) : (
                               <LayoutGrid className="h-4 w-4" />
                             )}
-                          </Button>
+                      </Button>
 
-                          {/* More Options Button */}
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                      {/* More Options Button */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                             className="h-8 w-8 p-0"
-                            onClick={() => handleOpenPanel('options')}
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
+                        onClick={() => handleOpenPanel('options')}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </div>
+                  )}
+                </div>
+              </div>
 
                   {/* Document Content */}
                   <TabsContent value="lokal" className="flex-1 m-0 relative overflow-hidden">
@@ -351,11 +351,11 @@ export function EPAInterface() {
                     )}
                     <div className="h-full overflow-y-auto px-6 pb-6">
                       {viewMode === 'thumbnail' ? (
-                        <DocumentThumbnailView
-                          onViewDetails={handleViewDetails}
+                        <DocumentThumbnailView 
+                          onViewDetails={handleViewDetails} 
                           documents={filteredDocuments}
                           onDocumentSelect={handleDocumentSelect}
-                                                localDocuments={localDocumentsList}
+                          localDocuments={localDocumentsList}
                       sharedFromLocalIds={sharedFromLocalIds}
                           multiSelectMode={multiSelectMode}
                           multiSelectedDocuments={multiSelectedDocuments}
@@ -363,7 +363,7 @@ export function EPAInterface() {
                           onEnableMultiSelect={handleEnableMultiSelect}
                         />
                       ) : (
-                        <DocumentTableView
+                        <DocumentTableView 
                           documents={filteredDocuments}
                           onDocumentSelect={handleDocumentSelect}
                           multiSelectMode={multiSelectMode}
@@ -412,8 +412,8 @@ export function EPAInterface() {
                     )}
                     <div className="h-full overflow-y-auto px-6 pb-6">
                       {viewMode === 'thumbnail' ? (
-                        <DocumentThumbnailView
-                          onViewDetails={handleViewDetails}
+                        <DocumentThumbnailView 
+                          onViewDetails={handleViewDetails} 
                           documents={filteredDocuments}
                           onDocumentSelect={handleDocumentSelect}
                           localDocuments={localDocumentsList}
@@ -425,7 +425,7 @@ export function EPAInterface() {
                           onEnableMultiSelect={handleEnableMultiSelect}
                         />
                       ) : (
-                        <DocumentTableView
+                        <DocumentTableView 
                           documents={filteredDocuments}
                           onDocumentSelect={handleDocumentSelect}
                           isFromEPA={true}
@@ -489,8 +489,8 @@ export function EPAInterface() {
             <ResizableHandle withHandle />
 
             <ResizablePanel defaultSize={panelSizes[1]} minSize={25}>
-                <DocumentPreview
-                  document={selectedDocument}
+                <DocumentPreview 
+                  document={selectedDocument} 
                 documents={selectedDocuments.length > 1 ? selectedDocuments : undefined}
                   onClose={() => {
                     setSelectedDocument(null);
@@ -517,25 +517,25 @@ export function EPAInterface() {
               <div className="sticky top-0 z-10 p-6 pb-0 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <TabsList className="h-8 bg-transparent p-0 border-none">
-                    <TabsTrigger
-                      value="lokal"
-                      className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
-                    >
-                      Lokal
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="epa"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
-                    >
-                      ePA
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="plus"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
-                    >
-                      +
-                    </TabsTrigger>
-                  </TabsList>
+                  <TabsTrigger 
+                    value="lokal" 
+                    className="h-8 px-3 text-sm bg-blue-100 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-900 rounded-sm mr-1"
+                  >
+                    Lokal
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="epa"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm mr-1"
+                  >
+                    ePA
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="plus"
+                    className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 rounded-sm"
+                  >
+                    +
+                  </TabsTrigger>
+                </TabsList>
 
                   {/* Toolbar for full-screen view */}
                   {multiSelectMode && multiSelectedDocuments.size > 0 ? (
@@ -550,9 +550,9 @@ export function EPAInterface() {
                   ) : (
                     <div className="flex items-center gap-1">
                       {/* Sort Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                         className={`h-8 w-8 p-0 relative ${
                           rightPanelType === 'sorting' || isSortingActive() ? 'bg-blue-100' : ''
                         }`}
@@ -567,9 +567,9 @@ export function EPAInterface() {
                       </Button>
 
                       {/* Filter Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                         className={`h-8 w-8 p-0 relative ${
                           rightPanelType === 'filter' ||
                           getActiveFilterCount() > 0
@@ -606,32 +606,32 @@ export function EPAInterface() {
                           </Button>
                         ) : (
                           <div className="relative flex items-center">
-                            <Input
-                              type="text"
-                              placeholder="Zum Suchen eingeben..."
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
+                        <Input
+                          type="text"
+                          placeholder="Zum Suchen eingeben..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                               onBlur={handleSearchBlur}
                               className="h-8 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
                               autoFocus
-                            />
-                            <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-1 top-1 h-6 w-6 p-0"
+                        />
+                        <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-6 w-6 p-0"
                               onClick={handleSearchToggle}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
                           </div>
                         )}
                       </div>
 
                       {/* Layout Toggle */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                         className="h-8 w-8 p-0"
                         onClick={() =>
                           setViewMode(
@@ -647,9 +647,9 @@ export function EPAInterface() {
                       </Button>
 
                       {/* More Options Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
                         className="h-8 w-8 p-0"
                         onClick={() => handleOpenPanel('options')}
                       >
@@ -699,8 +699,8 @@ export function EPAInterface() {
 
                 <div className="h-full overflow-y-auto px-6 pb-6">
                   {viewMode === 'thumbnail' ? (
-                    <DocumentThumbnailView
-                      onViewDetails={handleViewDetails}
+                    <DocumentThumbnailView 
+                      onViewDetails={handleViewDetails} 
                       documents={filteredDocuments}
                       onDocumentSelect={handleDocumentSelect}
                       localDocuments={localDocumentsList}
@@ -711,7 +711,7 @@ export function EPAInterface() {
                       onEnableMultiSelect={handleEnableMultiSelect}
                     />
                   ) : (
-                    <DocumentTableView
+                    <DocumentTableView 
                       documents={filteredDocuments}
                       onDocumentSelect={handleDocumentSelect}
                       multiSelectMode={multiSelectMode}
@@ -761,8 +761,8 @@ export function EPAInterface() {
 
                 <div className="h-full overflow-y-auto px-6 pb-6">
                   {viewMode === 'thumbnail' ? (
-                    <DocumentThumbnailView
-                      onViewDetails={handleViewDetails}
+                    <DocumentThumbnailView 
+                      onViewDetails={handleViewDetails} 
                       documents={filteredDocuments}
                       onDocumentSelect={handleDocumentSelect}
                       localDocuments={localDocumentsList}
@@ -774,7 +774,7 @@ export function EPAInterface() {
                       onEnableMultiSelect={handleEnableMultiSelect}
                     />
                   ) : (
-                    <DocumentTableView
+                    <DocumentTableView 
                       documents={filteredDocuments}
                       onDocumentSelect={handleDocumentSelect}
                       isFromEPA={true}

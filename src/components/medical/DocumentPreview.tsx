@@ -61,24 +61,50 @@ export function DocumentPreview({
       )) ||
     false;
 
+  // Get the corresponding local document if it exists (for getting thumbnail)
+  const correspondingLocalDoc =
+    singleDocument &&
+    localDocuments?.find(
+      (localDoc) =>
+        localDoc.name === singleDocument.name &&
+        localDoc.author === singleDocument.author &&
+        localDoc.creationDate === singleDocument.creationDate
+    );
+
   // Function to get category display text based on context
   const getCategoryDisplayText = (category: string) => {
     if (isFromEPA || singleDocument?.importedFromEPA) {
-      return dokumentenklasseData.documentClasses[category as keyof typeof dokumentenklasseData.documentClasses] || category;
+      return (
+        dokumentenklasseData.documentClasses[
+          category as keyof typeof dokumentenklasseData.documentClasses
+        ] || category
+      );
     } else {
-      return dokumentenklasseData.localCategories[category as keyof typeof dokumentenklasseData.localCategories] || category;
+      return (
+        dokumentenklasseData.localCategories[
+          category as keyof typeof dokumentenklasseData.localCategories
+        ] || category
+      );
     }
   };
 
   // Function to get document type display text
   const getDocumentTypeDisplayText = (type: string) => {
-    return dokumentenklasseData.documentTypes[type as keyof typeof dokumentenklasseData.documentTypes] || type;
+    return (
+      dokumentenklasseData.documentTypes[
+        type as keyof typeof dokumentenklasseData.documentTypes
+      ] || type
+    );
   };
 
   // Function to get department display text
   const getDepartmentDisplayText = (department: string) => {
     if (department === '-' || !department) return '-';
-    return dokumentenklasseData.departments[department as keyof typeof dokumentenklasseData.departments] || department;
+    return (
+      dokumentenklasseData.departments[
+        department as keyof typeof dokumentenklasseData.departments
+      ] || department
+    );
   };
 
   const handleDownload = async () => {
@@ -135,7 +161,14 @@ export function DocumentPreview({
         </div>
       </CardHeader>
 
-      <CardContent className={`flex-1 flex flex-col overflow-y-auto ${(singleDocument && !isFromEPA && singleDocument.thumbnailUrl) || isMultipleDocuments ? 'p-0' : 'p-4'}`}>
+      <CardContent
+        className={`flex-1 flex flex-col overflow-y-auto ${
+          (singleDocument && !isFromEPA && singleDocument.thumbnailUrl) ||
+          isMultipleDocuments
+            ? 'p-0'
+            : 'p-4'
+        }`}
+      >
         {/* Document Preview Area */}
         {isMultipleDocuments ? (
           // Multi-document grid view
@@ -163,37 +196,66 @@ export function DocumentPreview({
                   : 'auto-rows-fr'
               }`}
             >
-              {documents!.slice(0, 9).map((doc, index) => (
-                <div
-                  key={doc.id}
-                  className="flex flex-col h-full min-h-[100px] relative"
-                >
-                  {doc.thumbnailUrl && (!isFromEPA || doc.sharedFromLocal || doc.importedFromEPA) ? (
-                    <img
-                      src={doc.thumbnailUrl}
-                      alt={`Preview of ${doc.name}`}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center bg-muted">
-                      {isFromEPA ? (
-                        <img 
-                          src="/epa-icon.png" 
-                          alt="EPA Document" 
-                          className="w-8 h-8 opacity-60"
-                        />
-                      ) : (
-                        <FileText className="h-8 w-8 text-muted-foreground" />
-                      )}
+              {documents!.slice(0, 9).map((doc, index) => {
+                // Check if this specific document has been downloaded from EPA
+                const isDocumentDownloaded =
+                  localDocuments?.some(
+                    (localDoc) =>
+                      localDoc.name === doc.name &&
+                      localDoc.author === doc.author &&
+                      localDoc.creationDate === doc.creationDate
+                  ) || false;
+
+                // Get the corresponding local document for thumbnail
+                const correspondingLocalDoc = localDocuments?.find(
+                  (localDoc) =>
+                    localDoc.name === doc.name &&
+                    localDoc.author === doc.author &&
+                    localDoc.creationDate === doc.creationDate
+                );
+
+                return (
+                  <div
+                    key={doc.id}
+                    className="flex flex-col h-full min-h-[100px] relative"
+                  >
+                    {(doc.thumbnailUrl ||
+                      (isDocumentDownloaded &&
+                        correspondingLocalDoc?.thumbnailUrl)) &&
+                    (!isFromEPA ||
+                      doc.sharedFromLocal ||
+                      doc.importedFromEPA ||
+                      isDocumentDownloaded) ? (
+                      <img
+                        src={
+                          doc.thumbnailUrl ||
+                          correspondingLocalDoc?.thumbnailUrl ||
+                          ''
+                        }
+                        alt={`Preview of ${doc.name}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center bg-muted">
+                        {isFromEPA ? (
+                          <img
+                            src="/epa-icon.png"
+                            alt="EPA Document"
+                            className="w-8 h-8 opacity-60"
+                          />
+                        ) : (
+                          <FileText className="h-8 w-8 text-muted-foreground" />
+                        )}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-1">
+                      <p className="text-xs text-center truncate w-full">
+                        {doc.name}
+                      </p>
                     </div>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-1">
-                    <p className="text-xs text-center truncate w-full">
-                      {doc.name}
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               {documents!.length > 9 && (
                 <div className="flex flex-col h-full min-h-[100px] bg-muted items-center justify-center">
                   <div className="text-xl font-bold text-muted-foreground">
@@ -206,8 +268,12 @@ export function DocumentPreview({
               )}
             </div>
           </div>
-        ) : singleDocument && (!isFromEPA || singleDocument.sharedFromLocal || singleDocument.importedFromEPA) ? (
-          // Single document view - for non-EPA documents or shared from local
+        ) : singleDocument &&
+          (!isFromEPA ||
+            singleDocument.sharedFromLocal ||
+            singleDocument.importedFromEPA ||
+            isAlreadyImported) ? (
+          // Single document view - for non-EPA documents, shared from local, or downloaded EPA documents
           <div
             className={`${
               isMetadataCollapsed
@@ -215,17 +281,22 @@ export function DocumentPreview({
                 : 'flex items-center justify-center'
             }`}
           >
-            {singleDocument.thumbnailUrl ? (
+            {/* Use thumbnail from EPA document or corresponding local document */}
+            {singleDocument.thumbnailUrl ||
+            (isAlreadyImported && correspondingLocalDoc?.thumbnailUrl) ? (
               <img
-                src={singleDocument.thumbnailUrl}
+                src={
+                  singleDocument.thumbnailUrl ||
+                  correspondingLocalDoc?.thumbnailUrl ||
+                  ''
+                }
                 alt={`Preview of ${singleDocument.name}`}
                 className={`object-cover ${
-                  isMetadataCollapsed
-                    ? 'w-full h-full'
-                    : 'w-full h-auto'
+                  isMetadataCollapsed ? 'w-full h-full' : 'w-full h-auto'
                 }`}
               />
-            ) : (
+            ) : // Only show FileText fallback for non-EPA documents or non-downloaded EPA docs
+            isFromEPA && isAlreadyImported ? null : (
               <div className="text-center p-4">
                 <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-sm text-muted-foreground">
@@ -234,13 +305,17 @@ export function DocumentPreview({
               </div>
             )}
           </div>
-        ) : singleDocument && isFromEPA && !singleDocument.sharedFromLocal && !singleDocument.importedFromEPA ? (
-          // EPA document view - no preview, just a placeholder (only for original EPA docs)
+        ) : singleDocument &&
+          isFromEPA &&
+          !singleDocument.sharedFromLocal &&
+          !singleDocument.importedFromEPA &&
+          !isAlreadyImported ? (
+          // EPA document view - no preview, just a placeholder (only for original undownloaded EPA docs)
           <div className="bg-muted rounded-lg p-4 flex items-center justify-center min-h-64">
             <div className="text-center">
-              <img 
-                src="/epa-icon.png" 
-                alt="EPA Document" 
+              <img
+                src="/epa-icon.png"
+                alt="EPA Document"
                 className="w-16 h-16 mx-auto mb-4 opacity-60"
               />
               <p className="text-sm text-muted-foreground">
@@ -317,16 +392,24 @@ export function DocumentPreview({
 
                 <div>
                   <span className="font-medium text-muted-foreground">
-                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumentklasse:" : "Kategorie:"}
+                    {isFromEPA || singleDocument.importedFromEPA
+                      ? 'Dokumentklasse:'
+                      : 'Kategorie:'}
                   </span>
-                  <p className="mt-1">{getCategoryDisplayText(singleDocument.category)}</p>
+                  <p className="mt-1">
+                    {getCategoryDisplayText(singleDocument.category)}
+                  </p>
                 </div>
 
                 <div>
                   <span className="font-medium text-muted-foreground">
-                    {(isFromEPA || singleDocument.importedFromEPA) ? "Dokumententyp:" : "Dateityp:"}
+                    {isFromEPA || singleDocument.importedFromEPA
+                      ? 'Dokumententyp:'
+                      : 'Dateityp:'}
                   </span>
-                  <p className="mt-1">{getDocumentTypeDisplayText(singleDocument.type)}</p>
+                  <p className="mt-1">
+                    {getDocumentTypeDisplayText(singleDocument.type)}
+                  </p>
                 </div>
 
                 <Separator />
@@ -365,7 +448,9 @@ export function DocumentPreview({
                   <span className="font-medium text-muted-foreground">
                     Fachgruppe:
                   </span>
-                  <p className="mt-1">{getDepartmentDisplayText(singleDocument.department)}</p>
+                  <p className="mt-1">
+                    {getDepartmentDisplayText(singleDocument.department)}
+                  </p>
                 </div>
 
                 <Separator />
