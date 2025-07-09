@@ -163,7 +163,15 @@ export function DocumentPreview({
 
       <CardContent
         className={`flex-1 flex flex-col overflow-y-auto ${
-          (singleDocument && !isFromEPA && singleDocument.thumbnailUrl) ||
+          (singleDocument &&
+            ((!isFromEPA && singleDocument.thumbnailUrl) ||
+              (isFromEPA &&
+                (singleDocument.sharedFromLocal ||
+                  singleDocument.importedFromEPA ||
+                  isAlreadyImported) &&
+                (singleDocument.thumbnailUrl ||
+                  (isAlreadyImported &&
+                    correspondingLocalDoc?.thumbnailUrl))))) ||
           isMultipleDocuments
             ? 'p-0'
             : 'p-4'
@@ -274,13 +282,7 @@ export function DocumentPreview({
             singleDocument.importedFromEPA ||
             isAlreadyImported) ? (
           // Single document view - for non-EPA documents, shared from local, or downloaded EPA documents
-          <div
-            className={`${
-              isMetadataCollapsed
-                ? 'flex-1 flex items-center justify-center h-full'
-                : 'flex items-center justify-center'
-            }`}
-          >
+          <div className="bg-black flex-1 flex items-center justify-center h-full">
             {/* Use thumbnail from EPA document or corresponding local document */}
             {singleDocument.thumbnailUrl ||
             (isAlreadyImported && correspondingLocalDoc?.thumbnailUrl) ? (
@@ -291,9 +293,7 @@ export function DocumentPreview({
                   ''
                 }
                 alt={`Preview of ${singleDocument.name}`}
-                className={`object-cover ${
-                  isMetadataCollapsed ? 'w-full h-full' : 'w-full h-auto'
-                }`}
+                className="object-contain w-full h-full"
               />
             ) : // Only show FileText fallback for non-EPA documents or non-downloaded EPA docs
             isFromEPA && isAlreadyImported ? null : (
