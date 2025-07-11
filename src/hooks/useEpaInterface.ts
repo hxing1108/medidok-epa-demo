@@ -136,6 +136,11 @@ export const useEpaInterface = (
 
     // Apply sorting
     filtered.sort((a, b) => {
+      // First priority: neue ePA documents should always appear at the top
+      if (a.neueEPA && !b.neueEPA) return -1;
+      if (!a.neueEPA && b.neueEPA) return 1;
+
+      // Then apply regular sorting for documents with the same neueEPA status
       let aValue: string | Date;
       let bValue: string | Date;
 
@@ -316,11 +321,17 @@ export const useEpaInterface = (
       // Add to imported EPA document IDs
       setImportedEpaDocumentIds((prev) => new Set([...prev, document.id]));
 
+      // Mark neue ePA documents as viewed when downloaded
+      if (document.neueEPA) {
+        setViewedNeueEpaIds((prev) => new Set([...prev, document.id]));
+      }
+
       // Create a new local document with thumbnailUrl and importedFromEPA flag
       const newLocalDoc = {
         ...document,
         source: 'local' as const,
         importedFromEPA: true,
+        neueEPA: false, // Remove neueEPA flag for local copies
         // Add thumbnailUrl when downloading (simulating actual download with preview)
         thumbnailUrl: getDownloadedThumbnailUrl(document),
       };
@@ -360,10 +371,20 @@ export const useEpaInterface = (
       ]);
       setImportedEpaDocumentIds(newImportedIds);
 
+      // Mark neue ePA documents as viewed when downloaded
+      const neueEpaDocsToMark = selectedDocs.filter((doc) => doc.neueEPA);
+      if (neueEpaDocsToMark.length > 0) {
+        setViewedNeueEpaIds((prev) => new Set([
+          ...prev,
+          ...neueEpaDocsToMark.map((doc) => doc.id)
+        ]));
+      }
+
       const newLocalDocs = selectedDocs.map((doc) => ({
         ...doc,
         source: 'local' as const,
         importedFromEPA: true,
+        neueEPA: false, // Remove neueEPA flag for local copies
         // Add thumbnailUrl when downloading (simulating actual download with preview)
         thumbnailUrl: getDownloadedThumbnailUrl(doc),
       }));
@@ -567,6 +588,7 @@ export const useEpaInterface = (
     importedEpaDocumentIds,
     sharedToEpaDocuments,
     sharedFromLocalIds,
+    viewedNeueEpaIds,
     searchQuery,
     isSearchExpanded,
     showFilters,
@@ -623,6 +645,7 @@ export const useEpaInterface = (
     setImportedEpaDocumentIds,
     setSharedToEpaDocuments,
     setSharedFromLocalIds,
+    setViewedNeueEpaIds,
     setSearchQuery,
     setIsSearchExpanded,
     setShowFilters,

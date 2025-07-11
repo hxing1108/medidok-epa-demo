@@ -40,6 +40,7 @@ export function EPAInterface() {
     localDocumentsList,
     importedEpaDocumentIds,
     sharedFromLocalIds,
+    viewedNeueEpaIds,
     searchQuery,
     isSearchExpanded,
     showFilters,
@@ -430,6 +431,7 @@ export function EPAInterface() {
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
                           onEnableMultiSelect={handleEnableMultiSelect}
+                          onDownload={handleDownloadDocument}
                         />
                       ) : (
                         <DocumentTableView
@@ -443,6 +445,7 @@ export function EPAInterface() {
                           multiSelectedDocuments={multiSelectedDocuments}
                           onMultiSelectToggle={handleMultiSelectToggle}
                           onEnableMultiSelect={handleEnableMultiSelect}
+                          onDownload={handleDownloadDocument}
                         />
                       )}
                     </div>
@@ -542,6 +545,12 @@ export function EPAInterface() {
                       value="epa"
                       className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
                     >
+                      <img 
+                        src="/gematik-epa-icon.png" 
+                        alt="ePA"
+                        className="h-4 mr-1"
+                        style={{ width: 'auto', aspectRatio: '660/463' }}
+                      />
                       ePA
                     </TabsTrigger>
                     <TabsTrigger
@@ -796,6 +805,7 @@ export function EPAInterface() {
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}
                       onEnableMultiSelect={handleEnableMultiSelect}
+                      onDownload={handleDownloadDocument}
                     />
                   ) : (
                     <DocumentTableView
@@ -809,6 +819,7 @@ export function EPAInterface() {
                       multiSelectedDocuments={multiSelectedDocuments}
                       onMultiSelectToggle={handleMultiSelectToggle}
                       onEnableMultiSelect={handleEnableMultiSelect}
+                      onDownload={handleDownloadDocument}
                     />
                   )}
                 </div>

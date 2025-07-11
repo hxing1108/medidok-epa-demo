@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { ChevronDown, ChevronRight, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import befundberichtPreview from '@/assets/befundbericht-preview.jpg';
@@ -234,6 +234,7 @@ interface DocumentThumbnailViewProps {
   multiSelectedDocuments?: Set<string>;
   onMultiSelectToggle?: (documentId: string) => void;
   onEnableMultiSelect?: (documentId: string) => void;
+  onDownload?: (document: Document) => void; // For downloading ePA documents
 }
 
 export function DocumentThumbnailView({
@@ -248,6 +249,7 @@ export function DocumentThumbnailView({
   multiSelectedDocuments,
   onMultiSelectToggle,
   onEnableMultiSelect,
+  onDownload,
 }: DocumentThumbnailViewProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
@@ -323,16 +325,12 @@ export function DocumentThumbnailView({
       return acc;
     }, {} as Record<string, Document[]>);
 
-    // Convert to DocumentCategory format and sort documents within each category
+    // Convert to DocumentCategory format without sorting to avoid React rendering issues
+    // when neueEPA property changes (sorting is handled at the data level)
     return Object.entries(grouped).map(([name, documents]) => ({
       name,
       count: documents.length,
-      documents: documents.sort((a, b) => {
-        // Sort neue ePA documents to the top
-        if (a.neueEPA && !b.neueEPA) return -1;
-        if (!a.neueEPA && b.neueEPA) return 1;
-        return 0;
-      }),
+      documents: documents,
     }));
   }
 
@@ -482,35 +480,66 @@ export function DocumentThumbnailView({
                         <p className="text-xs text-muted-foreground truncate">
                           {doc.author}
                         </p>
-                        {/* Show pill based on context and import/share status */}
+                        {/* Show download button or status indicator based on context */}
                         {(isFromEPA ||
                           doc.importedFromEPA ||
                           doc.sharedFromLocal ||
                           sharedFromLocalIds?.has(doc.id)) && (
                           <div className="mt-2">
-                            <span
-                              className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs border ${
-                                doc.neueEPA && isFromEPA
-                                  ? 'bg-green-100 text-green-800 border-green-200'
-                                  : 'bg-blue-100 text-blue-800 border-blue-200'
-                              }`}
-                            >
-                              {doc.sharedFromLocal
-                                ? 'von lokal exportiert'
-                                : doc.neueEPA && isFromEPA
-                                ? 'neue ePA'
-                                : isFromEPA &&
-                                  importedEpaDocumentIds?.has(doc.id)
-                                ? 'ePA heruntergeladen'
-                                : isFromEPA &&
-                                  !importedEpaDocumentIds?.has(doc.id)
-                                ? 'ePA'
-                                : doc.importedFromEPA
-                                ? 'ePA heruntergeladen'
-                                : sharedFromLocalIds?.has(doc.id)
-                                ? 'zu ePA geteilt'
-                                : 'ePA'}
-                            </span>
+                            {(() => {
+                              if (doc.sharedFromLocal) {
+                                return (
+                                  <div className="flex items-center text-xs text-muted-foreground">
+                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    von lokal exportiert
+                                  </div>
+                                );
+                              } else if (isFromEPA && importedEpaDocumentIds?.has(doc.id)) {
+                                return (
+                                  <div className="flex items-center text-xs text-muted-foreground">
+                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    von der ePA heruntergeladen
+                                  </div>
+                                );
+                              } else if (doc.importedFromEPA) {
+                                return (
+                                  <div className="flex items-center text-xs text-muted-foreground">
+                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    von der ePA heruntergeladen
+                                  </div>
+                                );
+                              } else if (sharedFromLocalIds?.has(doc.id)) {
+                                return (
+                                  <div className="flex items-center text-xs text-muted-foreground">
+                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    zu ePA geteilt
+                                  </div>
+                                );
+                              } else if (isFromEPA && !importedEpaDocumentIds?.has(doc.id)) {
+                                // Show download button for non-downloaded ePA documents
+                                return (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-6 px-2 text-xs w-full bg-white border-gray-300 hover:bg-gray-50 text-foreground hover:text-foreground"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDownload?.(doc);
+                                    }}
+                                  >
+                                    <Download className="h-3 w-3 mr-1" />
+                                    ePA
+                                  </Button>
+                                );
+                              } else {
+                                // Default pill for other cases
+                                return (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs border bg-blue-100 text-blue-800 border-blue-200">
+                                    ePA
+                                  </span>
+                                );
+                              }
+                            })()}
                           </div>
                         )}
                       </div>

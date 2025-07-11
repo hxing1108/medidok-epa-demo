@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Check, FileText } from 'lucide-react';
+import { Check, FileText, Download } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +31,7 @@ interface DocumentTableViewProps {
   multiSelectedDocuments?: Set<string>;
   onMultiSelectToggle?: (documentId: string) => void;
   onEnableMultiSelect?: (documentId: string) => void;
+  onDownload?: (document: Document) => void; // For downloading ePA documents
 }
 
 // Mock data to match the screenshot
@@ -113,18 +115,14 @@ export function DocumentTableView({
   multiSelectedDocuments,
   onMultiSelectToggle,
   onEnableMultiSelect,
+  onDownload,
 }: DocumentTableViewProps) {
   // Use the actual documents passed as props, fallback to mockDocuments if empty
   const displayDocuments = useMemo(() => {
     const docsToDisplay = documents.length > 0 ? documents : mockDocuments;
-    // Sort documents to put "neue ePA" documents at the top by default
-    return [...docsToDisplay].sort((a, b) => {
-      // If one is neue ePA and the other isn't, neue ePA comes first
-      if (a.neueEPA && !b.neueEPA) return -1;
-      if (!a.neueEPA && b.neueEPA) return 1;
-      // If both are or aren't neue ePA, keep original order
-      return 0;
-    });
+    // Return documents in their original order to avoid React rendering issues
+    // when neueEPA property changes (sorting is handled at the data level)
+    return [...docsToDisplay];
   }, [documents, mockDocuments]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
@@ -282,29 +280,84 @@ export function DocumentTableView({
 
   // Function to render status pill for ePA documents
   const renderStatusPill = (doc: Document) => {
-    let statusText = '';
-    let pillStyles =
-      'inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200 whitespace-nowrap';
-
     if (doc.sharedFromLocal) {
-      statusText = 'von lokal exportiert';
-    } else if (doc.neueEPA && isFromEPA) {
-      statusText = 'neue ePA';
-      pillStyles =
-        'inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800 border border-green-200 whitespace-nowrap';
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center">
+              <Check className="h-4 w-4 text-green-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>von lokal exportiert</p>
+          </TooltipContent>
+        </Tooltip>
+      );
     } else if (isFromEPA && importedEpaDocumentIds?.has(doc.id)) {
-      statusText = 'ePA heruntergeladen';
-    } else if (isFromEPA && !importedEpaDocumentIds?.has(doc.id)) {
-      statusText = 'ePA';
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center">
+              <Check className="h-4 w-4 text-green-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>von der ePA heruntergeladen</p>
+          </TooltipContent>
+        </Tooltip>
+      );
     } else if (doc.importedFromEPA) {
-      statusText = 'ePA heruntergeladen';
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center">
+              <Check className="h-4 w-4 text-green-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>von der ePA heruntergeladen</p>
+          </TooltipContent>
+        </Tooltip>
+      );
     } else if (sharedFromLocalIds?.has(doc.id)) {
-      statusText = 'zu ePA geteilt';
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center">
+              <Check className="h-4 w-4 text-green-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>zu ePA geteilt</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    } else if (isFromEPA && !importedEpaDocumentIds?.has(doc.id)) {
+      // Show download button for non-downloaded ePA documents
+      return (
+        <div className="flex items-center justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-6 px-2 text-xs bg-white border-gray-300 hover:bg-gray-50 text-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDownload?.(doc);
+            }}
+          >
+            <Download className="h-3 w-3 mr-1" />
+            ePA
+          </Button>
+        </div>
+      );
     } else {
-      statusText = 'ePA';
+      // Default pill for other cases
+      return (
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200 whitespace-nowrap">
+          ePA
+        </span>
+      );
     }
-
-    return <span className={pillStyles}>{statusText}</span>;
   };
 
   // Helper component for truncated text with tooltip
