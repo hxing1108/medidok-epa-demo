@@ -166,22 +166,31 @@ export function EPAInterface() {
                   {/* Header with bottom border */}
                   <div className="p-6 pb-0 border-b border-gray-200">
                     <div className="flex items-center justify-between mb-4">
-                      <TabsList className="h-8 bg-transparent p-0 border-none">
+                      <TabsList className="h-9 bg-transparent p-0 border-none">
                         <TabsTrigger
                           value="lokal"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
                         >
                           Lokal
                         </TabsTrigger>
                         <TabsTrigger
                           value="epa"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
                         >
+                          <img 
+                            src="/gematik-epa-icon.png" 
+                            alt="gematik ePA" 
+                            className="h-4 mr-1"
+                            style={{ 
+                              width: 'auto', 
+                              aspectRatio: '660/463' 
+                            }}
+                          />
                           ePA
                         </TabsTrigger>
                         <TabsTrigger
                           value="plus"
-                          className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm"
                         >
                           +
                         </TabsTrigger>
@@ -203,7 +212,7 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 relative ${
+                            className={`h-9 w-9 p-0 relative ${
                               rightPanelType === 'sorting' || isSortingActive()
                                 ? 'bg-blue-100'
                                 : ''
@@ -222,7 +231,7 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 relative ${
+                            className={`h-9 w-9 p-0 relative ${
                               rightPanelType === 'filter' ||
                               getActiveFilterCount() > 0
                                 ? 'bg-blue-100'
@@ -244,7 +253,7 @@ export function EPAInterface() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`h-8 w-8 p-0 relative ${
+                                className={`h-9 w-9 p-0 relative ${
                                   isSearchActive() ? 'bg-blue-100' : ''
                                 }`}
                                 onClick={handleSearchToggle}
@@ -266,14 +275,14 @@ export function EPAInterface() {
                                     setSearchQuery(e.target.value)
                                   }
                                   onBlur={handleSearchBlur}
-                                  className="h-8 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
+                                  className="h-9 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
                                   autoFocus
                                 />
-                                <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                                <Search className="h-3 w-3 absolute left-2 top-3 text-gray-400" />
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="absolute right-1 top-1 h-6 w-6 p-0"
+                                  className="absolute right-1 top-1.5 h-6 w-6 p-0"
                                   onClick={handleSearchToggle}
                                 >
                                   <X className="h-3 w-3" />
@@ -286,7 +295,7 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-9 w-9 p-0"
                             onClick={() =>
                               setViewMode(
                                 viewMode === 'thumbnail' ? 'table' : 'thumbnail'
@@ -304,7 +313,7 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-9 w-9 p-0"
                             onClick={() => handleOpenPanel('options')}
                           >
                             <MoreHorizontal className="h-4 w-4" />

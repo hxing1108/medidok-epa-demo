@@ -44,7 +44,7 @@ export const InlineMultiSelectBar: React.FC<InlineMultiSelectBarProps> = ({
   onExitMultiSelect,
 }) => {
   return (
-    <div className="flex items-center gap-4 bg-white rounded-lg px-4 py-2 shadow-sm border">
+    <div className="flex items-center gap-4 bg-white rounded-lg px-4 py-2 h-9 shadow-sm border">
       <span className="text-sm font-medium text-blue-900">
         {multiSelectedCount} ausgewählt
       </span>

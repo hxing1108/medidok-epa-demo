@@ -389,7 +389,7 @@ export function DocumentThumbnailView({
                   return (
                     <div
                       key={doc.id}
-                      className={`border rounded-lg p-2 transition-all cursor-pointer relative group ${
+                      className={`border rounded-lg p-2 transition-all cursor-pointer relative group bg-white ${
                         multiSelectMode && isSelected
                           ? 'border-blue-500 border-2 bg-blue-50/30'
                           : selectedDocumentId === doc.id && !multiSelectMode
