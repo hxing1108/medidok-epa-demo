@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ChevronDown, ChevronRight, Check, Download } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Checkmark, Download as DownloadFileIcon, ChevronDown, ChevronRight } from '@carbon/icons-react';
+import { Download, Upload } from '@carbon/icons-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import befundberichtPreview from '@/assets/befundbericht-preview.jpg';
@@ -355,6 +356,15 @@ export function DocumentThumbnailView({
     setExpandedCategories(newExpanded);
   };
 
+  const getStatusIcon = (status: string) => {
+    if (status === "von epa heruntergeladen") {
+      return <Download className="h-3 w-3 text-green-600" />;
+    } else if (status === "von local importiert") {
+      return <Upload className="h-3 w-3 text-green-600" />;
+    }
+    return <Checkmark className="h-3 w-3 text-green-600" />;
+  };
+
   return (
     <div className="space-y-4">
       {displayCategories.map((category) => {
@@ -429,7 +439,7 @@ export function DocumentThumbnailView({
                           }}
                         >
                           {isSelected && (
-                            <Check className="h-3 w-3 text-white" />
+                            <Checkmark className="h-3 w-3 text-white" />
                           )}
                         </div>
                       </div>
@@ -490,28 +500,28 @@ export function DocumentThumbnailView({
                               if (doc.sharedFromLocal) {
                                 return (
                                   <div className="flex items-center text-xs text-muted-foreground">
-                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    <Upload className="h-3 w-3 mr-1 text-green-600" />
                                     von lokal exportiert
                                   </div>
                                 );
                               } else if (isFromEPA && importedEpaDocumentIds?.has(doc.id)) {
                                 return (
                                   <div className="flex items-center text-xs text-muted-foreground">
-                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    <Download className="h-3 w-3 mr-1 text-green-600" />
                                     von der ePA heruntergeladen
                                   </div>
                                 );
                               } else if (doc.importedFromEPA) {
                                 return (
                                   <div className="flex items-center text-xs text-muted-foreground">
-                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    <Download className="h-3 w-3 mr-1 text-green-600" />
                                     von der ePA heruntergeladen
                                   </div>
                                 );
                               } else if (sharedFromLocalIds?.has(doc.id)) {
                                 return (
                                   <div className="flex items-center text-xs text-muted-foreground">
-                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    <Checkmark className="h-3 w-3 mr-1 text-green-600" />
                                     zu ePA geteilt
                                   </div>
                                 );

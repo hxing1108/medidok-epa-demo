@@ -10,19 +10,18 @@ import {
 } from '@/components/ui/select';
 import {
   ArrowLeft,
-  X,
+  Close,
   Calendar,
-  ArrowUpDown,
-  RotateCcw,
-  FileText,
+  ArrowsVertical,
+  Reset,
+  Document,
   User,
   Filter,
   Settings,
-  LayoutGrid,
+  Grid,
   List,
   ChevronDown,
-  File,
-} from 'lucide-react';
+} from '@carbon/icons-react';
 import { FilterState, SortField, SortOrder, PanelType } from '@/types/epaInterface';
 import {
   DateFilterPopup,
@@ -76,7 +75,7 @@ export const SortingPanel: React.FC<SortingPanelProps> = ({
         <span className="font-medium">Sortierung</span>
       </div>
       <Button variant="ghost" size="sm" onClick={onClose}>
-        <X className="h-4 w-4" />
+        <Close className="h-4 w-4" />
       </Button>
     </div>
 
@@ -112,7 +111,7 @@ export const SortingPanel: React.FC<SortingPanelProps> = ({
             >
               <SelectTrigger className="w-full">
                 <div className="flex items-center gap-2">
-                  <ArrowUpDown className="h-4 w-4" />
+                  <ArrowsVertical className="h-4 w-4" />
                   <SelectValue />
                 </div>
               </SelectTrigger>
@@ -149,7 +148,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <span className="font-medium">Filter</span>
         </div>
         <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="h-4 w-4" />
+          <Close className="h-4 w-4" />
         </Button>
       </div>
 
@@ -162,7 +161,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             className="w-full justify-start text-left h-auto p-0"
           >
             <div className="flex items-center gap-2">
-              <RotateCcw className="h-4 w-4" />
+              <Reset className="h-4 w-4" />
               <span className="text-sm">Zurücksetzen</span>
             </div>
           </Button>
@@ -190,7 +189,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               onClick={() => onOpenFilterPopup?.('kategorie')}
             >
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
+                <Document className="h-4 w-4" />
                 <span className="text-sm">Kategorie</span>
               </div>
             </Button>
@@ -214,7 +213,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               onClick={() => onOpenFilterPopup?.('dateityp')}
             >
               <div className="flex items-center gap-2">
-                <File className="h-4 w-4" />
+                <Document className="h-4 w-4" />
                 <span className="text-sm">Dateityp</span>
               </div>
             </Button>
@@ -233,7 +232,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             {activeFilters.category.length > 0 && (
               <div className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                  <Document className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">
                     Kategorie
                   </span>
@@ -248,7 +247,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
                   onClick={() => onFilterChange('category', [])}
                 >
-                  <X className="h-3 w-3" />
+                  <Close className="h-3 w-3" />
                 </Button>
               </div>
             )}
@@ -272,7 +271,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
                   onClick={() => onFilterChange('author', [])}
                 >
-                  <X className="h-3 w-3" />
+                  <Close className="h-3 w-3" />
                 </Button>
               </div>
             )}
@@ -281,7 +280,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             {activeFilters.type.length > 0 && (
               <div className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                  <Document className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">
                     Typ
                   </span>
@@ -296,7 +295,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
                   onClick={() => onFilterChange('type', [])}
                 >
-                  <X className="h-3 w-3" />
+                  <Close className="h-3 w-3" />
                 </Button>
               </div>
             )}
@@ -321,7 +320,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
                   onClick={() => onFilterChange('dateRange', {})}
                 >
-                  <X className="h-3 w-3" />
+                  <Close className="h-3 w-3" />
                 </Button>
               </div>
             )}
@@ -401,7 +400,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
         <span className="font-medium">Optionen anzeigen</span>
       </div>
       <Button variant="ghost" size="sm" onClick={onClose}>
-        <X className="h-4 w-4" />
+        <Close className="h-4 w-4" />
       </Button>
     </div>
 
@@ -416,7 +415,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
           }
         >
           <div className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4" />
+            <Grid className="h-4 w-4" />
             <span className="text-sm">Layout</span>
           </div>
           <span className="text-xs text-gray-500">
@@ -456,7 +455,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
           onClick={() => onOpenPanel('sorting')}
         >
           <div className="flex items-center gap-2">
-            <ArrowUpDown className="h-4 w-4" />
+            <ArrowsVertical className="h-4 w-4" />
             <span className="text-sm">Sortierung</span>
           </div>
           <ChevronDown className="h-4 w-4" />

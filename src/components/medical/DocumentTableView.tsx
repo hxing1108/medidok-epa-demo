@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Check, FileText, Download } from 'lucide-react';
+import { Checkmark, Document as DocumentIcon, Download as DownloadFileIcon } from '@carbon/icons-react';
+import { Download, Upload } from '@carbon/icons-react';
 import {
   Table,
   TableBody,
@@ -284,8 +285,9 @@ export function DocumentTableView({
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center justify-center">
-              <Check className="h-4 w-4 text-green-600" />
+            <div className="flex items-center justify-center gap-2">
+              <Upload className="h-4 w-4 text-green-600" />
+              <span className="text-sm text-green-600">von lokal</span>
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -297,8 +299,9 @@ export function DocumentTableView({
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center justify-center">
-              <Check className="h-4 w-4 text-green-600" />
+            <div className="flex items-center justify-center gap-2">
+              <Download className="h-4 w-4 text-green-600" />
+              <span className="text-sm text-green-600">von ePA</span>
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -310,8 +313,9 @@ export function DocumentTableView({
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center justify-center">
-              <Check className="h-4 w-4 text-green-600" />
+            <div className="flex items-center justify-center gap-2">
+              <Download className="h-4 w-4 text-green-600" />
+              <span className="text-sm text-green-600">von ePA</span>
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -324,7 +328,7 @@ export function DocumentTableView({
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="flex items-center justify-center">
-              <Check className="h-4 w-4 text-green-600" />
+              <Checkmark className="h-4 w-4 text-green-600" />
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -511,7 +515,7 @@ export function DocumentTableView({
                             }}
                           >
                             {isMultiSelected && (
-                              <Check className="h-3 w-3 text-white" />
+                              <Checkmark className="h-3 w-3 text-white" />
                             )}
                           </div>
                         </div>
@@ -543,7 +547,7 @@ export function DocumentTableView({
                                 className="w-4 h-4 opacity-60"
                               />
                             ) : (
-                              <FileText className="h-4 w-4 text-muted-foreground" />
+                              <DocumentIcon className="h-4 w-4 text-muted-foreground" />
                             );
                           })()}
                         </div>

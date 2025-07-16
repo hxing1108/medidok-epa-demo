@@ -8,13 +8,14 @@ import {
 import {
   Search,
   Filter,
-  ArrowUpDown,
-  LayoutGrid,
+  ArrowsVertical,
+  Grid,
   List,
-  MoreHorizontal,
-  X,
-  Plus,
-} from 'lucide-react';
+  OverflowMenuHorizontal,
+  Close,
+  Add,
+  Folder,
+} from '@carbon/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DocumentThumbnailView } from './DocumentThumbnailView';
@@ -169,13 +170,14 @@ export function EPAInterface() {
                       <TabsList className="h-9 bg-transparent p-0 border-none">
                         <TabsTrigger
                           value="lokal"
-                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                         >
-                          Lokal
+                          <Folder className="h-4 w-4 mr-1" />
+                          Lokale Dokumente
                         </TabsTrigger>
                         <TabsTrigger
                           value="epa"
-                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                         >
                           <img 
                             src="/gematik-epa-icon.png" 
@@ -186,11 +188,11 @@ export function EPAInterface() {
                               aspectRatio: '660/463' 
                             }}
                           />
-                          ePA
+                          ePA-Dokumente
                         </TabsTrigger>
                         <TabsTrigger
                           value="plus"
-                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm"
+                          className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm"
                         >
                           +
                         </TabsTrigger>
@@ -214,12 +216,12 @@ export function EPAInterface() {
                             size="sm"
                             className={`h-9 w-9 p-0 relative ${
                               rightPanelType === 'sorting' || isSortingActive()
-                                ? 'bg-blue-100'
-                                : ''
+                                ? 'bg-blue-100 hover:bg-blue-100'
+                                : 'hover:bg-white/60'
                             }`}
                             onClick={() => handleOpenPanel('sorting')}
                           >
-                            <ArrowUpDown className="h-4 w-4" />
+                            <ArrowsVertical className="h-4 w-4" />
                             {isSortingActive() && (
                               <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                                 •
@@ -234,8 +236,8 @@ export function EPAInterface() {
                             className={`h-9 w-9 p-0 relative ${
                               rightPanelType === 'filter' ||
                               getActiveFilterCount() > 0
-                                ? 'bg-blue-100'
-                                : ''
+                                ? 'bg-blue-100 hover:bg-blue-100'
+                                : 'hover:bg-white/60'
                             }`}
                             onClick={() => handleOpenPanel('filter')}
                           >
@@ -254,7 +256,7 @@ export function EPAInterface() {
                                 variant="ghost"
                                 size="sm"
                                 className={`h-9 w-9 p-0 relative ${
-                                  isSearchActive() ? 'bg-blue-100' : ''
+                                  isSearchActive() ? 'bg-blue-100 hover:bg-blue-100' : 'hover:bg-white/60'
                                 }`}
                                 onClick={handleSearchToggle}
                               >
@@ -279,14 +281,14 @@ export function EPAInterface() {
                                   autoFocus
                                 />
                                 <Search className="h-3 w-3 absolute left-2 top-3 text-gray-400" />
-                                <Button
+                                                                <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="absolute right-1 top-1.5 h-6 w-6 p-0"
+                                  className="absolute right-1 top-1.5 h-6 w-6 p-0 hover:bg-white/60"
                                   onClick={handleSearchToggle}
                                 >
-                                  <X className="h-3 w-3" />
-                                </Button>
+                                <Close className="h-3 w-3" />
+                              </Button>
                               </div>
                             )}
                           </div>
@@ -295,7 +297,7 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-9 w-9 p-0"
+                            className="h-9 w-9 p-0 hover:bg-white/60"
                             onClick={() =>
                               setViewMode(
                                 viewMode === 'thumbnail' ? 'table' : 'thumbnail'
@@ -305,19 +307,23 @@ export function EPAInterface() {
                             {viewMode === 'thumbnail' ? (
                               <List className="h-4 w-4" />
                             ) : (
-                              <LayoutGrid className="h-4 w-4" />
+                              <Grid className="h-4 w-4" />
                             )}
                           </Button>
 
                           {/* More Options Button */}
-                          <Button
+                                                    <Button
                             variant="ghost"
                             size="sm"
-                            className="h-9 w-9 p-0"
+                            className={`h-9 w-9 p-0 ${
+                              rightPanelType === 'options'
+                                ? 'bg-blue-100 hover:bg-blue-100'
+                                : 'hover:bg-white/60'
+                            }`}
                             onClick={() => handleOpenPanel('options')}
                           >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                          <OverflowMenuHorizontal className="h-4 w-4" />
+                        </Button>
                         </div>
                       )}
                     </div>
@@ -500,7 +506,7 @@ export function EPAInterface() {
                     )}
                     <div className="h-full overflow-y-auto px-6 pb-6 flex items-center justify-center">
                       <div className="text-center">
-                        <Plus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <Add className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">
                           Weitere Optionen
                         </p>
@@ -546,13 +552,14 @@ export function EPAInterface() {
                   <TabsList className="h-8 bg-transparent p-0 border-none">
                     <TabsTrigger
                       value="lokal"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                     >
-                      Lokal
+                      <Folder className="h-4 w-4 mr-1" />
+                      Lokale Dokumente
                     </TabsTrigger>
                     <TabsTrigger
                       value="epa"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm mr-1"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                     >
                       <img 
                         src="/gematik-epa-icon.png" 
@@ -560,11 +567,11 @@ export function EPAInterface() {
                         className="h-4 mr-1"
                         style={{ width: 'auto', aspectRatio: '660/463' }}
                       />
-                      ePA
+                      ePA-Dokumente
                     </TabsTrigger>
                     <TabsTrigger
                       value="plus"
-                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 rounded-sm"
+                      className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm"
                     >
                       +
                     </TabsTrigger>
@@ -586,14 +593,14 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`h-8 w-8 p-0 relative ${
+                        className={`h-[34px] w-[34px] p-0 relative ${
                           rightPanelType === 'sorting' || isSortingActive()
-                            ? 'bg-blue-100'
-                            : ''
+                            ? 'bg-blue-100 hover:bg-blue-100'
+                            : 'hover:bg-white/60'
                         }`}
                         onClick={() => handleOpenPanel('sorting')}
                       >
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowsVertical size={34} />
                         {isSortingActive() && (
                           <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                             •
@@ -605,15 +612,15 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`h-8 w-8 p-0 relative ${
+                        className={`h-[34px] w-[34px] p-0 relative ${
                           rightPanelType === 'filter' ||
                           getActiveFilterCount() > 0
-                            ? 'bg-blue-100'
-                            : ''
+                            ? 'bg-blue-100 hover:bg-blue-100'
+                            : 'hover:bg-white/60'
                         }`}
                         onClick={() => handleOpenPanel('filter')}
                       >
-                        <Filter className="h-4 w-4" />
+                        <Filter size={34} />
                         {getActiveFilterCount() > 0 && (
                           <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                             {getActiveFilterCount()}
@@ -627,12 +634,12 @@ export function EPAInterface() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 p-0 relative ${
-                              isSearchActive() ? 'bg-blue-100' : ''
+                            className={`h-[34px] w-[34px] p-0 relative ${
+                              isSearchActive() ? 'bg-blue-100 hover:bg-blue-100' : 'hover:bg-white/60'
                             }`}
                             onClick={handleSearchToggle}
                           >
-                            <Search className="h-4 w-4" />
+                            <Search size={34} />
                             {isSearchActive() && (
                               <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                                 •
@@ -650,14 +657,14 @@ export function EPAInterface() {
                               className="h-8 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
                               autoFocus
                             />
-                            <Search className="h-3 w-3 absolute left-2 top-2.5 text-gray-400" />
+                            <Search className="absolute left-2 top-2.5 text-gray-400" size={12} />
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="absolute right-1 top-1 h-6 w-6 p-0"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-white/60"
                               onClick={handleSearchToggle}
                             >
-                              <X className="h-3 w-3" />
+                              <Close size={12} />
                             </Button>
                           </div>
                         )}
@@ -667,7 +674,7 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="h-[34px] w-[34px] p-0 hover:bg-white/60"
                         onClick={() =>
                           setViewMode(
                             viewMode === 'thumbnail' ? 'table' : 'thumbnail'
@@ -675,9 +682,9 @@ export function EPAInterface() {
                         }
                       >
                         {viewMode === 'thumbnail' ? (
-                          <List className="h-4 w-4" />
+                          <List size={34} />
                         ) : (
-                          <LayoutGrid className="h-4 w-4" />
+                          <Grid size={34} />
                         )}
                       </Button>
 
@@ -685,10 +692,14 @@ export function EPAInterface() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className={`h-[34px] w-[34px] p-0 ${
+                          rightPanelType === 'options'
+                            ? 'bg-blue-100 hover:bg-blue-100'
+                            : 'hover:bg-white/60'
+                        }`}
                         onClick={() => handleOpenPanel('options')}
                       >
-                        <MoreHorizontal className="h-4 w-4" />
+                        <OverflowMenuHorizontal size={34} />
                       </Button>
                     </div>
                   )}
@@ -837,7 +848,7 @@ export function EPAInterface() {
               <TabsContent value="plus" className="flex-1 m-0 px-6 pb-6">
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">
-                    <Plus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <Add className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">Weitere Optionen</p>
                   </div>
                 </div>
