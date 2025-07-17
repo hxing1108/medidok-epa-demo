@@ -179,13 +179,13 @@ export function EPAInterface() {
                           value="epa"
                           className="h-9 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                         >
-                          <img 
-                            src="/gematik-epa-icon.png" 
-                            alt="gematik ePA" 
+                          <img
+                            src="/gematik-epa-icon.png"
+                            alt="gematik ePA"
                             className="h-4 mr-1"
-                            style={{ 
-                              width: 'auto', 
-                              aspectRatio: '660/463' 
+                            style={{
+                              width: 'auto',
+                              aspectRatio: '660/463',
                             }}
                           />
                           ePA-Dokumente
@@ -256,7 +256,9 @@ export function EPAInterface() {
                                 variant="ghost"
                                 size="sm"
                                 className={`h-9 w-9 p-0 relative ${
-                                  isSearchActive() ? 'bg-blue-100 hover:bg-blue-100' : 'hover:bg-white/60'
+                                  isSearchActive()
+                                    ? 'bg-blue-100 hover:bg-blue-100'
+                                    : 'hover:bg-white/60'
                                 }`}
                                 onClick={handleSearchToggle}
                               >
@@ -281,14 +283,14 @@ export function EPAInterface() {
                                   autoFocus
                                 />
                                 <Search className="h-3 w-3 absolute left-2 top-3 text-gray-400" />
-                                                                <Button
+                                <Button
                                   variant="ghost"
                                   size="sm"
                                   className="absolute right-1 top-1.5 h-6 w-6 p-0 hover:bg-white/60"
                                   onClick={handleSearchToggle}
                                 >
-                                <Close className="h-3 w-3" />
-                              </Button>
+                                  <Close className="h-3 w-3" />
+                                </Button>
                               </div>
                             )}
                           </div>
@@ -312,7 +314,7 @@ export function EPAInterface() {
                           </Button>
 
                           {/* More Options Button */}
-                                                    <Button
+                          <Button
                             variant="ghost"
                             size="sm"
                             className={`h-9 w-9 p-0 ${
@@ -322,8 +324,8 @@ export function EPAInterface() {
                             }`}
                             onClick={() => handleOpenPanel('options')}
                           >
-                          <OverflowMenuHorizontal className="h-4 w-4" />
-                        </Button>
+                            <OverflowMenuHorizontal className="h-4 w-4" />
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -555,14 +557,14 @@ export function EPAInterface() {
                       className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                     >
                       <Folder className="h-4 w-4 mr-1" />
-                      Lokale Dokumente
+                      Lokale Bilderliste
                     </TabsTrigger>
                     <TabsTrigger
                       value="epa"
                       className="h-8 px-3 text-sm bg-gray-100 data-[state=active]:bg-[#CEE1F4] data-[state=active]:text-gray-900 data-[state=inactive]:hover:bg-white/60 rounded-sm mr-1"
                     >
-                      <img 
-                        src="/gematik-epa-icon.png" 
+                      <img
+                        src="/gematik-epa-icon.png"
                         alt="ePA"
                         className="h-4 mr-1"
                         style={{ width: 'auto', aspectRatio: '660/463' }}
@@ -635,7 +637,9 @@ export function EPAInterface() {
                             variant="ghost"
                             size="sm"
                             className={`h-[34px] w-[34px] p-0 relative ${
-                              isSearchActive() ? 'bg-blue-100 hover:bg-blue-100' : 'hover:bg-white/60'
+                              isSearchActive()
+                                ? 'bg-blue-100 hover:bg-blue-100'
+                                : 'hover:bg-white/60'
                             }`}
                             onClick={handleSearchToggle}
                           >
@@ -657,7 +661,10 @@ export function EPAInterface() {
                               className="h-8 w-48 text-xs pl-8 pr-8 transition-all duration-200 ease-in-out"
                               autoFocus
                             />
-                            <Search className="absolute left-2 top-2.5 text-gray-400" size={12} />
+                            <Search
+                              className="absolute left-2 top-2.5 text-gray-400"
+                              size={12}
+                            />
                             <Button
                               variant="ghost"
                               size="sm"
