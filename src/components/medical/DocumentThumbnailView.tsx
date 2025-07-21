@@ -25,6 +25,7 @@ export interface Document {
   importedFromEPA?: boolean;
   sharedFromLocal?: boolean;
   neueEPA?: boolean; // New property for new ePA documents
+  documentCreationDate?: string; // Date when the document was originally created (for EPA documents)
 }
 
 interface DocumentCategory {

@@ -132,7 +132,7 @@ export function DocumentTableView({
   // Column width state for resizing
   const [columnWidths, setColumnWidths] = useState<number[]>(
     isFromEPA
-      ? [300, 150, 180, 140, 150, 120, 180]
+      ? [300, 150, 180, 140, 160, 150, 120, 180]
       : [300, 150, 180, 140, 150, 120]
   );
   const [resizing, setResizing] = useState<{
@@ -429,35 +429,47 @@ export function DocumentTableView({
                     onMouseDown={(e) => handleMouseDown(e, 3)}
                   />
                 </TableHead>
+                {isFromEPA && (
+                  <TableHead
+                    className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3 relative"
+                    style={{ width: columnWidths[4] }}
+                  >
+                    Einstelldatum
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-300 active:bg-blue-500"
+                      onMouseDown={(e) => handleMouseDown(e, 4)}
+                    />
+                  </TableHead>
+                )}
                 <TableHead
                   className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3 relative"
-                  style={{ width: columnWidths[4] }}
+                  style={{ width: columnWidths[isFromEPA ? 5 : 4] }}
                 >
                   Initiator
                   <div
                     className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-300 active:bg-blue-500"
-                    onMouseDown={(e) => handleMouseDown(e, 4)}
+                    onMouseDown={(e) => handleMouseDown(e, isFromEPA ? 5 : 4)}
                   />
                 </TableHead>
                 <TableHead
                   className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3 relative"
-                  style={{ width: columnWidths[5] }}
+                  style={{ width: columnWidths[isFromEPA ? 6 : 5] }}
                 >
                   {isFromEPA ? 'Status' : 'Einsender'}
                   <div
                     className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-300 active:bg-blue-500"
-                    onMouseDown={(e) => handleMouseDown(e, 5)}
+                    onMouseDown={(e) => handleMouseDown(e, isFromEPA ? 6 : 5)}
                   />
                 </TableHead>
                 {isFromEPA && (
                   <TableHead
                     className="h-12 text-left align-middle [&:has([role=checkbox])]:pr-0 text-xs font-medium text-muted-foreground px-4 py-3 relative"
-                    style={{ width: columnWidths[6] }}
+                    style={{ width: columnWidths[7] }}
                   >
                     Fachgruppe
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-300 active:bg-blue-500"
-                      onMouseDown={(e) => handleMouseDown(e, 6)}
+                      onMouseDown={(e) => handleMouseDown(e, 7)}
                     />
                   </TableHead>
                 )}
@@ -592,15 +604,28 @@ export function DocumentTableView({
                         </div>
                       </div>
                     </TableCell>
+                    {isFromEPA && (
+                      <TableCell
+                        className="px-4 py-3 text-sm text-foreground"
+                        style={{ width: columnWidths[4] }}
+                      >
+                        <div className="whitespace-nowrap">
+                          <div>{doc.documentCreationDate || doc.creationDate}</div>
+                          <div className="text-xs text-muted-foreground">
+                            10:14
+                          </div>
+                        </div>
+                      </TableCell>
+                    )}
                     <TableCell
                       className="px-4 py-3 text-sm text-foreground"
-                      style={{ width: columnWidths[4] }}
+                      style={{ width: columnWidths[isFromEPA ? 5 : 4] }}
                     >
                       <TruncatedText text={doc.author} />
                     </TableCell>
                     <TableCell
                       className="px-4 py-3 text-sm text-muted-foreground"
-                      style={{ width: columnWidths[5] }}
+                      style={{ width: columnWidths[isFromEPA ? 6 : 5] }}
                     >
                       {isFromEPA ? (
                         renderStatusPill(doc)
@@ -611,7 +636,7 @@ export function DocumentTableView({
                     {isFromEPA && (
                       <TableCell
                         className="px-4 py-3 text-sm text-muted-foreground"
-                        style={{ width: columnWidths[6] }}
+                        style={{ width: columnWidths[7] }}
                       >
                         <TruncatedText
                           text={getDepartmentDisplayText(doc.department || '-')}

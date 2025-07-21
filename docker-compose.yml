@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  medidok-epa:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: medidok-epa-dev
+    
+    # Volume mapping - your local code is mounted into the container
+    volumes:
+      # Mount current directory to /app in container
+      - .:/app
+      # Prevent node_modules from being overwritten by local mount
+      - /app/node_modules
+    
+    # Port mapping
+    ports:
+      - "8080:8080"
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # For hot reload on some systems
+    
+    # Keep container running
+    stdin_open: true
+    tty: true
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Resource limits (adjust as needed)
+    mem_limit: 2g
+    cpus: '2.0'
+    
+    # Override default command for development
+    command: sh -c "npm install && npm run dev"
